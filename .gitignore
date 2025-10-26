@@ -1,0 +1,28 @@
+# Angular
+frontend/node_modules/
+frontend/.angular/
+frontend/.vscode/
+frontend/coverage/
+frontend/dist
+
+# Python
+backend/target/
+backend/.venv
+backend/__pycache__/
+*.pyc
+*.pyo
+
+# Testing and coverage
+.coverage
+/coverage/
+
+# IDE files
+.vscode/
+.idea/
+
+# Operating System files
+.DS_Store
+
+# Virtual environment
+.venv/
+env/

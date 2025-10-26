@@ -1,0 +1,5 @@
+[flake8]
+exclude = .venv,.git,__pycache__, **/__init__.py
+max-line-length = 90
+extend-ignore = E203, E501, W503
+docstring-convention = google

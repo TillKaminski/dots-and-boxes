@@ -1,0 +1,11 @@
+# Core Dependencies
+fastapi[standard]
+uvicorn
+
+# Development and Linting Tools
+flake8
+flake8-docstrings
+black
+pytest
+coverage
+pytest-cov
