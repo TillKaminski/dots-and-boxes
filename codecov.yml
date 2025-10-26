@@ -1,0 +1,27 @@
+codecov: 
+  flags:
+    backend:
+      paths:
+        - "backend" 
+    frontend:
+      paths:
+        - "frontend" 
+
+  status_checks:
+    patch:
+      default:
+        target: auto
+        threshold: 0% 
+    project:
+      default:
+        target: 50% 
+        flags:
+          - frontend
+          - backend
+
+      frontend:
+        target: 55% 
+        flags: frontend
+      backend:
+        target: 60% 
+        flags: backend

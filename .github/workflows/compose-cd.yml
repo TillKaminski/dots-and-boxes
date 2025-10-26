@@ -1,0 +1,187 @@
+name: Build, Push & Compose Release
+
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  check_paths:
+    runs-on: ubuntu-latest
+    outputs:
+      fe_changed: ${{ steps.filter.outputs.frontend }}
+      be_changed: ${{ steps.filter.outputs.backend }}
+    steps:
+      - uses: actions/checkout@v4
+        # Check last 2 Commits for Changes.
+        with:
+          fetch-depth: 2 
+      - name: Filter changed paths
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            frontend:
+              - 'frontend/**'
+            backend:
+              - 'backend/**'
+              - '**/requirements.txt'
+
+  # =========================================================
+  # FRONTEND BUILD & PUSH
+  # =========================================================
+  build_fe:
+    needs: [check_paths]
+    runs-on: ubuntu-latest
+    if: ${{ needs.check_paths.outputs.fe_changed == 'true' }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract tags for FE Docker
+        id: meta_fe
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}/frontend
+          tags: |
+            type=raw,value=latest
+            type=sha
+
+      - name: Build and push Frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          tags: ${{ steps.meta_fe.outputs.tags }}
+          labels: ${{ steps.meta_fe.outputs.labels }}
+
+  # =========================================================
+  # BACKEND BUILD & PUSH
+  # =========================================================
+  build_be:
+    needs: [check_paths]
+    runs-on: ubuntu-latest
+    if: ${{ needs.check_paths.outputs.be_changed == 'true' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry (GHCR)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags) for BE Docker
+        id: meta_be
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}/backend
+          tags: |
+            type=raw,value=latest
+            type=sha
+
+      - name: Build and push Backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: ${{ steps.meta_be.outputs.tags }}
+          labels: ${{ steps.meta_be.outputs.labels }}
+
+  # =========================================================
+  # DOCKER COMPOSE RELEASE
+  # =========================================================
+  create_compose_file:
+    needs: [check_paths, build_fe, build_be] 
+    runs-on: ubuntu-latest
+    if: ${{ always() && (needs.build_fe.result == 'success' || needs.build_be.result == 'success') }}
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set Release Tag
+        run: echo "RELEASE_TAG=latest" >> $GITHUB_ENV
+
+      - name: Generate final docker-compose.yml
+        run: |
+          echo "REPO=${GITHUB_REPOSITORY@L}" >>${GITHUB_ENV}
+          cat <<EOF > docker-compose-release.yml
+          version: '3.8'
+          services:             
+            dots-backend:
+              image: ghcr.io/${{ env.GITHUB_REPOSITORY }}/backend:${{ env.RELEASE_TAG }}
+              container_name: dots-backend
+              ports:
+                - "8080:8000"
+              restart: always
+          
+            dots-frontend:
+              image: ghcr.io/${{ env.GITHUB_REPOSITORY }}/frontend:${{ env.RELEASE_TAG }}
+              container_name: dots-frontend
+              ports:
+                - "4200:80"
+              depends_on:
+                - dots-backend
+              restart: always
+          EOF
+
+      - name: Upload Docker Compose File as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dots-docker-compose
+          path: docker-compose.yml
+          retention-days: 7
+
+      - name: Commit generated compose file
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "CI: Auto-commit docker-compose.yml after successful build."
+          commit_options: '--allow-empty' 
+          file_pattern: 'docker-compose.yml'
+
+  create_release:
+    needs: [create_compose_file, build_fe, build_be]
+    runs-on: ubuntu-latest
+    if: ${{ always() && (needs.create_compose_file.result == 'success' || needs.build_fe.result == 'success' || needs.build_be.result == 'success') }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Create Release Tag (v-latest)
+        id: tag_release
+        run: |
+          RELEASE_TAG="v-latest"
+          echo "tag_name=$RELEASE_TAG" >> $GITHUB_OUTPUT
+          git tag $RELEASE_TAG
+          git push origin $RELEASE_TAG || true 
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.tag_release.outputs.tag_name }}
+          name: Full CI/CD Release ${{ github.run_number }}
+          body: |
+            Auto-Release of Frontend and Backend Builds.
+            
+            Contains newest `docker-compose.yml` for deployment.
+          files: docker-compose.yml
+          draft: false
+          prerelease: false
