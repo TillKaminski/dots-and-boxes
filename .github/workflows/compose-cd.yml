@@ -122,7 +122,7 @@ jobs:
       - name: Generate final docker-compose.yml
         run: |
           echo "REPO=${GITHUB_REPOSITORY@L}" >>${GITHUB_ENV}
-          cat <<EOF > docker-compose-release.yml
+          cat <<EOF > docker-compose.yml
           version: '3.8'
           services:             
             dots-backend:
