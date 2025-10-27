@@ -121,19 +121,18 @@ jobs:
 
       - name: Generate final docker-compose.yml
         run: |
-          echo "REPO=${GITHUB_REPOSITORY@L}" >>${GITHUB_ENV}
           cat <<EOF > docker-compose.yml
           version: '3.8'
           services:             
             dots-backend:
-              image: ghcr.io/${{ env.GITHUB_REPOSITORY }}/backend:${{ env.RELEASE_TAG }}
+              image: ghcr.io/${{ github.repository }}/backend:${{ env.RELEASE_TAG }}
               container_name: dots-backend
               ports:
                 - "8080:8000"
               restart: always
           
             dots-frontend:
-              image: ghcr.io/${{ env.GITHUB_REPOSITORY }}/frontend:${{ env.RELEASE_TAG }}
+              image: ghcr.io/${{ github.repository }}/frontend:${{ env.RELEASE_TAG }}
               container_name: dots-frontend
               ports:
                 - "4200:80"
