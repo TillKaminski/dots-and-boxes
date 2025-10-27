@@ -2,5 +2,5 @@
 
 
 def main():
-    """Main Method for FastAPI."""
+    """Main Method for Fast-API."""
     print("Python Main.")
