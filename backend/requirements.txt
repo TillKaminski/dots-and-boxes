@@ -1,6 +1,7 @@
 # Core Dependencies
 fastapi[standard]
 uvicorn
+gunicorn
 
 # Development and Linting Tools
 flake8
