@@ -11,8 +11,8 @@ Full-Stack Monorepo: Dots and Boxes Game with Angular Frontend, Python FastAPI B
 
 | Pipeline | Status | Coverage |
 | :--- | :--- | :--- |
-| **Frontend CI** | [![Frontend CI (Tests, Linting, Coverage)](https://github.com/TillKaminski/dots-and-boxes/actions/workflows/frontend-ci.yml/badge.svg)](https://github.com/TillKaminski/dots-and-boxes/actions/workflows/frontend-ci.yml) | [Code Coverage (FE) Badge ] |
-| **Backend CI** | [![Backend CI (Tests, Linting, Coverage)](https://github.com/TillKaminski/dots-and-boxes/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/TillKaminski/dots-and-boxes/actions/workflows/backend-ci.yml) | [Code Coverage (BE) Badge ] |
+| **Frontend CI** | [![Frontend CI (Tests, Linting, Coverage)](https://github.com/TillKaminski/dots-and-boxes/actions/workflows/frontend-ci.yml/badge.svg)](https://github.com/TillKaminski/dots-and-boxes/actions/workflows/frontend-ci.yml) | [![codecov](https://codecov.io/gh/TillKaminski/dots-and-boxes/graph/badge.svg?token=5VQHNX69WU&flag=frontend)](https://codecov.io/gh/TillKaminski/dots-and-boxes/flags/frontend) |
+| **Backend CI** | [![Backend CI (Tests, Linting, Coverage)](https://github.com/TillKaminski/dots-and-boxes/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/TillKaminski/dots-and-boxes/actions/workflows/backend-ci.yml) | [![codecov](https://codecov.io/gh/TillKaminski/dots-and-boxes/graph/badge.svg?token=5VQHNX69WU&flag=backend)](https://codecov.io/gh/TillKaminski/dots-and-boxes/flags/backend) |
 | **CD Release** | [CD Build Status Badge ] | |
 
 ## 📦 Components
