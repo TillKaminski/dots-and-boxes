@@ -9,6 +9,7 @@ frontend/dist
 backend/target/
 backend/.venv
 backend/__pycache__/
+backend/coverage.xml
 *.pyc
 *.pyo
 
