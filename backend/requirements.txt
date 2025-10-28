@@ -10,3 +10,6 @@ black
 pytest
 coverage
 pytest-cov
+
+numpy
+torch
