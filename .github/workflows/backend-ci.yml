@@ -1,4 +1,4 @@
-name: Backend CI (Tests, Linting, Coverage)
+name: CI - Backend (Tests, Linting, Coverage)
 
 on:
   pull_request:

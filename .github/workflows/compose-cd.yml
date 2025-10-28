@@ -1,4 +1,4 @@
-name: Build, Push & Compose Release
+name: CD - Build, Push & Compose Release
 
 on:
   push:
@@ -130,6 +130,7 @@ jobs:
               ports:
                 - "8080:8000"
               restart: always
+              pull_policy: always
           
             dots-frontend:
               image: ghcr.io/${{ github.repository }}/frontend:${{ env.RELEASE_TAG }}
@@ -139,6 +140,7 @@ jobs:
               depends_on:
                 - dots-backend
               restart: always
+              pull_policy: always
           EOF
 
       - name: Upload Docker Compose File as Artifact
