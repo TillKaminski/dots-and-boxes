@@ -16,4 +16,5 @@ COPY --chown=app:app . .
 USER app
 
 EXPOSE 8000
-CMD ["/usr/local/bin/gunicorn", "main:app", "--bind", "0.0.0.0:8000", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker"]
+CMD ["python", "-X", "utf8", "-m", "gunicorn", "main:app", "--bind", "0.0.0.0:8000", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker"]
+
