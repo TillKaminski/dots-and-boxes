@@ -16,7 +16,7 @@ RUN apk add --no-cache dos2unix
 WORKDIR /app
 COPY --chown=app:app . .
 
-RUN find /app -name "*.py" -exec dos2unix {} +
+RUN apk add --no-cache dos2unix && find /app -type f -name "*.py" -exec dos2unix {} +
 
 USER app
 EXPOSE 8000
