@@ -33,5 +33,5 @@ async def root():
     Returns:
         Test message.
     """
-    print("Fast-API root calles.")
+    print("Fast-API root called.")
     return {"test-message": "Fast-API Test."}
