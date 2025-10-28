@@ -11,8 +11,6 @@ RUN addgroup -g 1000 app && adduser -u 1000 -G app -s /bin/sh -D app
 COPY --from=builder --chown=app:app /usr/local/lib/python3.12/site-packages/ /usr/local/lib/python3.12/site-packages/
 COPY --from=builder --chown=app:app /usr/local/bin/ /usr/local/bin/
 
-RUN apk add --no-cache dos2unix
-
 WORKDIR /app
 COPY --chown=app:app . .
 
@@ -21,5 +19,5 @@ RUN apk add --no-cache dos2unix && find /app -type f -name "*.py" -exec dos2unix
 USER app
 EXPOSE 8000
 
-CMD ["python", "-X", "utf8", "-m", "gunicorn", "main:app", "--bind", "0.0.0.0:8000", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker"]
+CMD ["gunicorn", "main:app", "--bind", "0.0.0.0:8000", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker"]
 
