@@ -74,6 +74,20 @@ class GameBoard:
             return 2
         else:
             return "Draw"
+        
+    def to_json(self) -> dict:
+        """Map Game Configuration to JSON."""
+        return {
+            "size": self.size,
+            "currentPlayer": self.current_player,
+            "finished": self.game_finished,
+            "scores": self.scores.copy(),
+            "edges": {
+                "horizontal": self.edges_horizontal.tolist(),
+                "vertical": self.edges_vertical.tolist(),
+            },
+            "boxes": self.boxes.tolist(),
+        }
 
     def _validate_input(self, x: int, y: int, orientation: Orientation):
         """Validate input parameters."""

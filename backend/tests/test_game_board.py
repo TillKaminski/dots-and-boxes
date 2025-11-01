@@ -313,7 +313,62 @@ def test_is_game_over():
 
 
 def test_game_state_to_json(create_test_board):
-    """Test if Game Configuration is mapped to JSON."""
-    pass
+    """Test if Game Configuration is correctly mapped to JSON."""
+    board = GameBoard(size=2)
+    # Check if JSON contains Player Action
+    board.move(0, 0, Orientation.HORIZONTAL)  # P1
+    board.move(1, 0, Orientation.VERTICAL)  # P2
 
+    json_state = board.to_json()
+    assert isinstance(json_state, dict)
 
+    # Check JSON-Fields 
+    assert "size" in json_state
+    assert "finished" in json_state
+    assert "currentPlayer" in json_state
+    assert "scores" in json_state
+    assert "edges" in json_state
+    assert "boxes" in json_state
+
+    # Check complex Objects
+    assert isinstance(json_state["edges"]["horizontal"], list)
+    assert isinstance(json_state["edges"]["vertical"], list)
+    assert isinstance(json_state["boxes"], list)
+
+    # Game State
+    assert json_state["currentPlayer"] in [1, 2]
+    assert sum(json_state["scores"].values()) == 0
+    assert not json_state["finished"]
+
+    horizontal_edges = json_state["edges"]["horizontal"]
+    vertical_edges = json_state["edges"]["vertical"]
+    boxes = json_state["boxes"]
+
+    # Horizontal: size x (size + 1)
+    assert len(horizontal_edges) == board.size
+    assert all(len(row) == board.size + 1 for row in horizontal_edges)
+
+    # Vertical: (size + 1) x size
+    assert len(vertical_edges) == board.size + 1
+    assert all(len(row) == board.size for row in vertical_edges)
+
+    # Check Player Action
+    assert horizontal_edges[0][0] == 1
+    for x, row in enumerate(horizontal_edges):
+        for y, val in enumerate(row):
+            if not (x, y) == (0, 0):
+                assert val == 0, "Hor. Edge occupied."
+    
+    assert vertical_edges[1][0] == 2
+    for x, row in enumerate(vertical_edges):
+        for y, val in enumerate(row):
+            if not (x, y) == (1, 0):
+                assert val == 0, "Ver. Edge occupied."
+
+    # Box (0, 0) should have 2 open Edges. (1, 0) -> 3
+    assert boxes[0][0] == -2
+    assert boxes[1][0] == -3
+    for x in range(board.size):
+        for y in range(board.size):
+            if not (x,y) in [(0, 0), (1, 0)]:
+                assert boxes[x][y] == -4
