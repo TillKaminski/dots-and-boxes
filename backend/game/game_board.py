@@ -25,6 +25,7 @@ class GameBoard:
         Positions are from bottom left to top right (Classical Coordinate System).
         """
         self.size = size
+        self.game_finished: bool = False
         self.edges_horizontal: np.ndarray = np.zeros((size, size + 1), dtype=int)
         self.edges_vertical: np.ndarray = np.zeros((size + 1, size), dtype=int)
         self.boxes: np.ndarray = np.full((size, size), -4, dtype=int)
@@ -45,8 +46,34 @@ class GameBoard:
             # Switch Player
             self._switch_player()
 
-        # print(f"Board.move() called: x = {x}, y = {y} - {orientation}")
-        # return None
+        if self.is_game_over():
+            self.game_finished = True
+            return
+
+    def is_game_over(self):
+        """Checks for Winning Player or Draw."""
+        # Player has majority of Boxes
+        score_threshold = self.size * self.size / 2
+        if self.scores[1] > score_threshold or self.scores[2] > score_threshold:
+            return True
+
+        # No Boxes with open Edges: Draw
+        if np.all(self.boxes > 0):
+            return True
+
+        return False
+
+    def get_winner(self) -> int | str | None:
+        """Return 1 or 2 for Winner, 'Draw' for Draw, None if game not finished."""
+        if not self.is_game_over():
+            return None
+        score_p1, score_ps = self.scores[1], self.scores[2]
+        if score_p1 > score_ps:
+            return 1
+        elif score_ps > score_p1:
+            return 2
+        else:
+            return "Draw"
 
     def _validate_input(self, x: int, y: int, orientation: Orientation):
         """Validate input parameters."""
@@ -121,7 +148,6 @@ class GameBoard:
 
     def print_board(self):
         """Prints the current board configuration to the Terminal."""
-
         print("=======" * (self.size + 1))
         print("\n")
 

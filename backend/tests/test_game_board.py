@@ -315,3 +315,5 @@ def test_is_game_over():
 def test_game_state_to_json(create_test_board):
     """Test if Game Configuration is mapped to JSON."""
     pass
+
+
