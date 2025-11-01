@@ -211,29 +211,107 @@ def test_move_consistent_updates(create_test_board):
     # Check Box (0, 0) for consistency
     assert board.boxes[0, 0] == current_player
 
+
 def test_print_board_closed_box(capsys):
     """Tests print."""
     board = GameBoard(size=2)
     board.current_player = 1
-    
+
     # Set Edged for Box (0, 0)
-    board.move(0, 0, Orientation.HORIZONTAL) # Player 1
-    board.move(0, 0, Orientation.VERTICAL) # Player 2
-    board.move(0, 1, Orientation.HORIZONTAL) # Player 1
-    
+    board.move(0, 0, Orientation.HORIZONTAL)  # Player 1
+    board.move(0, 0, Orientation.VERTICAL)  # Player 2
+    board.move(0, 1, Orientation.HORIZONTAL)  # Player 1
+
     # Close Box
-    board.move(1, 0, Orientation.VERTICAL) # Player 2
-    
+    board.move(1, 0, Orientation.VERTICAL)  # Player 2
+
     board.print_board()
     captured = capsys.readouterr()
     output = captured.out
     clean_output = [line.strip() for line in output.splitlines() if line.strip()]
 
-    # Check Output line-wise    
-    assert "=====================" in clean_output[0] 
+    # Check Output line-wise
+    assert "=====================" in clean_output[0]
     assert "#---1---#--- ---#" in clean_output[1]
     assert "|2 [2]  |2  3   |" in clean_output[2]
-    assert "#---1---#--- ---#" in clean_output[3] 
+    assert "#---1---#--- ---#" in clean_output[3]
     assert "|   3   |   4   |" in clean_output[4]
     assert "#--- ---#--- ---#" in clean_output[5]
-    assert "=====================" in clean_output[6] 
+    assert "=====================" in clean_output[6]
+
+
+def test_is_game_over():
+    """Test if Win or Draw is detected."""
+    # Board Configuration in which different Game Endings can be evaluated.
+    board_configuration = [
+        (0, 1, Orientation.VERTICAL),
+        (1, 1, Orientation.VERTICAL),
+        (2, 1, Orientation.VERTICAL),
+        (0, 0, Orientation.VERTICAL),
+        (1, 0, Orientation.VERTICAL),
+        (2, 0, Orientation.VERTICAL),
+        (0, 2, Orientation.HORIZONTAL),
+        (1, 2, Orientation.HORIZONTAL),
+    ]
+
+    board_win_p1: GameBoard = GameBoard(size=2)
+    board_win_p2: GameBoard = GameBoard(size=2)
+    board_draw: GameBoard = GameBoard(size=2)
+
+    # Setup Boards
+    for config in board_configuration:
+        board_win_p1.move(*config)
+        board_win_p2.move(*config)
+        board_draw.move(*config)
+
+    # Current Player should be Player 1
+    assert board_win_p1.current_player == 1
+    assert board_win_p2.current_player == 1
+    assert board_draw.current_player == 1
+
+    # No Points earned
+    assert board_win_p1.scores[1] == 0 and board_win_p1.scores[2] == 0
+    assert board_win_p2.scores[1] == 0 and board_win_p2.scores[2] == 0
+    assert board_draw.scores[1] == 0 and board_draw.scores[2] == 0
+
+    # Check Win Player 1 (Turn Player 1)
+    assert not board_win_p1.is_game_over()
+    assert not board_win_p1.game_finished
+    assert board_win_p1.get_winner() is None
+
+    board_win_p1.move(0, 1, Orientation.HORIZONTAL)
+    board_win_p1.move(0, 0, Orientation.HORIZONTAL)
+    board_win_p1.move(1, 1, Orientation.HORIZONTAL)
+
+    assert board_win_p1.is_game_over()
+    assert board_win_p1.game_finished
+    assert board_win_p1.get_winner() == 1
+
+    # Check Win Player 2 (Turn Player 1)
+    assert not board_win_p2.is_game_over()
+    assert board_win_p2.get_winner() is None
+
+    board_win_p2.move(0, 1, Orientation.HORIZONTAL)  # P1 score
+    board_win_p2.move(1, 0, Orientation.HORIZONTAL)  # P1 no score
+    board_win_p2.move(1, 1, Orientation.HORIZONTAL)  # P2 double score
+    board_win_p2.move(0, 0, Orientation.HORIZONTAL)  # P2 score
+
+    assert board_win_p2.is_game_over()
+    assert board_win_p2.get_winner() == 2
+
+    # Check Draw
+    assert not board_draw.is_game_over()
+    assert board_draw.get_winner() is None
+
+    board_draw.move(0, 1, Orientation.HORIZONTAL)  # P1 score
+    board_draw.move(0, 0, Orientation.HORIZONTAL)  # P1 score
+    board_draw.move(1, 0, Orientation.HORIZONTAL)  # P1 no score
+    board_draw.move(1, 1, Orientation.HORIZONTAL)  # P2 double score
+
+    assert board_draw.is_game_over()
+    assert board_draw.get_winner() == "Draw"
+
+
+def test_game_state_to_json(create_test_board):
+    """Test if Game Configuration is mapped to JSON."""
+    pass
