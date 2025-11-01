@@ -1,12 +1,8 @@
 """Test Class for Game Setup and Logic."""
 
-import sys
-import os
 import numpy as np
 from game.game_board import GameBoard, Orientation
 import pytest
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 
 @pytest.fixture
@@ -17,18 +13,15 @@ def create_test_board():
     and horizontal (1, 3).
     """
     board = GameBoard(4)
-
-    # Player 1 edges
-    board.edges_horizontal[0, 0] = 1
-    board.edges_horizontal[0, 1] = 1
-    board.edges_vertical[0, 0] = 1
-
-    # Player 2 edges
-    board.edges_horizontal[1, 2] = 2
-    board.edges_vertical[1, 2] = 2
-    board.edges_vertical[2, 2] = 2
-
     board.current_player = 1
+
+    board.move(0, 0, Orientation.HORIZONTAL)  # P1
+    board.move(0, 1, Orientation.HORIZONTAL)  # P2
+    board.move(0, 0, Orientation.VERTICAL)  # P1
+
+    board.move(1, 2, Orientation.HORIZONTAL)  # P2
+    board.move(1, 2, Orientation.VERTICAL)  # P1
+    board.move(2, 2, Orientation.VERTICAL)  # P2
 
     return board
 
@@ -36,7 +29,11 @@ def create_test_board():
 def test_board_initialization():
     """Test for Board Constructor."""
     size = 3
+    board = GameBoard(size=size, starting_player=2)
+    assert board.current_player == 2
+
     board = GameBoard(size=size)
+    assert board.current_player == 1
 
     # Check Board Shape
     assert board.edges_horizontal.shape == (size, size + 1)
@@ -46,39 +43,31 @@ def test_board_initialization():
     # Check Board Configuration
     assert np.all(board.edges_horizontal == 0)
     assert np.all(board.edges_vertical == 0)
-    assert np.all(board.boxes == 0)
+    assert np.all(board.boxes == -4)
 
     # Check Scores
     assert board.scores == {1: 0, 2: 0}
-    assert board.current_player == 0
 
 
-def test_move(capsys):
-    """Test for valid Turns (PLACEHOLDER)."""
-    size = 3
-    board = GameBoard(size=size)
-    board.move(2, 4, Orientation.VERTICAL)
-    captured = capsys.readouterr()
-    assert (
-        captured.out == "Board.move() called: row = 2, col = 4 - Orientation.VERTICAL\n"
-    )
-    assert captured.err == ""
-
-
-def test_move_validity(create_test_board):
+def test_move_rejects_occupied_edges(create_test_board):
     """Test if an already occupied edge throws an Error."""
     board: GameBoard = create_test_board
     current_player = board.current_player
-    # Already taken by Player 1
-    row_occ, col_occ, orientation_occ = 0, 0, Orientation.HORIZONTAL
-    with pytest.raises(ValueError):
-        board.move(row_occ, col_occ, orientation_occ)
+    # Already taken by Player 1 (Horizontal)
+    x_occ_h, y_occ_h, orientation_occ_h = 0, 0, Orientation.HORIZONTAL
+    with pytest.raises(ValueError, match="Edge is already taken"):
+        board.move(x_occ_h, y_occ_h, orientation_occ_h)
 
-    row_free, col_free, orientation_free = 3, 3, Orientation.HORIZONTAL
-    board.move(row_free, col_free, orientation_free)
+    # Already taken by Player 2 (Vertical)
+    x_occ_v, y_occ_v, orientation_occ_v = 1, 2, Orientation.VERTICAL
+    with pytest.raises(ValueError, match="Edge is already taken"):
+        board.move(x_occ_v, y_occ_v, orientation_occ_v)
+
+    x_free, y_free, orientation_free = 3, 3, Orientation.HORIZONTAL
+    board.move(x_free, y_free, orientation_free)
 
     # Edge belongs to Player
-    assert board.edges_horizontal[row_free, col_free] == current_player
+    assert board.edges_horizontal[x_free, y_free] == current_player
     # Player Switch
     assert board.current_player != current_player
 
@@ -86,20 +75,56 @@ def test_move_validity(create_test_board):
 def test_move_out_of_bounds(create_test_board):
     """Test if invalid Positions are rejected."""
     board: GameBoard = create_test_board
-    row_invalid, col_invalid, orientation = 10, 10, Orientation.VERTICAL
+    x_invalid, y_invalid, orientation = 10, 10, Orientation.VERTICAL
 
-    with pytest.raises(ValueError):
-        board.move(row_invalid, col_invalid, orientation)
+    with pytest.raises(ValueError, match="Value out of bounds."):
+        board.move(x_invalid, y_invalid, orientation)
+
+    # valid move
+    board.move(3, 0, Orientation.HORIZONTAL)
+    board.move(4, 0, Orientation.VERTICAL)
+
+    # out of bounds
+    with pytest.raises(ValueError, match="Value out of bounds."):
+        board.move(4, 0, Orientation.HORIZONTAL)
+
+    with pytest.raises(ValueError, match="Value out of bounds."):
+        board.move(5, 0, Orientation.VERTICAL)
+
+    with pytest.raises(ValueError, match="Value out of bounds."):
+        board.move(-1, -1, Orientation.HORIZONTAL)
 
 
-def test_move_close_box(create_test_board):
+def test_move_box_updates(create_test_board):
+    """Test all different box situations."""
+    board: GameBoard = create_test_board
+
+    # Boxes free: (2, 1) (2, 0) (3, 1)
+    assert board.boxes[2, 1] == -4
+    assert board.boxes[2, 0] == -4
+    assert board.boxes[3, 1] == -4
+
+    # Horizontal Edge between (2, 0) and (2, 1)
+    x_1, y_1, o_1 = 2, 1, Orientation.HORIZONTAL
+    board.move(x_1, y_1, o_1)
+    assert board.boxes[2, 1] == -3
+    assert board.boxes[2, 0] == -3
+
+    # Vertical Edge between (2, 1) and (3, 1)
+    x_2, y_2, o_2 = 3, 1, Orientation.VERTICAL
+    board.move(x_2, y_2, o_2)
+    assert board.boxes[2, 1] == -2
+    assert board.boxes[3, 1] == -3
+
+
+def test_move_scores_when_box_completed(create_test_board):
     """Test Score Updates and Turn passes if no box completed."""
     board: GameBoard = create_test_board
     player_before = board.current_player
     score_before = board.scores[player_before]
     # Last edge for box (1, 2)
-    row, col, orientation = 1, 3, Orientation.HORIZONTAL
-    board.move(row, col, orientation)
+    x, y, orientation = 1, 3, Orientation.HORIZONTAL
+    board.move(x, y, orientation)
     assert board.current_player == player_before
     assert board.scores[player_before] == score_before + 1
     assert board.boxes[1, 2] == player_before
@@ -113,15 +138,102 @@ def test_move_multiple_boxes(create_test_board):
     score_before = board.scores[player_before]
 
     # First Box (0, 0)
-    row_first, col_first, orientation_first = 1, 0, Orientation.VERTICAL
-    board.move(row_first, col_first, orientation_first)
+    x_first, y_first, orientation_first = 1, 0, Orientation.VERTICAL
+    board.move(x_first, y_first, orientation_first)
     assert board.current_player == player_before
     assert board.scores[player_before] == score_before + 1
     assert board.boxes[0, 0] == player_before
 
     # Second Box (1, 2)
-    row_second, col_second, orientation_second = 1, 3, Orientation.HORIZONTAL
-    board.move(row_second, col_second, orientation_second)
+    x_second, y_second, orientation_second = 1, 3, Orientation.HORIZONTAL
+    board.move(x_second, y_second, orientation_second)
     assert board.current_player == player_before
     assert board.scores[player_before] == score_before + 2
     assert board.boxes[1, 2] == player_before
+
+
+def test_move_close_simultaneously(create_test_board):
+    """Test if an Edge between two closed Boxes works."""
+    board: GameBoard = create_test_board
+
+    # Setup Box (1, 0)
+    board.move(1, 0, Orientation.HORIZONTAL)
+    board.move(1, 1, Orientation.HORIZONTAL)
+    board.move(2, 0, Orientation.VERTICAL)
+
+    current_player = board.current_player
+    player_score = board.scores[current_player]
+    # Close two Boxes: (1, 0) and (0, 0)
+    board.move(1, 0, Orientation.VERTICAL)
+    assert board.current_player == current_player
+    assert board.scores[current_player] == player_score + 2
+    # Two Boxes updated
+    assert board.boxes[0, 0] == current_player
+    assert board.boxes[1, 0] == current_player
+
+    # Setup Box (1, 3)
+    board.move(1, 4, Orientation.HORIZONTAL)
+    board.move(1, 3, Orientation.VERTICAL)
+    board.move(2, 3, Orientation.VERTICAL)
+
+    current_player = board.current_player
+    player_score = board.scores[current_player]
+    # Close two Boxes: (1, 3) and (1, 2)
+    board.move(1, 3, Orientation.HORIZONTAL)
+    assert board.current_player == current_player
+    assert board.scores[current_player] == player_score + 2
+    # Two Boxes updated
+    assert board.boxes[1, 3] == current_player
+    assert board.boxes[1, 2] == current_player
+
+
+def test_move_consistent_updates(create_test_board):
+    """Test if Updates get overwritten."""
+    board: GameBoard = create_test_board
+
+    # Close first Box (0, 0)
+    current_player = board.current_player
+    board.move(1, 0, Orientation.VERTICAL)
+    assert board.current_player == current_player
+    assert board.boxes[0, 0] == current_player
+
+    # Close second Box (1, 0)
+    board.move(1, 0, Orientation.HORIZONTAL)
+    board.move(1, 1, Orientation.HORIZONTAL)
+
+    # Additional Move to switch players
+    board.move(3, 1, Orientation.HORIZONTAL)
+    assert board.current_player != current_player
+
+    board.move(2, 0, Orientation.VERTICAL)
+    assert board.boxes[1, 0] == board.current_player
+
+    # Check Box (0, 0) for consistency
+    assert board.boxes[0, 0] == current_player
+
+def test_print_board_closed_box(capsys):
+    """Tests print."""
+    board = GameBoard(size=2)
+    board.current_player = 1
+    
+    # Set Edged for Box (0, 0)
+    board.move(0, 0, Orientation.HORIZONTAL) # Player 1
+    board.move(0, 0, Orientation.VERTICAL) # Player 2
+    board.move(0, 1, Orientation.HORIZONTAL) # Player 1
+    
+    # Close Box
+    board.move(1, 0, Orientation.VERTICAL) # Player 2
+    
+    board.print_board()
+    captured = capsys.readouterr()
+    output = captured.out
+    clean_output = [line.strip() for line in output.splitlines() if line.strip()]
+
+    # Check Output line-wise    
+    assert "=====================" in clean_output[0] 
+    assert "#---1---#--- ---#" in clean_output[1]
+    assert "|2 [2]  |2  3   |" in clean_output[2]
+    assert "#---1---#--- ---#" in clean_output[3] 
+    assert "|   3   |   4   |" in clean_output[4]
+    assert "#--- ---#--- ---#" in clean_output[5]
+    assert "=====================" in clean_output[6] 
