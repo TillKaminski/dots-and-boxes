@@ -1,20 +1,22 @@
-FROM python:3.12-alpine AS builder
-RUN apk add --no-cache gcc musl-dev linux-headers
+FROM python:3.12-slim AS builder
+
 WORKDIR /app
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt && rm -rf /root/.cache/pip
-
-FROM python:3.12-alpine
+RUN pip install --no-cache-dir -r requirements.txt
+# RUN pip install --no-cache-dir torch==2.3.0 --index-url https://download.pytorch.org/whl/cpu
+  
+FROM python:3.12-slim
 ENV PATH="/usr/local/bin:$PATH" PYTHONUNBUFFERED=1
-RUN addgroup -g 1000 app && adduser -u 1000 -G app -s /bin/sh -D app
+
+RUN apt-get update && rm -rf /var/lib/apt/lists/*
+
+RUN addgroup -gid 1000 app && useradd --uid 1000 --gid 1000 -m app
 
 COPY --from=builder --chown=app:app /usr/local/lib/python3.12/site-packages/ /usr/local/lib/python3.12/site-packages/
 COPY --from=builder --chown=app:app /usr/local/bin/ /usr/local/bin/
 
 WORKDIR /app
 COPY --chown=app:app . .
-
-RUN apk add --no-cache dos2unix && find /app -type f -name "*.py" -exec dos2unix {} +
 
 USER app
 EXPOSE 8000

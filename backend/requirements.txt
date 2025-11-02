@@ -12,4 +12,3 @@ coverage
 pytest-cov
 
 numpy
-torch

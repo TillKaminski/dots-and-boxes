@@ -10,6 +10,7 @@ backend/target/
 backend/.venv
 backend/__pycache__/
 backend/coverage.xml
+backend/requirements-dev.txt
 *.pyc
 *.pyo
 
