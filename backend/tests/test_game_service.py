@@ -28,7 +28,7 @@ def test_initial_state(service):
     # Default Game exists
     assert game_id in service.games
 
-    assert service.create_game(game_id="1", size=12)
+    assert service.create_game(game_id="1", size=12) == ERROR_GAME_EXISTS
     assert service.get_state(game_id="999") == ERROR_GAME_NOT_FOUND
 
     state = service.get_state(game_id)
