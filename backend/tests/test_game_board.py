@@ -4,6 +4,8 @@ import numpy as np
 from game.game_board import GameBoard, Orientation
 import pytest
 
+from game.errors import ERROR_EDGE_TAKEN, ERROR_OUT_OF_BOUNDS
+
 
 @pytest.fixture
 def create_test_board():
@@ -55,12 +57,12 @@ def test_move_rejects_occupied_edges(create_test_board):
     current_player = board.current_player
     # Already taken by Player 1 (Horizontal)
     x_occ_h, y_occ_h, orientation_occ_h = 0, 0, Orientation.HORIZONTAL
-    with pytest.raises(ValueError, match="Edge is already taken"):
+    with pytest.raises(ValueError, match=ERROR_EDGE_TAKEN["error"]):
         board.move(x_occ_h, y_occ_h, orientation_occ_h)
 
     # Already taken by Player 2 (Vertical)
     x_occ_v, y_occ_v, orientation_occ_v = 1, 2, Orientation.VERTICAL
-    with pytest.raises(ValueError, match="Edge is already taken"):
+    with pytest.raises(ValueError, match=ERROR_EDGE_TAKEN["error"]):
         board.move(x_occ_v, y_occ_v, orientation_occ_v)
 
     x_free, y_free, orientation_free = 3, 3, Orientation.HORIZONTAL
@@ -77,7 +79,7 @@ def test_move_out_of_bounds(create_test_board):
     board: GameBoard = create_test_board
     x_invalid, y_invalid, orientation = 10, 10, Orientation.VERTICAL
 
-    with pytest.raises(ValueError, match="Value out of bounds."):
+    with pytest.raises(ValueError, match=ERROR_OUT_OF_BOUNDS["error"]):
         board.move(x_invalid, y_invalid, orientation)
 
     # valid move
@@ -85,13 +87,13 @@ def test_move_out_of_bounds(create_test_board):
     board.move(4, 0, Orientation.VERTICAL)
 
     # out of bounds
-    with pytest.raises(ValueError, match="Value out of bounds."):
+    with pytest.raises(ValueError, match=ERROR_OUT_OF_BOUNDS["error"]):
         board.move(4, 0, Orientation.HORIZONTAL)
 
-    with pytest.raises(ValueError, match="Value out of bounds."):
+    with pytest.raises(ValueError, match=ERROR_OUT_OF_BOUNDS["error"]):
         board.move(5, 0, Orientation.VERTICAL)
 
-    with pytest.raises(ValueError, match="Value out of bounds."):
+    with pytest.raises(ValueError, match=ERROR_OUT_OF_BOUNDS["error"]):
         board.move(-1, -1, Orientation.HORIZONTAL)
 
 

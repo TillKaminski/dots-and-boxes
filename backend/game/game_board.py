@@ -3,6 +3,7 @@
 # from typing import Optional
 import numpy as np
 from enum import Enum, auto
+from .errors import ERROR_EDGE_TAKEN, ERROR_OUT_OF_BOUNDS
 
 
 class Orientation(Enum):
@@ -93,23 +94,23 @@ class GameBoard:
         """Validate input parameters."""
         # Check if Position is in valid range
         if x < 0 or y < 0:
-            raise ValueError("Value out of bounds.")
+            raise ValueError(ERROR_OUT_OF_BOUNDS["error"])
 
         if orientation == Orientation.HORIZONTAL:
             if x > self.size - 1 or y > self.size:
-                raise ValueError("Value out of bounds.")
+                raise ValueError(ERROR_OUT_OF_BOUNDS["error"])
 
         if orientation == Orientation.VERTICAL:
             if x > self.size or y > self.size - 1:
-                raise ValueError("Value out of bounds.")
+                raise ValueError(ERROR_OUT_OF_BOUNDS["error"])
 
         # Check if Position is occupied
         if orientation == Orientation.HORIZONTAL:
             if self.edges_horizontal[x, y] != 0:
-                raise ValueError("Edge is already taken")
+                raise ValueError(ERROR_EDGE_TAKEN["error"])
         else:
             if self.edges_vertical[x, y] != 0:
-                raise ValueError("Edge is already taken")
+                raise ValueError(ERROR_EDGE_TAKEN["error"])
 
     def _set_board_position(self, x: int, y: int, orientation: Orientation):
         """Update Board."""
