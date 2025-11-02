@@ -9,18 +9,29 @@ from game.errors import (
     ERROR_GAME_OVER,
     ERROR_OUT_OF_BOUNDS,
     ERROR_INVALID_ORIENTATION,
+    ERROR_GAME_EXISTS,
+    ERROR_GAME_NOT_FOUND
 )
 
+game_id = "1"
 
 @pytest.fixture
 def service():
     """Creates a new Game-Service Object with 2x2 Board."""
-    return GameService(size=2)
+    game_service = GameService()
+    game_service.create_game(game_id, size=2)
+    return game_service
 
 
 def test_initial_state(service):
     """Test new Game initialization."""
-    state = service.get_state()
+    # Default Game exists
+    assert game_id in service.games
+
+    assert service.create_game(game_id="1", size=12)
+    assert service.get_state(game_id="999") == ERROR_GAME_NOT_FOUND
+
+    state = service.get_state(game_id)
 
     # Check Structure
     assert isinstance(state, dict)
@@ -50,9 +61,9 @@ def test_make_move_changes_state(service):
     ]
 
     for action in actions:
-        service.make_move(*action)
+        service.make_move(game_id, *action)
 
-    result = service.get_state()
+    result = service.get_state(game_id)
 
     assert result["currentPlayer"] == 2
     assert result["edges"]["horizontal"][0][0] == 1
@@ -65,11 +76,11 @@ def test_make_move_changes_state(service):
 
 
 def test_restart_game_resets_everything(service):
-    """Test if Restart Calls empties everything."""
-    service.make_move(0, 0, Orientation.HORIZONTAL)
-    state_before = service.get_state()
+    """Test if Restart Call empties everything."""
+    service.make_move(game_id, 0, 0, Orientation.HORIZONTAL)
+    state_before = service.get_state(game_id)
 
-    new_state = service.restart_game()
+    new_state = service.restart_game(game_id)
 
     assert new_state["currentPlayer"] == 1
     assert new_state["scores"] == {1: 0, 2: 0}
@@ -93,34 +104,34 @@ def test_game_over_detection(service):
         (1, 1, Orientation.VERTICAL),  # Player 1
         (0, 2, Orientation.HORIZONTAL),  # Player 2 (score)
         (2, 1, Orientation.VERTICAL),  # Player 2
-        (2, 2, Orientation.HORIZONTAL),  # Player 1 (score)
-        (2, 2, Orientation.VERTICAL),  # Player 1 (score)
+        (1, 2, Orientation.HORIZONTAL),  # Player 1 (score)
+        (2, 0, Orientation.VERTICAL),  # Player 1 (score)
     ]
 
     for x, y, o in moves:
-        service.make_move(x, y, o)
+        service.make_move(game_id, x, y, o)
 
-    assert isinstance(service.is_game_over(), bool)
-    assert service.is_game_over()
-    assert service.get_state()["finished"] is True
-    assert service.get_winner() == "Draw"
+    assert isinstance(service.is_game_over(game_id), bool)
+    assert service.is_game_over(game_id)
+    assert service.get_state(game_id)["finished"] is True
+    assert service.get_winner(game_id) == "Draw"
 
     # Check Additional Moves after Game End
-    prev_state = service.get_state().copy()
-    assert service.make_move(0, 0, Orientation.HORIZONTAL) == ERROR_GAME_OVER
-    assert service.get_state() == prev_state
+    prev_state = service.get_state(game_id).copy()
+    assert service.make_move(game_id, 0, 0, Orientation.HORIZONTAL) == ERROR_GAME_OVER
+    assert service.get_state(game_id) == prev_state
 
 
 def test_invalid_move(service):
     """Test if illegal moves (duplicate edges) returns an Error-Message."""
-    service.make_move(0, 0, Orientation.HORIZONTAL)
+    service.make_move(game_id, 0, 0, Orientation.HORIZONTAL)
 
-    result = service.make_move(0, 0, Orientation.HORIZONTAL)
-    assert result == ERROR_EDGE_TAKEN
+    with pytest.raises(ValueError, match=ERROR_EDGE_TAKEN["error"]):
+        service.make_move(game_id, 0, 0, Orientation.HORIZONTAL)
 
     # Test-Board is smaller than 5x5
-    result_out_of_bounds = service.make_move(5, 5, Orientation.HORIZONTAL)
-    assert result_out_of_bounds == ERROR_OUT_OF_BOUNDS
+    with pytest.raises(ValueError, match=ERROR_OUT_OF_BOUNDS["error"]):
+        service.make_move(game_id, 5, 5, Orientation.HORIZONTAL)
 
-    result_invalid_orientation = service.make_move(0, 0, None)
-    assert result_invalid_orientation == ERROR_INVALID_ORIENTATION
+    with pytest.raises(ValueError, match=ERROR_INVALID_ORIENTATION["error"]):
+        service.make_move(game_id, 0, 0, None)
