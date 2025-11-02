@@ -1,4 +1,4 @@
-"""Pyhton Main-File (APIs)."""
+"""Python Main-File (APIs)."""
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware

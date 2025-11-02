@@ -1,0 +1,11 @@
+[tool.coverage.run]
+source = [
+    "game", 
+    "main"
+]
+
+[tool.coverage.report]
+omit = [
+    "tests/*",
+    "*/__init__.py", 
+]
