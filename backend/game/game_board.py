@@ -74,7 +74,7 @@ class GameBoard:
             return 2
         else:
             return "Draw"
-        
+
     def to_json(self) -> dict:
         """Map Game Configuration to JSON."""
         return {

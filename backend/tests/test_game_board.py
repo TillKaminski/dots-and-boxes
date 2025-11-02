@@ -322,7 +322,7 @@ def test_game_state_to_json(create_test_board):
     json_state = board.to_json()
     assert isinstance(json_state, dict)
 
-    # Check JSON-Fields 
+    # Check JSON-Fields
     assert "size" in json_state
     assert "finished" in json_state
     assert "currentPlayer" in json_state
@@ -358,7 +358,7 @@ def test_game_state_to_json(create_test_board):
         for y, val in enumerate(row):
             if not (x, y) == (0, 0):
                 assert val == 0, "Hor. Edge occupied."
-    
+
     assert vertical_edges[1][0] == 2
     for x, row in enumerate(vertical_edges):
         for y, val in enumerate(row):
@@ -370,5 +370,5 @@ def test_game_state_to_json(create_test_board):
     assert boxes[1][0] == -3
     for x in range(board.size):
         for y in range(board.size):
-            if not (x,y) in [(0, 0), (1, 0)]:
+            if not (x, y) in [(0, 0), (1, 0)]:
                 assert boxes[x][y] == -4
