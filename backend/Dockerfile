@@ -3,12 +3,12 @@ FROM python:3.12-slim AS builder
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-# RUN pip install --no-cache-dir torch==2.3.0 --index-url https://download.pytorch.org/whl/cpu
-  
+# RUN pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+
 FROM python:3.12-slim
 ENV PATH="/usr/local/bin:$PATH" PYTHONUNBUFFERED=1
 
-RUN apt-get update && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN addgroup -gid 1000 app && useradd --uid 1000 --gid 1000 -m app
 

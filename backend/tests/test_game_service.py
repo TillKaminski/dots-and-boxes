@@ -10,10 +10,11 @@ from game.errors import (
     ERROR_OUT_OF_BOUNDS,
     ERROR_INVALID_ORIENTATION,
     ERROR_GAME_EXISTS,
-    ERROR_GAME_NOT_FOUND
+    ERROR_GAME_NOT_FOUND,
 )
 
 game_id = "1"
+
 
 @pytest.fixture
 def service():
@@ -135,3 +136,18 @@ def test_invalid_move(service):
 
     with pytest.raises(ValueError, match=ERROR_INVALID_ORIENTATION["error"]):
         service.make_move(game_id, 0, 0, None)
+
+
+def test_new_game_is_available(service):
+    """Test if Game Creation works for multiple Games."""
+    service.create_game("111", size=4)
+    service.create_game("222", size=6)
+    service.create_game("333", size=5)
+
+    data_game_1 = service.get_state("111")
+    data_game_2 = service.get_state("222")
+    data_game_3 = service.get_state("333")
+
+    assert data_game_1["size"] == 4
+    assert data_game_2["size"] == 6
+    assert data_game_3["size"] == 5

@@ -2,12 +2,9 @@
 
 from .game_board import GameBoard, Orientation
 from .errors import (
-    ERROR_EDGE_TAKEN,
     ERROR_GAME_OVER,
-    ERROR_OUT_OF_BOUNDS,
-    ERROR_INVALID_ORIENTATION,
     ERROR_GAME_EXISTS,
-    ERROR_GAME_NOT_FOUND
+    ERROR_GAME_NOT_FOUND,
 )
 
 
@@ -43,9 +40,11 @@ class GameService:
     def restart_game(self, game_id: str):
         """Restart current Game-Session."""
         board = self._get_game(game_id)
-        size = board.size
-        self.games[game_id] = GameBoard(size=size) 
-        return self.get_state(game_id)
+        if isinstance(board, GameBoard):
+            size = board.size
+            self.games[game_id] = GameBoard(size=size)
+            return self.get_state(game_id)
+        return board
 
     def is_game_over(self, game_id: str):
         """Check if Game is over."""

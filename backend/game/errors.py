@@ -18,6 +18,7 @@ ERROR_CODE_MAP = {
     ERROR_INVALID_ORIENTATION["error"]: status.HTTP_400_BAD_REQUEST,
 }
 
+
 def get_error_response(message: str):
     """Returns Tuple(dict, code)."""
     code = ERROR_CODE_MAP.get(message, status.HTTP_400_BAD_REQUEST)
