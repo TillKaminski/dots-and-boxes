@@ -23,7 +23,7 @@ jobs:
     
     steps:
       - name: 🗑️ Delete old Backend Image tags
-        uses: actions-ecosystem/action-delete-package-versions@v1
+        uses: actions/delete-package-versions@v4
         with:
           package-name: tillkaminski/dots-and-boxes/backend 
           package-type: container
@@ -40,7 +40,7 @@ jobs:
       
     steps:
       - name: 🗑️ Delete old Frontend Image tags
-        uses: actions-ecosystem/action-delete-package-versions@v1
+        uses: actions/delete-package-versions@v4
         with:
           package-name: tillkaminski/dots-and-boxes/frontend
           package-type: container
