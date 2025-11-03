@@ -15,7 +15,7 @@ class GameService:
     """Game-Service Object that handles State Management and Communication."""
 
     def __init__(self):
-        """Implement Constructor."""
+        """Stores all Game Objects."""
         self.games: dict[str, GameBoard] = {}
 
     def create_game(self, game_id: str, size: int = 3):
@@ -28,7 +28,7 @@ class GameService:
     def make_move(self, game_id: str, x: int, y: int, orientation: Orientation):
         """Handle Move-Logic."""
         board = self._get_game(game_id)
-        if board.is_game_over():
+        if board.is_game_over() or board.game_finished:
             return ERROR_GAME_OVER
         board.move(x, y, orientation)
         return self.get_state(game_id)
