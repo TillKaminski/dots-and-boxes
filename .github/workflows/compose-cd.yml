@@ -1,4 +1,4 @@
-name: CD - Build, Push & Compose Release
+name: 📦 CD - Build, Push & Compose Release
 
 on:
   push:
