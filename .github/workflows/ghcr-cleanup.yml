@@ -1,0 +1,49 @@
+name: 🧹 GHCR Image Cleanup Policy
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Trigger Cleanup'
+        required: false
+        default: 'Cleanup'
+
+  workflow_run:
+    workflows: ["compose-cd.yml"]
+    types: [completed]
+    branches: [main]
+
+jobs:
+  cleanup_backend:
+    name: Backend Image Cleanup
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    
+    steps:
+      - name: 🗑️ Delete old Backend Image tags
+        uses: actions-ecosystem/action-delete-package-versions@v1
+        with:
+          package-name: tillkaminski/dots-and-boxes/backend 
+          package-type: container
+          min-versions-to-keep: 1
+          ignore-versions: latest
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  cleanup_frontend:
+    name: Frontend Image Cleanup
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+      
+    steps:
+      - name: 🗑️ Delete old Frontend Image tags
+        uses: actions-ecosystem/action-delete-package-versions@v1
+        with:
+          package-name: tillkaminski/dots-and-boxes/frontend
+          package-type: container
+          min-versions-to-keep: 1
+          ignore-versions: latest
+          token: ${{ secrets.GITHUB_TOKEN }}
