@@ -25,7 +25,7 @@ jobs:
       - name: 🗑️ Delete old Backend Image tags
         uses: actions/delete-package-versions@v4
         with:
-          package-name: tillkaminski/dots-and-boxes/backend 
+          package-name: dots-and-boxes/backend 
           package-type: container
           min-versions-to-keep: 1
           ignore-versions: latest
@@ -42,7 +42,7 @@ jobs:
       - name: 🗑️ Delete old Frontend Image tags
         uses: actions/delete-package-versions@v4
         with:
-          package-name: tillkaminski/dots-and-boxes/frontend
+          package-name: dots-and-boxes/frontend
           package-type: container
           min-versions-to-keep: 1
           ignore-versions: latest
