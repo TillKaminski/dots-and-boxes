@@ -3,6 +3,7 @@
 # from typing import Optional
 import numpy as np
 from enum import Enum, auto
+from .errors import ERROR_EDGE_TAKEN, ERROR_OUT_OF_BOUNDS, ERROR_INVALID_ORIENTATION
 
 
 class Orientation(Enum):
@@ -67,10 +68,10 @@ class GameBoard:
         """Return 1 or 2 for Winner, 'Draw' for Draw, None if game not finished."""
         if not self.is_game_over():
             return None
-        score_p1, score_ps = self.scores[1], self.scores[2]
-        if score_p1 > score_ps:
+        score_p1, score_p2 = self.scores[1], self.scores[2]
+        if score_p1 > score_p2:
             return 1
-        elif score_ps > score_p1:
+        elif score_p2 > score_p1:
             return 2
         else:
             return "Draw"
@@ -91,25 +92,29 @@ class GameBoard:
 
     def _validate_input(self, x: int, y: int, orientation: Orientation):
         """Validate input parameters."""
+        # Check Orientation
+        if orientation not in [Orientation.HORIZONTAL, Orientation.VERTICAL]:
+            raise ValueError(ERROR_INVALID_ORIENTATION["error"])
+
         # Check if Position is in valid range
         if x < 0 or y < 0:
-            raise ValueError("Value out of bounds.")
+            raise ValueError(ERROR_OUT_OF_BOUNDS["error"])
 
         if orientation == Orientation.HORIZONTAL:
             if x > self.size - 1 or y > self.size:
-                raise ValueError("Value out of bounds.")
+                raise ValueError(ERROR_OUT_OF_BOUNDS["error"])
 
         if orientation == Orientation.VERTICAL:
             if x > self.size or y > self.size - 1:
-                raise ValueError("Value out of bounds.")
+                raise ValueError(ERROR_OUT_OF_BOUNDS["error"])
 
         # Check if Position is occupied
         if orientation == Orientation.HORIZONTAL:
             if self.edges_horizontal[x, y] != 0:
-                raise ValueError("Edge is already taken")
+                raise ValueError(ERROR_EDGE_TAKEN["error"])
         else:
             if self.edges_vertical[x, y] != 0:
-                raise ValueError("Edge is already taken")
+                raise ValueError(ERROR_EDGE_TAKEN["error"])
 
     def _set_board_position(self, x: int, y: int, orientation: Orientation):
         """Update Board."""

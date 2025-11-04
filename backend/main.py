@@ -3,7 +3,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from game.game_service import GameService
+from game.api.router import router as game_router
+
 app = FastAPI()
+service = GameService()
+
+app.include_router(game_router)
+
 
 # CORS-Filter Domains:
 origins = [
@@ -21,17 +28,15 @@ app.add_middleware(
 )
 
 
-def main():
-    """Main Method for Fast-API."""
-    print("Python Main.")
-
-
 @app.get("/")
 async def root():
     """Returns message for Standard Link.
 
     Returns:
-        Test message.
+        Root message.
     """
-    print("Fast-API root called.")
-    return {"test-message": "Fast-API Test."}
+    return {
+        "root-message": "Fast-API Entrypoint.",
+        "api-version": "v1",
+        "status": "running",
+    }
