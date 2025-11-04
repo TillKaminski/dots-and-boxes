@@ -122,7 +122,7 @@ jobs:
       - name: Generate final docker-compose.yml
         run: |
           cat <<EOF > docker-compose.yml
-          version: '3.8'
+          # version: '3.8'
           services:             
             dots-backend:
               # image: ghcr.io/${{ github.repository }}/backend:${{ env.RELEASE_TAG }}
@@ -135,7 +135,7 @@ jobs:
           
             dots-frontend:
               # image: ghcr.io/${{ github.repository }}/frontend:${{ env.RELEASE_TAG }}
-              image: ghcr.io/tillkaminski/dots-and-boxes/backend:${{ env.RELEASE_TAG }}
+              image: ghcr.io/tillkaminski/dots-and-boxes/frontend:${{ env.RELEASE_TAG }}
               container_name: dots-frontend
               ports:
                 - "4200:80"
