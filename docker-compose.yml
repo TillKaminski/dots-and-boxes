@@ -1,7 +1,8 @@
 version: '3.8'
 services:             
   dots-backend:
-    image: ghcr.io/TillKaminski/dots-and-boxes/backend:latest
+    # image: ghcr.io/TillKaminski/dots-and-boxes/backend:latest
+    image: ghcr.io/tillkaminski/dots-and-boxes/backend:latest
     container_name: dots-backend
     ports:
       - "8080:8000"
@@ -9,7 +10,8 @@ services:
     pull_policy: always
 
   dots-frontend:
-    image: ghcr.io/TillKaminski/dots-and-boxes/frontend:latest
+    # image: ghcr.io/TillKaminski/dots-and-boxes/frontend:latest
+    image: ghcr.io/tillkaminski/dots-and-boxes/backend:latest
     container_name: dots-frontend
     ports:
       - "4200:80"
