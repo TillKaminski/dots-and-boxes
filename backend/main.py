@@ -33,7 +33,10 @@ async def root():
     """Returns message for Standard Link.
 
     Returns:
-        Test message.
+        Root message.
     """
-    print("Fast-API root called.")
-    return {"test-message": "Fast-API Test."}
+    return {
+        "root-message": "Fast-API Entrypoint.",
+        "api-version": "v1",
+        "status": "running",
+    }

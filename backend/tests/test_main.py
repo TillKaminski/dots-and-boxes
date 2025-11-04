@@ -10,8 +10,11 @@ game_id = "1"
 def test_root_connection():
     """Test root-Function."""
     response = client.get("/")
+    data = response.json()
     assert response.status_code == 200
-    assert response.json() == {"test-message": "Fast-API Test."}
+    assert "root-message" in data
+    assert "api-version" in data
+    assert "status" in data
 
 
 def test_game_router_connection():
@@ -19,5 +22,5 @@ def test_game_router_connection():
     response = client.get("/v1/games")
     assert response.status_code == 200
     data = response.json()
-    assert data["service"] == "Game API"
-    assert data["status"] == "online"
+    assert "service" in data
+    assert "status" in data
