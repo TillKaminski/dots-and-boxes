@@ -10,6 +10,8 @@ backend/target/
 backend/.venv
 backend/__pycache__/
 backend/coverage.xml
+backend/.coverage
+backend/ai/outputs/training_data.json
 backend/requirements-dev.txt
 *.pyc
 *.pyo
