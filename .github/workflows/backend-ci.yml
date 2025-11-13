@@ -21,6 +21,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
           pip install black flake8 flake8-docstrings pytest
+          pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
       - name: Lint
         run: |
           black --check backend/
