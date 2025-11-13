@@ -5,7 +5,16 @@ import argparse
 from ai.training.trainer import ModelTrainer
 
 
-if __name__ == "__main__":
+def main(it: int = 100):
+    """Handles User Input."""
+    model = ModelTrainer()
+    print("TODO: Implement Training.")
+    print(f"\n### Start Training ({it} Iterations) ###\n")
+    model.train()
+    print("Training finished.")
+
+
+if __name__ == "__main__":  # pragma: no cover
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -13,11 +22,4 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    model = ModelTrainer()
-
-    print("TODO: Implement Training.")
-    print(f"\n### Start Training ({args.it} Iterations) ###\n")
-
-    model.train()
-
-    print("Training finished.")
+    main(args.it)
