@@ -2,6 +2,7 @@
 
 import pytest
 from ai.bots.random_bot import RandomBot
+from backend.ai.bots.move import Move
 from game.game_board import Orientation
 
 bot_size = 4
@@ -23,7 +24,7 @@ def test_random_bot_constructor(bot):
 
 def test_move_returns_valid_move_dict(bot):
     """Random-Bot should return a valid move dict."""
-    move = bot.move(ret_dict=True)
+    move = bot.move(return_dictionary=True)
     assert "x" in move and "y" in move and "orientation" in move
     assert isinstance(move["x"], int)
     assert isinstance(move["y"], int)
@@ -32,7 +33,7 @@ def test_move_returns_valid_move_dict(bot):
 
 def test_move_returns_valid_move(bot):
     """Random-Bot should return a valid move dict."""
-    move = bot.move()
+    move: Move = bot.move()
     assert isinstance(move.x, int)
     assert isinstance(move.x, int)
     assert move.orientation in [Orientation.HORIZONTAL, Orientation.VERTICAL]
@@ -40,8 +41,8 @@ def test_move_returns_valid_move(bot):
 
 def test_update_positions(bot):
     """After update, move should be unavailable."""
-    move = bot.move(ret_dict=False)
-    bot.update_positions(move.x, move.y, move.orientation)
+    move = bot.move(return_dictionary=False)
+    bot.update(move.x, move.y, move.orientation)
     match = [
         m
         for m in bot.positions
@@ -66,13 +67,13 @@ def test_move_logging(bot, capsys):
     output = capsys.readouterr()
     assert "RandomBot move" in output.out
 
-    bot.move(ret_dict=True, log_move=True)
+    bot.move(return_dictionary=True, log_move=True)
     output = capsys.readouterr()
     assert "RandomBot move" in output.out
 
 
 def test_bot_restart(bot):
-    """Test Bot Restart."""
+    """Bot Restart resets all positions."""
     for pos in bot.positions:
         pos.update()
 
@@ -84,9 +85,14 @@ def test_bot_restart(bot):
         assert pos.available
 
 
-def test_move_exhaustion(bot):
-    """When all moves are used, should raise error."""
+def test_move_not_possible(bot):
+    """Move with no positions available should raise error."""
     for m in bot.positions:
         m.update()
     with pytest.raises(RuntimeError):
         bot.move()
+
+
+def test_name(bot):
+    """Name-Method should return Model Name."""
+    assert bot.name() == "random"
