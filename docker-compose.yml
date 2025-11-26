@@ -11,7 +11,7 @@ services:
 
   dots-frontend:
     # image: ghcr.io/TillKaminski/dots-and-boxes/frontend:latest
-    image: ghcr.io/tillkaminski/dots-and-boxes/backend:latest
+    image: ghcr.io/tillkaminski/dots-and-boxes/frontend:latest
     container_name: dots-frontend
     ports:
       - "4200:80"
