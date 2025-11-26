@@ -5,6 +5,10 @@ from ai.bots.move import Move
 from ai.bots.basic_bot import BasicBot
 from game.game_board import Orientation
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class RandomBot(BasicBot):
     """Bot that selects random available moves."""
@@ -36,7 +40,7 @@ class RandomBot(BasicBot):
 
     def move(self, log_move: bool = False, return_dictionary: bool = False):
         """Select and return a random available move.
-        
+
         ### Params:
         - *log_move*: Log Bot Move via Terminal.
         - *return_dictionary*: Dictionary as Move Representation, Move-Object otherwise.
@@ -45,25 +49,24 @@ class RandomBot(BasicBot):
 
         if not possible_moves:
             if log_move:
-                print("No possible Moves available.")
+                logger.warning("No possible Moves available.")
             raise RuntimeError("No possible Moves available.")
         move = random.choice(possible_moves)
 
-        if return_dictionary:
-            if log_move:
-                print(
-                    f"RandomBot move: x={move.x}, y={move.y}, orientation={move.orientation.name.lower()}"
-                )
-            return {
+        if log_move:
+            logger.info(
+                f"RandomBot move: x={move.x}, y={move.y}, orientation={move.orientation}"
+            )
+
+        return (
+            move
+            if not return_dictionary
+            else {
                 "x": move.x,
                 "y": move.y,
                 "orientation": move.orientation.name.lower(),
             }
-        if log_move:
-            print(
-                f"RandomBot move: x={move.x}, y={move.y}, orientation={move.orientation}"
-            )
-        return move
+        )
 
     def update(self, x: int, y: int, orientation: Orientation):
         """Update Positions."""

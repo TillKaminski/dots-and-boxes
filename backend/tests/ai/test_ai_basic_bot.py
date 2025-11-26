@@ -5,6 +5,7 @@ from typing import Any, Dict
 from game.game_board import Orientation
 from ai.bots.basic_bot import BasicBot
 
+
 # Create Classes for Inheritance Behavior
 class TestBot(BasicBot):
     """Subclass that calls Superclass Methods."""

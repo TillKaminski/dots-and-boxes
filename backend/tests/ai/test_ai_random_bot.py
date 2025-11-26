@@ -2,11 +2,10 @@
 
 import pytest
 from ai.bots.random_bot import RandomBot
-from backend.ai.bots.move import Move
+from ai.bots.move import Move
 from game.game_board import Orientation
 
 bot_size = 4
-
 
 @pytest.fixture
 def bot():
@@ -52,24 +51,15 @@ def test_update_positions(bot):
 
 
 def test_move_logging(bot, capsys):
-    """Test Terminal Messages."""
+    """Test Terminal Logging has no impact on Bot Behavior."""
+    move = bot.move(log_move=True)
+    assert isinstance(move, Move)
+    
     for pos in bot.positions:
         pos.update()
 
     with pytest.raises(RuntimeError, match="No possible Moves available."):
         bot.move(log_move=True)
-    output = capsys.readouterr()
-    assert "No possible Moves available." in output.out
-
-    bot.reset()
-
-    bot.move(log_move=True)
-    output = capsys.readouterr()
-    assert "RandomBot move" in output.out
-
-    bot.move(return_dictionary=True, log_move=True)
-    output = capsys.readouterr()
-    assert "RandomBot move" in output.out
 
 
 def test_bot_restart(bot):

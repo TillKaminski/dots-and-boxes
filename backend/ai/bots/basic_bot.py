@@ -2,7 +2,7 @@
 
 from abc import ABC, abstractmethod
 from typing import Any, Dict
-
+from ai.bots.move import Move
 from game.game_board import Orientation
 
 
@@ -23,7 +23,7 @@ class BasicBot(ABC):
     @abstractmethod
     def move(
         self, log_move: bool = False, return_dictionary: bool = False
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, Any] | Move:
         """Select a move.
 
         Returns dict: {"x": int, "y": int, "orientation": "horizontal|vertical"}
