@@ -1,7 +1,7 @@
 """Test Class for Game Setup and Logic."""
 
 import numpy as np
-from game.game_board import GameBoard, Orientation
+from game.game_board import GameBoard, Orientation, parse_orientation
 import pytest
 
 from game.errors import ERROR_EDGE_TAKEN, ERROR_OUT_OF_BOUNDS
@@ -374,3 +374,38 @@ def test_game_state_to_json(create_test_board):
         for y in range(board.size):
             if not (x, y) in [(0, 0), (1, 0)]:
                 assert boxes[x][y] == -4
+
+
+def test_game_parse_enum():
+    """Test if String Input is mapped to Enum."""
+    orientation_enum = Orientation.VERTICAL
+
+    orientation_str_lower = "horizontal"
+    orientation_str_upper = "HORIZONTAL"
+    orientation_str_mixed = "Horizontal"
+
+    orientation_str_vert = "vertical"
+
+    orientation_invalid_value = "invalid"
+
+    orientation_invalid_type: int = 0
+
+    assert parse_orientation(orientation=orientation_enum) == Orientation.VERTICAL
+
+    assert (
+        parse_orientation(orientation=orientation_str_lower) == Orientation.HORIZONTAL
+    )
+    assert (
+        parse_orientation(orientation=orientation_str_upper) == Orientation.HORIZONTAL
+    )
+    assert (
+        parse_orientation(orientation=orientation_str_mixed) == Orientation.HORIZONTAL
+    )
+
+    assert parse_orientation(orientation=orientation_str_vert) == Orientation.VERTICAL
+
+    with pytest.raises(ValueError):
+        parse_orientation(orientation=orientation_invalid_value)
+
+    with pytest.raises(TypeError):
+        parse_orientation(orientation=orientation_invalid_type)
