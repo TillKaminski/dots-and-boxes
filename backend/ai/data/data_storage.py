@@ -18,7 +18,7 @@ class DataStorage:
         self.log = log
 
     def save_to_json(self, data: dict, filename: str = f"{FILE_NAME}.json"):
-        """Save training data to JSON format."""
+        """Save Training Data to JSON format."""
         output_dir = os.path.join(os.path.dirname(__file__), "../outputs")
         os.makedirs(output_dir, exist_ok=True)
 
@@ -30,7 +30,7 @@ class DataStorage:
         return file_path
 
     def load_from_json(self, filename: str = f"{FILE_NAME}.json"):
-        """Load training data from JSON."""
+        """Load Training Data from JSON."""
         output_dir = os.path.join(os.path.dirname(__file__), "../outputs")
         file_path = os.path.join(output_dir, filename)
 
@@ -45,7 +45,7 @@ class DataStorage:
         return data
 
     def save_to_pt(self, data, filename: str = f"{FILE_NAME}.pt"):
-        """Save data as PyTorch .pt (pickle)."""
+        """Save Data as PyTorch .pt (pickle)."""
         output_dir = os.path.join(os.path.dirname(__file__), "../outputs")
         os.makedirs(output_dir, exist_ok=True)
 
@@ -68,18 +68,6 @@ class DataStorage:
 
         if self.log:
             logger.info(f"Loaded PT data from {file_path}")
-        return data
-
-    def load_training_data(self, file_name: str = f"{FILE_NAME}.json"):
-        """Load Training Data."""
-        output_dir = os.path.join(os.path.dirname(__file__), "../outputs")
-        file_path = os.path.join(output_dir, str(file_name))
-
-        if not os.path.exists(file_path):
-            raise FileNotFoundError(f"No Data found: {file_path}")
-
-        with open(file_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
         return data
 
     def print_training_data_summary(

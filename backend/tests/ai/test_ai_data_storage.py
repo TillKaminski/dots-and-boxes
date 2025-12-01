@@ -63,31 +63,6 @@ def test_load_pt_file_not_found(setup_filepath):
         data_storage.load_from_pt(invalid_file_path)
 
 
-def test_load_training_data(setup_filepath, tmp_path):
-    """Test if stored data is equivalent to loaded data."""
-    data_storage = DataStorage()
-    # Store Test-data
-    test_data = {"x": 42}
-    outputs = tmp_path / "outputs"
-    outputs.mkdir()
-
-    with open(outputs / "training.json", "w") as f:
-        json.dump(test_data, f)
-
-    # Compare I/O Data
-    data = data_storage.load_training_data("training.json")
-    assert data == test_data
-
-
-def test_load_training_data_not_found(setup_filepath):
-    """Test if invalid Filepath throws an Exception."""
-    data_storage = DataStorage()
-    invalid_file_path = "missing.json"
-
-    with pytest.raises(FileNotFoundError):
-        data_storage.load_training_data(invalid_file_path)
-
-
 def test_print_training_data_summary(capsys):
     """Test if Print Function uses correct Data."""
     data_storage = DataStorage()
