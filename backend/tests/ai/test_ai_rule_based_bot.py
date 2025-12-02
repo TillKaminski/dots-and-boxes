@@ -93,7 +93,7 @@ def test_box_tracking(bot):
     # Close one Box
     bot.update(x=0, y=0, orientation=Orientation.HORIZONTAL)
     bot.update(x=0, y=1, orientation=Orientation.HORIZONTAL)
-
+    # Two Edges left
     assert bot.boxes[0][0] == -2
 
     bot.update(x=0, y=0, orientation=Orientation.VERTICAL)
