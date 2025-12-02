@@ -87,3 +87,19 @@ def test_move_not_possible(bot):
 def test_name(bot):
     """Name-Method should return Model Name."""
     assert bot.name() == "rule_based"
+
+def test_box_tracking(bot):
+    """Test if Updating adjacent Boxes works as expected."""
+    # Close one Box
+    bot.update(x=0, y=0, orientation=Orientation.HORIZONTAL)
+    bot.update(x=0, y=1, orientation=Orientation.HORIZONTAL)
+
+    assert bot.boxes[0][0] == -2
+
+    bot.update(x=0, y=0, orientation=Orientation.VERTICAL)
+    bot.update(x=1, y=0, orientation=Orientation.VERTICAL)
+
+    assert bot.boxes[0][0] == 1
+    assert bot.boxes[1][0] == -3
+    assert bot.boxes[0][1] == -3
+
