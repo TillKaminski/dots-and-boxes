@@ -1,4 +1,5 @@
 """Rule Based Bot that performs smarter Moves than Random Bot."""
+
 import random
 
 import numpy as np

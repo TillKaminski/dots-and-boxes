@@ -7,6 +7,7 @@ from game.game_board import Orientation
 
 bot_size = 4
 
+
 @pytest.fixture
 def bot():
     """Create a Bot Instance for each Test."""
@@ -54,7 +55,7 @@ def test_move_logging(bot, capsys):
     """Test Terminal Logging has no impact on Bot Behavior."""
     move = bot.move(log_move=True)
     assert isinstance(move, Move)
-    
+
     for pos in bot.positions:
         pos.update()
 

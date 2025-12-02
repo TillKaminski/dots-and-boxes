@@ -13,6 +13,7 @@ from .errors import (
 
 class Orientation(Enum):
     """Enumeration to distinguish between Edge orientation."""
+
     HORIZONTAL = auto()
     VERTICAL = auto()
 
