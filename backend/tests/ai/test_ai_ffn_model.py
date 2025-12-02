@@ -3,7 +3,7 @@
 import torch
 import torch.nn as nn
 
-from ai.model.nn_model import ModelNet
+from ai.model.ffn_model import ModelNet
 
 
 def test_model_construction():
