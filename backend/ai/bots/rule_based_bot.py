@@ -111,21 +111,53 @@ class RuleBasedBot(BasicBot):
             for move in possible_moves:
                 for x, y in self._get_adjacent_boxes(move):
                     if boxes[x][y] == -1:
-                        return move
+                        return (
+                            move
+                            if not return_dictionary
+                            else {
+                                "x": move.x,
+                                "y": move.y,
+                                "orientation": move.orientation.name.lower(),
+                            }
+                        )
 
         # produce win (create boxes with 2 open Edges)
         if -3 in self.boxes:
             for move in possible_moves:
                 for x, y in self._get_adjacent_boxes(move):
                     if boxes[x][y] == -3:
-                        return move
+                        return (
+                            move
+                            if not return_dictionary
+                            else {
+                                "x": move.x,
+                                "y": move.y,
+                                "orientation": move.orientation.name.lower(),
+                            }
+                        )
 
         # neutral
         if -4 in self.boxes:
             for move in possible_moves:
                 for x, y in self._get_adjacent_boxes(move):
                     if boxes[x][y] == -4:
-                        return move
+                        return (
+                            move
+                            if not return_dictionary
+                            else {
+                                "x": move.x,
+                                "y": move.y,
+                                "orientation": move.orientation.name.lower(),
+                            }
+                        )
 
         # fallback
-        return random.choice(possible_moves)
+        return (
+            random.choice(possible_moves)
+            if not return_dictionary
+            else {
+                "x": move.x,
+                "y": move.y,
+                "orientation": move.orientation.name.lower(),
+            }
+        )
