@@ -106,58 +106,48 @@ class RuleBasedBot(BasicBot):
 
         boxes = self.boxes
 
+        best_move: Move | None = None
+
         # get win (box has 1 open Edge)
         if -1 in self.boxes:
             for move in possible_moves:
                 for x, y in self._get_adjacent_boxes(move):
                     if boxes[x][y] == -1:
-                        return (
-                            move
-                            if not return_dictionary
-                            else {
-                                "x": move.x,
-                                "y": move.y,
-                                "orientation": move.orientation.name.lower(),
-                            }
-                        )
+                        best_move = move
+                        break
+                if best_move:
+                    break
 
         # produce win (create boxes with 2 open Edges)
-        if -3 in self.boxes:
+        if best_move is None and -3 in self.boxes:
             for move in possible_moves:
                 for x, y in self._get_adjacent_boxes(move):
                     if boxes[x][y] == -3:
-                        return (
-                            move
-                            if not return_dictionary
-                            else {
-                                "x": move.x,
-                                "y": move.y,
-                                "orientation": move.orientation.name.lower(),
-                            }
-                        )
+                        best_move = move
+                        break
+                if best_move:
+                    break
 
         # neutral
-        if -4 in self.boxes:
+        if best_move is None and -4 in self.boxes:
             for move in possible_moves:
                 for x, y in self._get_adjacent_boxes(move):
                     if boxes[x][y] == -4:
-                        return (
-                            move
-                            if not return_dictionary
-                            else {
-                                "x": move.x,
-                                "y": move.y,
-                                "orientation": move.orientation.name.lower(),
-                            }
-                        )
+                        best_move = move
+                        break
+                if best_move:
+                    break
 
         # fallback
+        if best_move is None:
+            best_move = random.choice(possible_moves)
+
         return (
-            random.choice(possible_moves)
+            best_move
             if not return_dictionary
             else {
-                "x": move.x,
-                "y": move.y,
-                "orientation": move.orientation.name.lower(),
+                "x": best_move.x,
+                "y": best_move.y,
+                "orientation": best_move.orientation.name.lower(),
             }
         )
