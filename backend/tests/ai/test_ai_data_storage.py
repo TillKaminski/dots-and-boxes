@@ -2,7 +2,6 @@
 
 import pytest
 
-import json
 import os
 import torch
 from ai.data.data_storage import DataStorage
