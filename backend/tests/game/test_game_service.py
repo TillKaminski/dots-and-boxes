@@ -7,8 +7,8 @@ from game.game_service import GameService
 from game.errors import (
     ERROR_EDGE_TAKEN,
     ERROR_GAME_OVER,
+    ERROR_INVALID_ORIENTATION_TYPE,
     ERROR_OUT_OF_BOUNDS,
-    ERROR_INVALID_ORIENTATION,
     ERROR_GAME_EXISTS,
     ERROR_GAME_NOT_FOUND,
 )
@@ -134,7 +134,7 @@ def test_invalid_move(service):
     with pytest.raises(ValueError, match=ERROR_OUT_OF_BOUNDS["error"]):
         service.make_move(game_id, 5, 5, Orientation.HORIZONTAL)
 
-    with pytest.raises(ValueError, match=ERROR_INVALID_ORIENTATION["error"]):
+    with pytest.raises(TypeError, match=ERROR_INVALID_ORIENTATION_TYPE["error"]):
         service.make_move(game_id, 0, 0, None)
 
 

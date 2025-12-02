@@ -11,10 +11,13 @@ backend/.venv
 backend/__pycache__/
 backend/coverage.xml
 backend/.coverage
+backend/ai/outputs
 backend/ai/outputs/training_data.json
+backend/ai/outputs/training_data.pt
 backend/requirements-dev.txt
 *.pyc
 *.pyo
+*.log
 
 # Testing and coverage
 .coverage

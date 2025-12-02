@@ -3,7 +3,7 @@
 import torch
 import torch.nn as nn
 
-from ai.model.model import ModelNet
+from ai.model.nn_model import ModelNet
 
 
 def test_model_construction():
@@ -20,8 +20,8 @@ def test_model_construction():
     expected_layers = len(hidden_layers) * 2 + 1
     assert len(model.net) == expected_layers
 
-    dummy_input = torch.randn(batch_size, input_size)
-    output = model(dummy_input)
+    test_input = torch.randn(batch_size, input_size)
+    output = model(test_input)
 
     assert output.shape == (batch_size, output_size)
 

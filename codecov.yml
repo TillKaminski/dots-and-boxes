@@ -1,27 +1,23 @@
-codecov: 
-  flags:
-    backend:
-      paths:
-        - "backend" 
-    frontend:
-      paths:
-        - "frontend" 
+coverage:
+  status:
+    project: off
+    patch: off
 
-  status_checks:
-    patch:
-      default:
-        target: auto
-        threshold: 0% 
-    project:
-      default:
-        target: 50% 
-        flags:
-          - frontend
-          - backend
-
-      frontend:
-        target: 55% 
-        flags: frontend
-      backend:
-        target: 60% 
-        flags: backend
+flag_management:
+  default_rules:
+    carryforward: true
+  individual_flags:
+    - name: backend
+      paths:
+        - backend/
+      statuses:
+        - type: project
+          target: 95%
+          threshold: 5%
+    - name: frontend
+      paths:
+        - frontend/
+      statuses:
+        - type: project
+          target: 90%
+          threshold: 10%

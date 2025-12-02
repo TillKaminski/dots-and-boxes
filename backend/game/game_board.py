@@ -3,7 +3,12 @@
 # from typing import Optional
 import numpy as np
 from enum import Enum, auto
-from .errors import ERROR_EDGE_TAKEN, ERROR_OUT_OF_BOUNDS, ERROR_INVALID_ORIENTATION
+from .errors import (
+    ERROR_EDGE_TAKEN,
+    ERROR_OUT_OF_BOUNDS,
+    ERROR_INVALID_ORIENTATION,
+    ERROR_INVALID_ORIENTATION_TYPE,
+)
 
 
 class Orientation(Enum):
@@ -93,8 +98,7 @@ class GameBoard:
     def _validate_input(self, x: int, y: int, orientation: Orientation):
         """Validate input parameters."""
         # Check Orientation
-        if orientation not in [Orientation.HORIZONTAL, Orientation.VERTICAL]:
-            raise ValueError(ERROR_INVALID_ORIENTATION["error"])
+        orientation = parse_orientation(orientation)
 
         # Check if Position is in valid range
         if x < 0 or y < 0:
@@ -211,3 +215,16 @@ class GameBoard:
         print(line)
         print("\n")
         print("=======" * (self.size + 1))
+
+
+def parse_orientation(orientation: Orientation | str | None):
+    """Map String to Enum."""
+    if orientation is None:
+        raise TypeError(ERROR_INVALID_ORIENTATION_TYPE["error"])
+    if isinstance(orientation, Orientation):
+        return orientation
+    if isinstance(orientation, str):
+        if orientation.lower() in ["horizontal", "vertical"]:
+            return Orientation[orientation.upper()]
+        raise ValueError(ERROR_INVALID_ORIENTATION["error"])
+    raise TypeError(ERROR_INVALID_ORIENTATION_TYPE["error"])
