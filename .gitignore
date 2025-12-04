@@ -8,13 +8,13 @@ frontend/dist
 # Python
 backend/target/
 backend/.venv
-backend/__pycache__/
 backend/coverage.xml
 backend/.coverage
 backend/ai/outputs
 backend/ai/outputs/training_data.json
 backend/ai/outputs/training_data.pt
 backend/requirements-dev.txt
+*/__pycache__/
 *.pyc
 *.pyo
 *.log
