@@ -4,7 +4,7 @@ import torch.nn as nn
 
 
 class ModelNet(nn.Module):
-    """Definition of the Neural Network."""
+    """Definition of the Feed Forward Neural Network."""
 
     def __init__(self, input_size: int, hidden_layers: list[int], output_size: int):
         """Model Constructor.
