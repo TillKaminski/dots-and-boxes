@@ -36,7 +36,7 @@ class GameService:
         if isinstance(game, GameBoard):
             return game.to_json()
         return game
-    
+
     def get_state_object(self, game_id: str):
         """Return Game-State Object."""
         game: GameBoard = self._get_game(game_id)
