@@ -36,6 +36,11 @@ class GameService:
         if isinstance(game, GameBoard):
             return game.to_json()
         return game
+    
+    def get_state_object(self, game_id: str):
+        """Return Game-State Object."""
+        game: GameBoard = self._get_game(game_id)
+        return game.get_state_object()
 
     def restart_game(self, game_id: str):
         """Restart current Game-Session."""
