@@ -6,6 +6,7 @@ import numpy as np
 from typing import Any, Tuple, Dict
 
 from ai.data.data_storage import DataStorage
+from game.game_state import GameState
 
 
 class DataPreprocessor:
@@ -22,15 +23,21 @@ class DataPreprocessor:
         )
         self.output_size = self.num_horizontal_edges + self.num_vertical_edges
 
-    def _serialize_state(self, state: Dict[str, Any]) -> torch.Tensor:
+    def _serialize_state(self, state: Dict[str, Any] | GameState) -> torch.Tensor:
         """Transforms the Board State into a 1D input Vector X.
 
         **Order**: [Horizontal Edges, Vertical Edges, Boxes State].
         """
-        horizontal_edges = np.array(state["edges"]["horizontal"]).flatten()
-        vertical_edges = np.array(state["edges"]["vertical"]).flatten()
-        boxes_raw = np.array(state["boxes"]).flatten()
-        current_player = state["currentPlayer"]
+        if isinstance(state, GameState):
+            horizontal_edges = np.array(state.edges["horizontal"]).flatten()
+            vertical_edges = np.array(state.edges["vertical"]).flatten()
+            boxes_raw = np.array(state.boxes).flatten()
+            current_player = state.currentPlayer
+        else:
+            horizontal_edges = np.array(state["edges"]["horizontal"]).flatten()
+            vertical_edges = np.array(state["edges"]["vertical"]).flatten()
+            boxes_raw = np.array(state["boxes"]).flatten()
+            current_player = state["currentPlayer"]
 
         horizontal_norm = self._normalize_edges(horizontal_edges)
         vertical_norm = self._normalize_edges(vertical_edges)

@@ -3,6 +3,7 @@
 import argparse
 import logging
 from ai.bots.basic_bot import BasicBot
+from ai.bots.ffn_bot import FFNBot
 from ai.data.data_storage import DataStorage
 from game.game_service import GameService
 from ai.bots.random_bot import RandomBot, Move
@@ -43,6 +44,10 @@ class DataGenerator:
         state_list = []
         current_bot = bot1
         while not self.service.games[game_id].game_finished:
+            if current_bot.name() == "ffn-bot":
+                state = self.service.get_state_object(game_id)
+                current_bot.update_state(state)
+
             move: Move = current_bot.move(log_move=log, return_dictionary=False)
 
             state_before = self.service.get_state(game_id=game_id)
@@ -108,6 +113,7 @@ class DataGenerator:
 
 BOT_CLASSES: dict[str, BasicBot] = {
     "random": RandomBot,
+    "ffn": FFNBot,
     # TODO: Add more Bots.
 }
 

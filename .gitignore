@@ -14,7 +14,7 @@ backend/ai/outputs
 backend/ai/outputs/training_data.json
 backend/ai/outputs/training_data.pt
 backend/requirements-dev.txt
-*/__pycache__/
+*__pycache__*
 *.pyc
 *.pyo
 *.log

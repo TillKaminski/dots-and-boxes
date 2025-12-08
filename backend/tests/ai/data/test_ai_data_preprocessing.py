@@ -1,3 +1,5 @@
+"""Tests for the DataPreprocessing Class."""
+
 import unittest
 import torch
 import numpy as np
@@ -103,7 +105,6 @@ class TestDataPreprocessor(unittest.TestCase):
 
     def test_data_pair(self):
         """Test processing of a single Game State (State X and Move Y)."""
-
         # Mock Game State for a 2x2 board (size=2)
         mock_step_data: Dict[str, Any] = {
             "move": {
