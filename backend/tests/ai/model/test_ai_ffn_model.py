@@ -3,13 +3,13 @@
 import torch
 import torch.nn as nn
 
-from ai.model.ffn_model import ModelNet
+from ai.model.ffn_model import FeedForwardNet
 
 
 def test_model_construction():
     """Test Model Constructor and Number of Layers."""
     input_size, hidden_layers, output_size, batch_size = (32, [64, 32, 16], 1, 64)
-    model = ModelNet(
+    model = FeedForwardNet(
         input_size=input_size, hidden_layers=hidden_layers, output_size=output_size
     )
 
