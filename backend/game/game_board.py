@@ -1,8 +1,9 @@
 """Class for Game Objects and Logic."""
 
-# from typing import Optional
 import numpy as np
 from enum import Enum, auto
+
+from game.game_state import GameState
 from .errors import (
     ERROR_EDGE_TAKEN,
     ERROR_OUT_OF_BOUNDS,
@@ -81,19 +82,23 @@ class GameBoard:
         else:
             return "Draw"
 
-    def to_json(self) -> dict:
-        """Map Game Configuration to JSON."""
-        return {
-            "size": self.size,
-            "currentPlayer": self.current_player,
-            "finished": self.game_finished,
-            "scores": self.scores.copy(),
-            "edges": {
+    def get_state_object(self) -> GameState:
+        """Create GameState-Object."""
+        return GameState(
+            size=self.size,
+            currentPlayer=self.current_player,
+            finished=self.game_finished,
+            scores=self.scores.copy(),
+            edges={
                 "horizontal": self.edges_horizontal.tolist(),
                 "vertical": self.edges_vertical.tolist(),
             },
-            "boxes": self.boxes.tolist(),
-        }
+            boxes=self.boxes.tolist(),
+        )
+
+    def to_json(self) -> dict:
+        """Map Game Configuration to JSON."""
+        return self.get_state_object().__dict__
 
     def _validate_input(self, x: int, y: int, orientation: Orientation):
         """Validate input parameters."""

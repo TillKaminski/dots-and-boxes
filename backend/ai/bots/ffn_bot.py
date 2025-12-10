@@ -1,0 +1,139 @@
+"""Implementation of a Bot that uses a Feed-Forward Network to predict Moves."""
+
+import logging
+import os
+from typing import Any, Dict
+
+import torch
+from ai.bots.basic_bot import BasicBot
+from ai.bots.move import Move
+from ai.config.params import DeploymentConfig, ModelConfig
+from ai.data.data_preprocessing import DataPreprocessor
+from ai.model.ffn_model import FeedForwardNet
+from game.game_board import Orientation
+from game.game_state import GameState
+
+logger = logging.getLogger(__name__)
+
+
+class FFNBot(BasicBot):
+    """Bot Class that uses a FFN for Predictions based on the current Game State."""
+
+    def __init__(self, size: int, model_path: str = DeploymentConfig.MODEL_PATH):
+        """Constructor for a Bot that uses a FFN for Move Predictions."""
+        self.size = size
+        self.model_path = model_path
+        self.positions: list[Move] = []
+        self.preprocessor = DataPreprocessor(size=size)
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+        self._current_state: GameState | None = None
+
+        self.model = self._load_model()
+        self._init_positions()
+
+    def _load_model(self) -> FeedForwardNet:
+        """Load pretrained FFN-Model."""
+        model = FeedForwardNet(
+            input_size=ModelConfig.INPUT_SIZE,
+            hidden_layers=ModelConfig.HIDDEN_LAYERS,
+            output_size=ModelConfig.OUTPUT_SIZE,
+        ).to(self.device)
+
+        full_path = os.path.join(os.path.dirname(__file__), "../..", self.model_path)
+
+        if not os.path.exists(full_path):
+            logger.warning(
+                f"Model file not found at {full_path}. Using uninitialized model."
+            )
+            return model
+
+        model.load_state_dict(torch.load(full_path, map_location=self.device))
+        model.eval()
+        return model
+
+    def reset(self) -> None:
+        """Reset bot to initial state for a new game."""
+        self.positions.clear()
+        self._init_positions()
+        self._current_state = None
+
+    def move(
+        self, log_move: bool = False, return_dictionary: bool = False
+    ) -> Dict[str, Any] | Move:
+        """Predicts the best Move based on the current Game State.
+
+        Returns dict: {"x": int, "y": int, "orientation": "horizontal|vertical"}
+        """
+        if self._current_state is None:
+            raise RuntimeError("No Game State set.")
+
+        with torch.no_grad():
+            state_vector_X = self.preprocessor._serialize_state(self._current_state)
+
+            X = state_vector_X.unsqueeze(0).to(self.device)
+            output = self.model(X).squeeze(0).cpu()
+
+            # Filter possible Moves
+            move_scores = output.numpy()
+            possible_moves_mask = torch.zeros(ModelConfig.OUTPUT_SIZE, dtype=torch.bool)
+
+            for i in range(ModelConfig.OUTPUT_SIZE):
+                move_obj = self._map_index_to_move(i)
+                if move_obj.available:
+                    possible_moves_mask[i] = True
+
+            masked_scores = move_scores.copy()
+            # Assign small negative Number for Arg/Soft-Max
+            masked_scores[~possible_moves_mask.numpy()] = -1e9
+
+            best_move_index = masked_scores.argmax()
+
+            move = self._map_index_to_move(best_move_index)
+
+            if log_move:
+                logger.info(
+                    f"FFNBot move (Index {best_move_index}): x={move.x}, y={move.y}, orientation={move.orientation}"
+                )
+
+            return (
+                move
+                if not return_dictionary
+                else {
+                    "x": move.x,
+                    "y": move.y,
+                    "orientation": move.orientation.name.lower(),
+                }
+            )
+
+    def update(self, x: int, y: int, orientation: Orientation) -> None:
+        """Update internal state based on an applied move (self or opponent)."""
+        for pos in self.positions:
+            if pos.x == x and pos.y == y and pos.orientation == orientation:
+                pos.update()
+                break
+
+    def update_state(self, new_state: GameState):
+        """Update the current State."""
+        self._current_state = new_state
+
+    def name(self) -> str:
+        """Return bot name for logging or stats."""
+        return "ffn-bot"
+
+    def _init_positions(self):
+        """Initialize all possible moves."""
+        for y in range(self.size + 1):
+            for x in range(self.size):
+                self.positions.append(Move(x, y, Orientation.HORIZONTAL))
+
+        for y in range(self.size):
+            for x in range(self.size + 1):
+                self.positions.append(Move(x, y, Orientation.VERTICAL))
+
+    def _map_index_to_move(self, index: int) -> Move:
+        """Maps 1D Representation to corresponding Move Object."""
+        if 0 <= index < len(self.positions):
+            return self.positions[index]
+
+        raise ValueError(f"Invalid Move Index '{index}'")

@@ -14,12 +14,11 @@ class DataStorage:
 
     def __init__(self, log: bool = False):
         """Data-Storage Constructor."""
-        self.file_path = ""
         self.log = log
 
     def save_to_json(self, data: dict, filename: str = f"{FILE_NAME}.json"):
         """Save Training Data to JSON format."""
-        output_dir = os.path.join(os.path.dirname(__file__), "../outputs")
+        output_dir = os.path.join(os.path.dirname(__file__), "../outputs", "data")
         os.makedirs(output_dir, exist_ok=True)
 
         file_path = os.path.join(output_dir, filename)
@@ -31,7 +30,7 @@ class DataStorage:
 
     def load_from_json(self, filename: str = f"{FILE_NAME}.json"):
         """Load Training Data from JSON."""
-        output_dir = os.path.join(os.path.dirname(__file__), "../outputs")
+        output_dir = os.path.join(os.path.dirname(__file__), "../outputs", "data")
         file_path = os.path.join(output_dir, filename)
 
         if not os.path.exists(file_path):
@@ -46,7 +45,7 @@ class DataStorage:
 
     def save_to_pt(self, data, filename: str = f"{FILE_NAME}.pt"):
         """Save Data as PyTorch .pt (pickle)."""
-        output_dir = os.path.join(os.path.dirname(__file__), "../outputs")
+        output_dir = os.path.join(os.path.dirname(__file__), "../outputs", "data")
         os.makedirs(output_dir, exist_ok=True)
 
         file_path = os.path.join(output_dir, filename)
@@ -58,7 +57,7 @@ class DataStorage:
 
     def load_from_pt(self, filename: str = f"{FILE_NAME}.pt"):
         """Load PyTorch .pt file."""
-        output_dir = os.path.join(os.path.dirname(__file__), "../outputs")
+        output_dir = os.path.join(os.path.dirname(__file__), "../outputs", "data")
         file_path = os.path.join(output_dir, filename)
 
         if not os.path.exists(file_path):
