@@ -19,7 +19,6 @@ def main():
     iterations = args.it if args.it > 0 else None
 
     model = ModelTrainer()
-    print("TODO: Implement Training.")
     print(
         f"\n### Start Training ({iterations if iterations is not None else 'default'} Iterations) ###\n"
     )
