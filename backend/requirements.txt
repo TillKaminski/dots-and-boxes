@@ -12,3 +12,6 @@ coverage
 pytest-cov
 
 numpy
+
+matplotlib
+scikit-learn
