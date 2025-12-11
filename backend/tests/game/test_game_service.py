@@ -21,7 +21,10 @@ def service():
     """Creates a new Game-Service Object with 2x2 Board."""
     game_service = GameService()
     game_service.create_game(game_id, size=2)
-    return game_service
+    yield game_service
+
+    # Removes Bot in BotService
+    game_service.delete_game(game_id)
 
 
 def test_initial_state(service):

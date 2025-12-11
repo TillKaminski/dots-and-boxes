@@ -22,7 +22,7 @@ class Orientation(Enum):
 class GameBoard:
     """Representation of Game Board."""
 
-    def __init__(self, size: int, starting_player: int = 1):
+    def __init__(self, size: int, starting_player: int = 1, bot_model: str = "random"):
         """Game Board Constructor.
 
         Creates a new Board. Configuration is stored in 3 matrices:
@@ -38,6 +38,7 @@ class GameBoard:
         self.boxes: np.ndarray = np.full((size, size), -4, dtype=int)
         self.scores: dict[int, int] = {1: 0, 2: 0}
         self.current_player: int = starting_player
+        self.bot_model: str = bot_model
 
     def move(self, x: int, y: int, orientation: Orientation):
         """Handle Move-Action.
