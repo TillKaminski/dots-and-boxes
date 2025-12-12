@@ -39,7 +39,8 @@ def test_root_connection():
 def test_new_game():
     """Test if starting a new Game returns the correct Game-ID."""
     new_id = "2"
-    response = client.post(URL_PREFIX + f"/new_game/{new_id}")
+    new_game_body = {}  # empty Request Body (starting_player and bot_model can be set)
+    response = client.post(URL_PREFIX + f"/new_game/{new_id}", json=new_game_body)
     assert response.status_code == 200
     assert isinstance(service.get_state("2"), dict)
 
@@ -78,7 +79,7 @@ def test_post_move_updates_state():
     """Test Game-State after POST /move."""
     response = client.post(
         URL_PREFIX + f"/{game_id}/move",
-        json={"x": 0, "y": 0, "orientation": "horizontal"},
+        json={"player_id": 1, "x": 0, "y": 0, "orientation": "horizontal"},
     )
     assert response.status_code == 200
 
@@ -92,10 +93,10 @@ def test_post_move_updates_state():
 def test_multiple_moves():
     """Test if Board-Configuration is consistent after multiple Actions."""
     moves = [
-        {"x": 0, "y": 0, "orientation": "horizontal"},
-        {"x": 0, "y": 0, "orientation": "vertical"},
-        {"x": 1, "y": 0, "orientation": "horizontal"},
-        {"x": 0, "y": 1, "orientation": "vertical"},
+        {"player_id": 1, "x": 0, "y": 0, "orientation": "horizontal"},
+        {"player_id": 2, "x": 0, "y": 0, "orientation": "vertical"},
+        {"player_id": 1, "x": 1, "y": 0, "orientation": "horizontal"},
+        {"player_id": 2, "x": 0, "y": 1, "orientation": "vertical"},
     ]
     for move in moves:
         response = client.post(URL_PREFIX + f"/{game_id}/move", json=move)
@@ -113,7 +114,7 @@ def test_restart_game_resets_state():
     """Test POST /restart resets current Game."""
     client.post(
         URL_PREFIX + f"/{game_id}/move",
-        json={"x": 0, "y": 0, "orientation": "horizontal"},
+        json={"player_id": 1, "x": 0, "y": 0, "orientation": "horizontal"},
     )
     state_before = client.get(URL_PREFIX + f"/{game_id}/state").json()["state"]
 
@@ -137,7 +138,7 @@ def test_move_after_restart():
     client.post(URL_PREFIX + f"{game_id}/restart")
     response = client.post(
         URL_PREFIX + f"/{game_id}/move",
-        json={"x": 0, "y": 0, "orientation": "horizontal"},
+        json={"player_id": 1, "x": 0, "y": 0, "orientation": "horizontal"},
     )
     assert response.status_code == 200
 
@@ -155,7 +156,7 @@ def test_move_out_of_bounds():
     """Tests if input is in the correct range."""
     response = client.post(
         URL_PREFIX + f"/{game_id}/move",
-        json={"x": 5, "y": 5, "orientation": "horizontal"},
+        json={"player_id": 1, "x": 5, "y": 5, "orientation": "horizontal"},
     )
     assert response.status_code == 400
     assert ERROR_OUT_OF_BOUNDS["error"] in response.text
@@ -164,7 +165,7 @@ def test_move_out_of_bounds():
 def test_move_invalid_orientation():
     """Tests Invalid Orientation."""
     response = client.post(
-        URL_PREFIX + f"/{game_id}/move", json={"x": 0, "y": 0, "orientation": "invalid"}
+        URL_PREFIX + f"/{game_id}/move", json={"player_id": 1, "x": 0, "y": 0, "orientation": "invalid"}
     )
     assert response.status_code == 400
     assert ERROR_INVALID_ORIENTATION["error"] in response.text
@@ -174,11 +175,11 @@ def test_move_on_taken_edge():
     """Test Occupied Edges."""
     client.post(
         URL_PREFIX + f"/{game_id}/move",
-        json={"x": 0, "y": 0, "orientation": "horizontal"},
+        json={"player_id": 1, "x": 0, "y": 0, "orientation": "horizontal"},
     )
     response = client.post(
         URL_PREFIX + f"/{game_id}/move",
-        json={"x": 0, "y": 0, "orientation": "horizontal"},
+        json={"player_id": 2, "x": 0, "y": 0, "orientation": "horizontal"},
     )
     assert response.status_code == 409
     assert ERROR_EDGE_TAKEN["error"] in response.text
@@ -199,7 +200,7 @@ def test_move_after_game_finished():
 
     response = client.post(
         URL_PREFIX + f"/{game_id}/move",
-        json={"x": 0, "y": 0, "orientation": "horizontal"},
+        json={"player_id": 1, "x": 0, "y": 0, "orientation": "horizontal"},
     )
     assert response.status_code == 403
     assert ERROR_GAME_OVER["error"] in response.text
@@ -212,10 +213,10 @@ def test_multiple_games_parallel():
 
     client.post(
         URL_PREFIX + f"/{game_id}/move",
-        json={"x": 0, "y": 0, "orientation": "horizontal"},
+        json={"player_id": 1, "x": 0, "y": 0, "orientation": "horizontal"},
     )
     client.post(
-        URL_PREFIX + f"/{id2}/move", json={"x": 1, "y": 1, "orientation": "horizontal"}
+        URL_PREFIX + f"/{id2}/move", json={"player_id": 1, "x": 1, "y": 1, "orientation": "horizontal"}
     )
 
     state1 = client.get(URL_PREFIX + f"/{game_id}/state").json()["state"]
@@ -228,7 +229,8 @@ def test_multiple_games_parallel():
 
 def test_create_new_game_existing_id():
     """Test if Creating a new Game with an existing ID returns an Error."""
-    response = client.post(URL_PREFIX + f"/new_game/{game_id}")
+    new_game_body = {}
+    response = client.post(URL_PREFIX + f"/new_game/{game_id}", json=new_game_body)
     assert response.status_code == 409
     assert ERROR_GAME_EXISTS["error"] in response.text
 

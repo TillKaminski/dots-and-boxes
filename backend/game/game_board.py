@@ -39,6 +39,7 @@ class GameBoard:
         self.scores: dict[int, int] = {1: 0, 2: 0}
         self.current_player: int = starting_player
         self.bot_model: str = bot_model
+        self.bot_id: int = 2
 
     def move(self, x: int, y: int, orientation: Orientation):
         """Handle Move-Action.

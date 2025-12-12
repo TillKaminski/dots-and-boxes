@@ -45,6 +45,21 @@ class StateModel(BaseModel):
     currentPlayer: int = Field(..., description="ID of the player whose turn it is.")
 
 
+class NewGameRequest(BaseModel):
+    """Input format for creating a new game, including optional bot data."""
+
+    starting_player: Optional[int] = Field(
+        default=1,
+        description="Choose the starting player.",
+        examples=[1, 2]
+    )
+
+    bot_model: Optional[str] = Field(
+        default=None,
+        description="Optional model name of the bot to be registered for this game.",
+        examples=["random", "ffn-bot"],
+    )
+
 class GameResponse(BaseModel):
     """Standard API Response Format."""
 
@@ -65,6 +80,8 @@ class ErrorResponse(BaseModel):
 
 class MoveRequest(BaseModel):
     """Input format for a player move action."""
+    
+    player_id: int = Field(..., description="ID of the player making the move (1 or 2).", examples=[1])
 
     x: int = Field(..., description="X coordinate of the edge.", examples=[0])
     y: int = Field(..., description="Y coordinate of the edge.", examples=[1])

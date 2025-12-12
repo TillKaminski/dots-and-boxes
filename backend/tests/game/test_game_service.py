@@ -56,12 +56,12 @@ def test_initial_state(service):
 
 def test_make_move_changes_state(service):
     """Test if Player Action changes Board Configuration."""
-    # Create a closed box and check Board
+    # Create a closed box and check Board (action: player_id, x, y, orientation)
     actions = [
-        (0, 0, Orientation.HORIZONTAL),  # P1
-        (0, 1, Orientation.HORIZONTAL),  # P2
-        (0, 0, Orientation.VERTICAL),  # P1
-        (1, 0, Orientation.VERTICAL),  # P2 scores (0, 0)
+        (1, 0, 0, Orientation.HORIZONTAL),  # P1
+        (2, 0, 1, Orientation.HORIZONTAL),  # P2
+        (1, 0, 0, Orientation.VERTICAL),  # P1
+        (2, 1, 0, Orientation.VERTICAL),  # P2 scores (0, 0)
     ]
 
     for action in actions:
@@ -81,7 +81,7 @@ def test_make_move_changes_state(service):
 
 def test_restart_game_resets_everything(service):
     """Test if Restart Call empties everything."""
-    service.make_move(game_id, 0, 0, Orientation.HORIZONTAL)
+    service.make_move(game_id, 1, 0, 0, Orientation.HORIZONTAL)
     state_before = service.get_state(game_id)
 
     new_state = service.restart_game(game_id)
@@ -98,22 +98,22 @@ def test_game_over_detection(service):
     """Test if an Action triggers Game-Over Flag."""
     # Moves in 2x2 for Draw, all Edges filled
     moves = [
-        (0, 0, Orientation.HORIZONTAL),  # Player 1
-        (0, 0, Orientation.VERTICAL),  # Player 2
-        (1, 0, Orientation.HORIZONTAL),  # Player 1
-        (0, 1, Orientation.VERTICAL),  # Player 2
-        (0, 1, Orientation.HORIZONTAL),  # Player 1
-        (1, 0, Orientation.VERTICAL),  # Player 2 (score)
-        (1, 1, Orientation.HORIZONTAL),  # Player 2
-        (1, 1, Orientation.VERTICAL),  # Player 1
-        (0, 2, Orientation.HORIZONTAL),  # Player 2 (score)
-        (2, 1, Orientation.VERTICAL),  # Player 2
-        (1, 2, Orientation.HORIZONTAL),  # Player 1 (score)
-        (2, 0, Orientation.VERTICAL),  # Player 1 (score)
+        (1, 0, 0, Orientation.HORIZONTAL),  # Player 1
+        (2, 0, 0, Orientation.VERTICAL),  # Player 2
+        (1, 1, 0, Orientation.HORIZONTAL),  # Player 1
+        (2, 0, 1, Orientation.VERTICAL),  # Player 2
+        (1, 0, 1, Orientation.HORIZONTAL),  # Player 1
+        (2, 1, 0, Orientation.VERTICAL),  # Player 2 (score)
+        (2, 1, 1, Orientation.HORIZONTAL),  # Player 2
+        (1, 1, 1, Orientation.VERTICAL),  # Player 1
+        (2, 0, 2, Orientation.HORIZONTAL),  # Player 2 (score)
+        (2, 2, 1, Orientation.VERTICAL),  # Player 2
+        (1, 1, 2, Orientation.HORIZONTAL),  # Player 1 (score)
+        (1, 2, 0, Orientation.VERTICAL),  # Player 1 (score)
     ]
 
-    for x, y, o in moves:
-        service.make_move(game_id, x, y, o)
+    for p, x, y, o in moves:
+        service.make_move(game_id, p, x, y, o)
 
     assert isinstance(service.is_game_over(game_id), bool)
     assert service.is_game_over(game_id)
@@ -122,23 +122,23 @@ def test_game_over_detection(service):
 
     # Check Additional Moves after Game End
     prev_state = service.get_state(game_id).copy()
-    assert service.make_move(game_id, 0, 0, Orientation.HORIZONTAL) == ERROR_GAME_OVER
+    assert service.make_move(game_id, 2, 0, 0, Orientation.HORIZONTAL) == ERROR_GAME_OVER
     assert service.get_state(game_id) == prev_state
 
 
 def test_invalid_move(service):
     """Test if illegal moves (duplicate edges) returns an Error-Message."""
-    service.make_move(game_id, 0, 0, Orientation.HORIZONTAL)
+    service.make_move(game_id, 1, 0, 0, Orientation.HORIZONTAL)
 
     with pytest.raises(ValueError, match=ERROR_EDGE_TAKEN["error"]):
-        service.make_move(game_id, 0, 0, Orientation.HORIZONTAL)
+        service.make_move(game_id, 2, 0, 0, Orientation.HORIZONTAL)
 
     # Test-Board is smaller than 5x5
     with pytest.raises(ValueError, match=ERROR_OUT_OF_BOUNDS["error"]):
-        service.make_move(game_id, 5, 5, Orientation.HORIZONTAL)
+        service.make_move(game_id, 2, 5, 5, Orientation.HORIZONTAL)
 
     with pytest.raises(TypeError, match=ERROR_INVALID_ORIENTATION_TYPE["error"]):
-        service.make_move(game_id, 0, 0, None)
+        service.make_move(game_id, 2, 0, 0, None)
 
 
 def test_new_game_is_available(service):
