@@ -27,7 +27,7 @@ class TestDataGeneratorLogging:
     """Test Logging for Data-Generator Class."""
 
     def test_simulate_game_move_rejected_logs_warning(self, caplog):
-        """Test if Logging for a rejected Move works."""
+        """Test if Logging for a rejected Move works."""    
         service = MagicMock()
         bot1 = MagicMock()
         bot2 = MagicMock()
@@ -59,7 +59,7 @@ class TestDataGeneratorLogging:
 
         side_effect_make_move.call_count = 1
         service.make_move.side_effect = side_effect_make_move
-        service.get_state.return_value = {"state": "before"}
+        service.get_state.return_value = {"state": "before", "currentPlayer": 1}
 
         with caplog.at_level(logging.WARNING, logger=generator_logger.name):
             data_gen.simulate_game("test_game", bot1, bot2, log=True)
