@@ -1,13 +1,17 @@
 """Test Class for Service-Tests."""
 
+from unittest.mock import patch
 import pytest
+from ai.bots.move import Move
 from game.game_board import Orientation
 from game.game_service import GameService
 
 from game.errors import (
+    ERROR_BOT_NOT_SET,
     ERROR_EDGE_TAKEN,
     ERROR_GAME_OVER,
     ERROR_INVALID_ORIENTATION_TYPE,
+    ERROR_NOT_YOUR_TURN,
     ERROR_OUT_OF_BOUNDS,
     ERROR_GAME_EXISTS,
     ERROR_GAME_NOT_FOUND,
@@ -17,18 +21,20 @@ game_id = "1"
 
 
 @pytest.fixture
-def service():
+def services():
     """Creates a new Game-Service Object with 2x2 Board."""
-    game_service = GameService()
-    game_service.create_game(game_id, size=2)
-    yield game_service
+    with patch("game.game_service.bot_service", autospec=True) as mock_bot_service:
+        game_service = GameService()
+        game_service.create_game(game_id, size=2)
+        yield game_service, mock_bot_service
 
-    # Removes Bot in BotService
-    game_service.delete_game(game_id)
+        # Removes Bot in BotService
+        game_service.delete_game(game_id)
 
 
-def test_initial_state(service):
+def test_initial_state(services):
     """Test new Game initialization."""
+    service, _ = services
     # Default Game exists
     assert game_id in service.games
 
@@ -54,9 +60,10 @@ def test_initial_state(service):
     assert all(val == -4 for row in state["boxes"] for val in row)
 
 
-def test_make_move_changes_state(service):
+def test_make_move_changes_state(services):
     """Test if Player Action changes Board Configuration."""
     # Create a closed box and check Board (action: player_id, x, y, orientation)
+    service, _ = services
     actions = [
         (1, 0, 0, Orientation.HORIZONTAL),  # P1
         (2, 0, 1, Orientation.HORIZONTAL),  # P2
@@ -79,8 +86,9 @@ def test_make_move_changes_state(service):
     assert result["scores"] == {1: 0, 2: 1}
 
 
-def test_restart_game_resets_everything(service):
+def test_restart_game_resets_everything(services):
     """Test if Restart Call empties everything."""
+    service, _ = services
     service.make_move(game_id, 1, 0, 0, Orientation.HORIZONTAL)
     state_before = service.get_state(game_id)
 
@@ -94,8 +102,9 @@ def test_restart_game_resets_everything(service):
     assert state_before != new_state
 
 
-def test_game_over_detection(service):
+def test_game_over_detection(services):
     """Test if an Action triggers Game-Over Flag."""
+    service, _ = services
     # Moves in 2x2 for Draw, all Edges filled
     moves = [
         (1, 0, 0, Orientation.HORIZONTAL),  # Player 1
@@ -128,8 +137,9 @@ def test_game_over_detection(service):
     assert service.get_state(game_id) == prev_state
 
 
-def test_invalid_move(service):
+def test_invalid_move(services):
     """Test if illegal moves (duplicate edges) returns an Error-Message."""
+    service, _ = services
     service.make_move(game_id, 1, 0, 0, Orientation.HORIZONTAL)
 
     with pytest.raises(ValueError, match=ERROR_EDGE_TAKEN["error"]):
@@ -143,8 +153,9 @@ def test_invalid_move(service):
         service.make_move(game_id, 2, 0, 0, None)
 
 
-def test_new_game_is_available(service):
+def test_new_game_is_available(services):
     """Test if Game Creation works for multiple Games."""
+    service, _ = services
     service.create_game("111", size=4)
     service.create_game("222", size=6)
     service.create_game("333", size=5)
@@ -156,3 +167,50 @@ def test_new_game_is_available(service):
     assert data_game_1["size"] == 4
     assert data_game_2["size"] == 6
     assert data_game_3["size"] == 5
+
+
+def test_make_bot_move(services):
+    """Test GameService.make_bot_move handles bot logic and state updates."""
+    service, mock_bot_service = services
+
+    bot_id = 1
+    bot_model_name = "test_bot"
+
+    board = service.games[game_id]
+    board.bot_model = bot_model_name
+    board.bot_id = bot_id
+
+    expected_move = Move(x=1, y=1, orientation=Orientation.VERTICAL, available=True)
+
+    mock_bot_service.game_state_required.return_value = True
+    mock_bot_service.get_move.return_value = expected_move
+
+    initial_current_player = board.current_player
+    result_move = service.make_bot_move(game_id)
+
+    # Move was executed and state updated
+    assert result_move is expected_move
+    assert board.current_player != initial_current_player
+    assert board.edges_vertical[1][1] == bot_id
+
+    # Test Game State Check
+    mock_bot_service.game_state_required.assert_called_with(bot_model_name)
+
+    # Test wrong Turn
+    result_error = service.make_bot_move(game_id)
+    assert result_error == ERROR_NOT_YOUR_TURN
+
+    # Test Bot not set
+    service.restart_game(game_id)
+    board.bot_model = None
+    board.bot_id = None
+
+    # Create new Game without bot set
+    game_no_bot = "no_bot"
+    service.create_game(game_id=game_no_bot)
+    # Make Move to switch Turns (bot.pos = 2)
+    service.make_move(
+        game_id=game_no_bot, player_id=1, x=0, y=0, orientation=Orientation.HORIZONTAL
+    )
+    result_error = service.make_bot_move(game_no_bot)
+    assert result_error == ERROR_BOT_NOT_SET
