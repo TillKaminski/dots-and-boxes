@@ -122,7 +122,9 @@ def test_game_over_detection(service):
 
     # Check Additional Moves after Game End
     prev_state = service.get_state(game_id).copy()
-    assert service.make_move(game_id, 2, 0, 0, Orientation.HORIZONTAL) == ERROR_GAME_OVER
+    assert (
+        service.make_move(game_id, 2, 0, 0, Orientation.HORIZONTAL) == ERROR_GAME_OVER
+    )
     assert service.get_state(game_id) == prev_state
 
 

@@ -16,23 +16,24 @@ BOT_MODEL: dict[str, BasicBot] = {
 
 ACTIVE_BOTS: dict[str, BasicBot] = {}
 
+
 class BotService:
     """Manages different Bot Models."""
 
     def get_bot_models(self) -> set[str]:
         """Returns available Bot Models."""
         return BOT_MODEL.keys()
-    
+
     def get_bot_model(self, model: str) -> BasicBot:
         """Returns the Bot Object."""
         model_lower = model.lower()
         if model_lower in BOT_MODEL.keys():
             return BOT_MODEL.get(model_lower)
         raise ValueError("Bot Model not found.")
-    
+
     def game_state_required(self, bot_model: str | BasicBot) -> bool:
         """Check, if Bot needs a GameState Object for predictions.
-        
+
         Accepts Model Name as String or Model Object.
         """
         if isinstance(bot_model, str):
@@ -40,21 +41,23 @@ class BotService:
             return BotClass.game_state_required()
         elif isinstance(bot_model, BasicBot):
             return bot_model.game_state_required()
-        
+
     def get_move(self, game_id: str, game_state: GameState | None = None) -> Move:
         """Returns the Bot Move (Model dependent)."""
-        bot_model = self.get_bot(game_id)        
+        bot_model = self.get_bot(game_id)
         if self.game_state_required(bot_model):
             if game_state is None:
                 raise ValueError(f"NN Bot '{bot_model.name()}' needs GameState.")
             # Update current Game State
             bot_model.update_state(game_state)
         return bot_model.move()
-    
+
     def register_bot(self, game_id: str, size: int, bot_model: str):
         """Registers Bot Model by Game ID."""
         if game_id in ACTIVE_BOTS.keys():
-            raise ValueError(f"Bot ({ACTIVE_BOTS[game_id].name()}) already registered (Game-ID: {game_id})")
+            raise ValueError(
+                f"Bot ({ACTIVE_BOTS[game_id].name()}) already registered (Game-ID: {game_id})"
+            )
         bot = self.get_bot_model(bot_model)
         bot_obj = bot(size)
         ACTIVE_BOTS[game_id] = bot_obj

@@ -55,7 +55,11 @@ class DataGenerator:
             # Execute Move
             current_player = state_before["currentPlayer"]
             result = self.service.make_move(
-                game_id=game_id, player_id=current_player, x=move.x, y=move.y, orientation=move.orientation
+                game_id=game_id,
+                player_id=current_player,
+                x=move.x,
+                y=move.y,
+                orientation=move.orientation,
             )
 
             if "error" in result and result["error"]:

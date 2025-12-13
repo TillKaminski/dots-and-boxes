@@ -29,7 +29,11 @@ def get_game_service_info():
 
 
 @router.post("/new_game/{game_id}", response_model=GameResponse)
-def new_game(game_id: str, request_data: NewGameRequest, service: GameService = Depends(get_game_service)):
+def new_game(
+    game_id: str,
+    request_data: NewGameRequest,
+    service: GameService = Depends(get_game_service),
+):
     """Create a new Game for given Game-ID.
 
     ### Args
@@ -43,7 +47,9 @@ def new_game(game_id: str, request_data: NewGameRequest, service: GameService = 
     """
     starting_player = request_data.starting_player
     bot_name = request_data.bot_model
-    result = service.create_game(game_id=game_id, starting_player=starting_player, bot_model=bot_name)
+    result = service.create_game(
+        game_id=game_id, starting_player=starting_player, bot_model=bot_name
+    )
     _check_error_message(result)
 
     result["scores"] = {str(k): v for k, v in result["scores"].items()}
@@ -126,10 +132,9 @@ def move(
     }
     return response
 
+
 @router.post("/{game_id}/bot_move", response_model=GameResponse)
-def bot_move(
-    game_id: str, service: GameService = Depends(get_game_service)
-):
+def bot_move(game_id: str, service: GameService = Depends(get_game_service)):
     """Get an Action performed by the chosen Bot.
 
     ### Args
@@ -153,7 +158,6 @@ def bot_move(
         # Exception thrown
         error_obj, status_code = get_error_response(str(e))
         raise HTTPException(status_code=status_code, detail=error_obj["error"])
-
 
     result_state["scores"] = {str(k): v for k, v in result_state["scores"].items()}
     response = {

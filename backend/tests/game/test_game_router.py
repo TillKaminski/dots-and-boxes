@@ -165,7 +165,8 @@ def test_move_out_of_bounds():
 def test_move_invalid_orientation():
     """Tests Invalid Orientation."""
     response = client.post(
-        URL_PREFIX + f"/{game_id}/move", json={"player_id": 1, "x": 0, "y": 0, "orientation": "invalid"}
+        URL_PREFIX + f"/{game_id}/move",
+        json={"player_id": 1, "x": 0, "y": 0, "orientation": "invalid"},
     )
     assert response.status_code == 400
     assert ERROR_INVALID_ORIENTATION["error"] in response.text
@@ -216,7 +217,8 @@ def test_multiple_games_parallel():
         json={"player_id": 1, "x": 0, "y": 0, "orientation": "horizontal"},
     )
     client.post(
-        URL_PREFIX + f"/{id2}/move", json={"player_id": 1, "x": 1, "y": 1, "orientation": "horizontal"}
+        URL_PREFIX + f"/{id2}/move",
+        json={"player_id": 1, "x": 1, "y": 1, "orientation": "horizontal"},
     )
 
     state1 = client.get(URL_PREFIX + f"/{game_id}/state").json()["state"]

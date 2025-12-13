@@ -27,7 +27,7 @@ class TestDataGeneratorLogging:
     """Test Logging for Data-Generator Class."""
 
     def test_simulate_game_move_rejected_logs_warning(self, caplog):
-        """Test if Logging for a rejected Move works."""    
+        """Test if Logging for a rejected Move works."""
         service = MagicMock()
         bot1 = MagicMock()
         bot2 = MagicMock()

@@ -27,7 +27,7 @@ class BasicBot(ABC):
     def game_state_required(cls) -> bool:
         """Returns if Game-State is required for predictions."""
         return cls.GAME_STATE_REQUIRED
-    
+
     def move(
         self, log_move: bool = False, return_dictionary: bool = False
     ) -> Dict[str, Any] | Move:
@@ -39,7 +39,7 @@ class BasicBot(ABC):
 
         if log_move:
             print(f"[{self.name()}] Selected move: {selected_move}")
-        
+
         if return_dictionary:
             return {
                 "x": selected_move.x,
@@ -48,7 +48,7 @@ class BasicBot(ABC):
             }
 
         return selected_move
-    
+
     @abstractmethod
     def _select_move(
         self, log_move: bool = False, return_dictionary: bool = False
@@ -65,5 +65,3 @@ class BasicBot(ABC):
     def update(self, x: int, y: int, orientation: Orientation) -> None:
         """Update internal state based on an applied move (self or opponent)."""
         raise NotImplementedError("Subclass: update()-Method not implemented.")
-
-
