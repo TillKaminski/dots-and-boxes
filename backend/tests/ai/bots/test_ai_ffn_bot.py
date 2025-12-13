@@ -149,4 +149,4 @@ def test_ffn_bot_update_state(ffn_bot_mock, state_mock):
 def test_ffn_bot_name(ffn_bot_mock):
     """Test, if Name-Method returns the correct Bpt-Name."""
     bot = ffn_bot_mock
-    assert bot.name() == "ffn-bot"
+    assert bot.name() == FFNBot.BOT_NAME

@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from game.errors import ERROR_INVALID_ORIENTATION, get_error_response
 from game.game_board import Orientation
 from game.game_service import GameService
-from .response import GameResponse, MoveRequest, ServiceInfoResponse
+from .response import GameResponse, MoveRequest, ServiceInfoResponse, NewGameRequest
 
 router = APIRouter(prefix="/v1/games", tags=["Games"])
 # service = GameService()
@@ -29,7 +29,11 @@ def get_game_service_info():
 
 
 @router.post("/new_game/{game_id}", response_model=GameResponse)
-def new_game(game_id: str, service: GameService = Depends(get_game_service)):
+def new_game(
+    game_id: str,
+    request_data: NewGameRequest,
+    service: GameService = Depends(get_game_service),
+):
     """Create a new Game for given Game-ID.
 
     ### Args
@@ -41,7 +45,11 @@ def new_game(game_id: str, service: GameService = Depends(get_game_service)):
     ### Raises
     - **HTTPException** If the game already exists (409).
     """
-    result = service.create_game(game_id=game_id)
+    starting_player = request_data.starting_player
+    bot_name = request_data.bot_model
+    result = service.create_game(
+        game_id=game_id, starting_player=starting_player, bot_model=bot_name
+    )
     _check_error_message(result)
 
     result["scores"] = {str(k): v for k, v in result["scores"].items()}
@@ -101,6 +109,7 @@ def move(
         orientation_enum = _map_orientation(move.orientation)
         result = service.make_move(
             game_id=game_id,
+            player_id=move.player_id,
             x=move.x,
             y=move.y,
             orientation=orientation_enum,
@@ -120,6 +129,44 @@ def move(
             "version": "v1",
         },
         "state": result,
+    }
+    return response
+
+
+@router.post("/{game_id}/bot_move", response_model=GameResponse)
+def bot_move(game_id: str, service: GameService = Depends(get_game_service)):
+    """Get an Action performed by the chosen Bot.
+
+    ### Args
+    - **game_id** *(str)* ID of the game
+
+    ### Returns
+    - **GameResponse** The resulting game state with meta information.
+
+    ### Raises
+    - **HTTPException** If the game is finished (403), Invalid Input (400), Edge already taken (409).
+    """
+    try:
+        # Returns chosen Move
+        result_move = service.make_bot_move(game_id)
+
+        # Error Message received
+        _check_error_message(result_move)
+
+        result_state = service.get_state(game_id)
+    except ValueError as e:
+        # Exception thrown
+        error_obj, status_code = get_error_response(str(e))
+        raise HTTPException(status_code=status_code, detail=error_obj["error"])
+
+    result_state["scores"] = {str(k): v for k, v in result_state["scores"].items()}
+    response = {
+        "meta": {
+            "game_id": game_id,
+            "version": "v1",
+        },
+        "move": result_move,
+        "state": result_state,
     }
     return response
 

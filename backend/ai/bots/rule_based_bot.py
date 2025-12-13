@@ -15,6 +15,8 @@ logger = logging.getLogger(__name__)
 class RuleBasedBot(BasicBot):
     """Rule-based Bot that performs Moves with a simple logic."""
 
+    BOT_NAME = "Rule"
+
     def __init__(self, size: int):
         """Rule-based Bot Constructor."""
         self.size = size
@@ -73,10 +75,6 @@ class RuleBasedBot(BasicBot):
                 if self.boxes[x - 1, y] == 0:
                     self.boxes[x - 1, y] = 1
 
-    def name(self) -> str:
-        """Returns Bot Name."""
-        return "rule_based"
-
     def _get_adjacent_boxes(self, move: Move) -> list[tuple[int, int]]:
         """Get Coordinates of adjacent Boxes."""
         boxes = []
@@ -96,7 +94,7 @@ class RuleBasedBot(BasicBot):
 
         return boxes
 
-    def move(self, log_move: bool = False, return_dictionary: bool = False):
+    def _select_move(self, log_move: bool = False, return_dictionary: bool = False):
         """Evaluate best Move."""
         possible_moves = [move for move in self.positions if move.available]
 
@@ -142,12 +140,4 @@ class RuleBasedBot(BasicBot):
         if best_move is None:
             best_move = random.choice(possible_moves)
 
-        return (
-            best_move
-            if not return_dictionary
-            else {
-                "x": best_move.x,
-                "y": best_move.y,
-                "orientation": best_move.orientation.name.lower(),
-            }
-        )
+        return best_move

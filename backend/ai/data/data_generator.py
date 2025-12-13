@@ -44,7 +44,7 @@ class DataGenerator:
         state_list = []
         current_bot = bot1
         while not self.service.games[game_id].game_finished:
-            if current_bot.name() == "ffn-bot":
+            if current_bot.game_state_required():
                 state = self.service.get_state_object(game_id)
                 current_bot.update_state(state)
 
@@ -53,8 +53,13 @@ class DataGenerator:
             state_before = self.service.get_state(game_id=game_id)
 
             # Execute Move
+            current_player = state_before["currentPlayer"]
             result = self.service.make_move(
-                game_id=game_id, x=move.x, y=move.y, orientation=move.orientation
+                game_id=game_id,
+                player_id=current_player,
+                x=move.x,
+                y=move.y,
+                orientation=move.orientation,
             )
 
             if "error" in result and result["error"]:
@@ -87,8 +92,8 @@ class DataGenerator:
             # Get Bot for next Turn (result always
             # contains the current player, no matter
             # if a box was closed or not)
-            current_player = result["currentPlayer"]
-            current_bot = bot1 if current_player == 1 else bot2
+            next_player = result["currentPlayer"]
+            current_bot = bot1 if next_player == 1 else bot2
         return state_list
 
     def simulate_multiple_games(

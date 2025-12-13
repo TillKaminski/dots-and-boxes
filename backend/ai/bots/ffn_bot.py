@@ -19,6 +19,9 @@ logger = logging.getLogger(__name__)
 class FFNBot(BasicBot):
     """Bot Class that uses a FFN for Predictions based on the current Game State."""
 
+    BOT_NAME = "FFN"
+    GAME_STATE_REQUIRED = True
+
     def __init__(self, size: int, model_path: str = DeploymentConfig.MODEL_PATH):
         """Constructor for a Bot that uses a FFN for Move Predictions."""
         self.size = size
@@ -58,7 +61,7 @@ class FFNBot(BasicBot):
         self._init_positions()
         self._current_state = None
 
-    def move(
+    def _select_move(
         self, log_move: bool = False, return_dictionary: bool = False
     ) -> Dict[str, Any] | Move:
         """Predicts the best Move based on the current Game State.
@@ -91,20 +94,7 @@ class FFNBot(BasicBot):
 
             move = self._map_index_to_move(best_move_index)
 
-            if log_move:
-                logger.info(
-                    f"FFNBot move (Index {best_move_index}): x={move.x}, y={move.y}, orientation={move.orientation}"
-                )
-
-            return (
-                move
-                if not return_dictionary
-                else {
-                    "x": move.x,
-                    "y": move.y,
-                    "orientation": move.orientation.name.lower(),
-                }
-            )
+            return move
 
     def update(self, x: int, y: int, orientation: Orientation) -> None:
         """Update internal state based on an applied move (self or opponent)."""
@@ -116,10 +106,6 @@ class FFNBot(BasicBot):
     def update_state(self, new_state: GameState):
         """Update the current State."""
         self._current_state = new_state
-
-    def name(self) -> str:
-        """Return bot name for logging or stats."""
-        return "ffn-bot"
 
     def _init_positions(self):
         """Initialize all possible moves."""

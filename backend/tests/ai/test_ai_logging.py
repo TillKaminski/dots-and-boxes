@@ -59,7 +59,7 @@ class TestDataGeneratorLogging:
 
         side_effect_make_move.call_count = 1
         service.make_move.side_effect = side_effect_make_move
-        service.get_state.return_value = {"state": "before"}
+        service.get_state.return_value = {"state": "before", "currentPlayer": 1}
 
         with caplog.at_level(logging.WARNING, logger=generator_logger.name):
             data_gen.simulate_game("test_game", bot1, bot2, log=True)
@@ -106,7 +106,7 @@ class TestRandomBotLogging:
 
         with pytest.raises(RuntimeError):
             with caplog.at_level(logging.WARNING, logger=bot_logger.name):
-                random_bot.move(log_move=True)
+                random_bot._select_move(log_move=True)
 
         expected_log_message = "No possible Moves available."
         assert expected_log_message in caplog.text
@@ -121,7 +121,7 @@ class TestRandomBotLogging:
         bot = RandomBot(2)
 
         with caplog.at_level(logging.INFO, logger=bot_logger.name):
-            move = bot.move(log_move=True)
+            move = bot._select_move(log_move=True)
 
         expected = (
             f"RandomBot move: x={move.x}, y={move.y}, orientation={move.orientation}"
