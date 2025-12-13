@@ -86,4 +86,4 @@ def test_move_not_possible(bot):
 
 def test_name(bot):
     """Name-Method should return Model Name."""
-    assert bot.name() == "random"
+    assert bot.name() == RandomBot.BOT_NAME

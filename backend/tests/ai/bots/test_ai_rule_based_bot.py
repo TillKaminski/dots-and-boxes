@@ -75,7 +75,7 @@ def test_bot_constructor(rule_based_bot):
     assert rule_based_bot.boxes.shape == (GAME_SIZE, GAME_SIZE)
     assert np.all(rule_based_bot.boxes == -4)
 
-    assert rule_based_bot.name() == "rule_based"
+    assert rule_based_bot.name() == RuleBasedBot.BOT_NAME
 
 
 def test_move_returns_valid_move_dict(rule_based_bot):

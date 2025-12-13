@@ -14,11 +14,11 @@ class TestBot(BasicBot):
         """Call Superclass reset-Method."""
         return super().reset()
 
-    def move(
+    def _select_move(
         self, log_move: bool = False, return_dictionary: bool = False
     ) -> Dict[str, Any]:
         """Call Superclass move-Method."""
-        return super().move(log_move, return_dictionary)
+        return super()._select_move(log_move, return_dictionary)
 
     def update(self, x: int, y: int, orientation: Orientation) -> None:
         """Call Superclass update-Method."""
@@ -36,7 +36,7 @@ class MockBot(BasicBot):
         """Override of abstract Method reset."""
         self._reset_called = True
 
-    def move(
+    def _select_move(
         self, log_move: bool = False, return_dictionary: bool = False
     ) -> Dict[str, Any]:
         """Override of abstract Method move."""
@@ -67,8 +67,8 @@ class TestAbstractMethods(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             self.bot.update(x=0, y=0, orientation=Orientation.HORIZONTAL)
 
-        with self.assertRaises(NotImplementedError):
-            self.bot.name()
+        # Bot Name not set
+        assert self.bot.name() == BasicBot.BOT_NAME
 
 
 class TestBasicBotImplementation(unittest.TestCase):
@@ -90,7 +90,7 @@ class TestBasicBotImplementation(unittest.TestCase):
         self.assertIsNone(self.bot.reset())
 
         # Test move()
-        move = self.bot.move()
+        move = self.bot._select_move()
         expect = {"x", "y", "orientation"}
         self.assertEqual(set(move.keys()), expect)
         self.assertIsInstance(move["x"], int)

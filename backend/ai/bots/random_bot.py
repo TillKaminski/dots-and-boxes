@@ -13,6 +13,8 @@ logger = logging.getLogger(__name__)
 class RandomBot(BasicBot):
     """Bot that selects random available moves."""
 
+    BOT_NAME = "Random"
+
     def __init__(self, size: int):
         """Creates a new Random-Bot."""
         self.size = size
@@ -29,16 +31,12 @@ class RandomBot(BasicBot):
             for x in range(self.size + 1):
                 self.positions.append(Move(x, y, Orientation.VERTICAL))
 
-    def name(self) -> str:
-        """Returns Bot Name."""
-        return "random"
-
     def reset(self) -> None:
         """Resets the Bot for following Games."""
         self.positions.clear()
         self._init_positions()
 
-    def move(self, log_move: bool = False, return_dictionary: bool = False):
+    def _select_move(self, log_move: bool = False, return_dictionary: bool = False):
         """Select and return a random available move.
 
         ### Params:
@@ -58,15 +56,7 @@ class RandomBot(BasicBot):
                 f"RandomBot move: x={move.x}, y={move.y}, orientation={move.orientation}"
             )
 
-        return (
-            move
-            if not return_dictionary
-            else {
-                "x": move.x,
-                "y": move.y,
-                "orientation": move.orientation.name.lower(),
-            }
-        )
+        return move
 
     def update(self, x: int, y: int, orientation: Orientation):
         """Update Positions."""

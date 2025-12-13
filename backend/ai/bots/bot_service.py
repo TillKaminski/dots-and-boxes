@@ -25,24 +25,26 @@ class BotService:
     
     def get_bot_model(self, model: str) -> BasicBot:
         """Returns the Bot Object."""
-        if model in BOT_MODEL.keys():
-            return BOT_MODEL.get(model.lower())
+        model_lower = model.lower()
+        if model_lower in BOT_MODEL.keys():
+            return BOT_MODEL.get(model_lower)
         raise ValueError("Bot Model not found.")
     
-    def is_nn_bot(self, bot_model: str | BasicBot) -> bool:
+    def game_state_required(self, bot_model: str | BasicBot) -> bool:
         """Check, if Bot needs a GameState Object for predictions.
         
         Accepts Model Name as String or Model Object.
         """
         if isinstance(bot_model, str):
-            return bot_model == "ffn" or bot_model == "pvn"
+            BotClass = self.get_bot_model(bot_model)
+            return BotClass.game_state_required()
         elif isinstance(bot_model, BasicBot):
-            return bot_model.name() == "ffn-bot" or bot_model.name() == "pvn-bot"
+            return bot_model.game_state_required()
         
     def get_move(self, game_id: str, game_state: GameState | None = None) -> Move:
         """Returns the Bot Move (Model dependent)."""
         bot_model = self.get_bot(game_id)        
-        if self.is_nn_bot(bot_model):
+        if self.game_state_required(bot_model):
             if game_state is None:
                 raise ValueError(f"NN Bot '{bot_model.name()}' needs GameState.")
             # Update current Game State

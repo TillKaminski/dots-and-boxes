@@ -49,7 +49,7 @@ class GameService:
             return ERROR_NOT_YOUR_TURN
         # Check Bot Type
         current_state = None
-        if bot_service.is_nn_bot(bot_model_name):
+        if bot_service.game_state_required(bot_model_name):
             current_state = board.get_state_object()
         
         move = bot_service.get_move(game_id=game_id, game_state=current_state)

@@ -44,7 +44,7 @@ class DataGenerator:
         state_list = []
         current_bot = bot1
         while not self.service.games[game_id].game_finished:
-            if current_bot.name() == "ffn-bot":
+            if current_bot.game_state_required():
                 state = self.service.get_state_object(game_id)
                 current_bot.update_state(state)
 
