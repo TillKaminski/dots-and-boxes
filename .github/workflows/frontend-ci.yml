@@ -32,12 +32,12 @@ jobs:
 
       - name: Run Frontend Tests
         working-directory: ./frontend
-        run: npm run test -- --code-coverage --no-watch --no-progress --browsers=ChromeHeadlessCI
+        run: npm run test -- --code-coverage --no-watch --no-progress
 
       - name: Upload Frontend coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
-          files: ./frontend/coverage/frontend/lcov.info
+          files: ./frontend/coverage/lcov.info
           flags: frontend
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
