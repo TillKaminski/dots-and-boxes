@@ -78,25 +78,6 @@ class NewGameRequest(CamelCaseBaseModel):
         examples=["random", "ffn-bot"],
     )
 
-
-class GameResponse(CamelCaseBaseModel):
-    """Standard API Response Format."""
-
-    meta: MetaModel = Field(..., description="Meta information about the request.")
-    state: StateModel = Field(..., description="Current game state.")
-
-
-class ErrorResponse(CamelCaseBaseModel):
-    """Error Response Format."""
-
-    error: str = Field(..., description="Error message explaining what went wrong.")
-    code: Optional[int] = Field(
-        default=None,
-        description="HTTP status code corresponding to the error.",
-        examples=[400, 404, 409],
-    )
-
-
 class MoveRequest(CamelCaseBaseModel):
     """Input format for a player move action."""
 
@@ -112,6 +93,38 @@ class MoveRequest(CamelCaseBaseModel):
         examples=["horizontal"],
     )
 
+class BotMoveOutput(CamelCaseBaseModel):
+    """Output format for a bot move action, without player_id."""
+
+    x: int = Field(..., description="X coordinate of the edge.", examples=[0])
+    y: int = Field(..., description="Y coordinate of the edge.", examples=[1])
+    orientation: str = Field(
+        ...,
+        description="Orientation of the edge: 'horizontal' or 'vertical'.",
+        examples=["horizontal"],
+    )
+
+
+class GameResponse(CamelCaseBaseModel):
+    """Standard API Response Format."""
+
+    meta: MetaModel = Field(..., description="Meta information about the request.")
+    state: StateModel = Field(..., description="Current game state.")
+    
+    move: Optional[BotMoveOutput] = Field(
+        default=None, 
+        description="The executed move details, present only for /bot_move."
+    )
+
+class ErrorResponse(CamelCaseBaseModel):
+    """Error Response Format."""
+
+    error: str = Field(..., description="Error message explaining what went wrong.")
+    code: Optional[int] = Field(
+        default=None,
+        description="HTTP status code corresponding to the error.",
+        examples=[400, 404, 409],
+    )
 
 class ServiceInfoResponse(CamelCaseBaseModel):
     """Format for Health-Checks."""
