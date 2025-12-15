@@ -1,9 +1,9 @@
 export type Orientation = 'horizontal' | 'vertical';
 
 export interface StatusInfo {
-    'root-message': string; 
-    'api-version': string;
-    status: string;
+  'root-message': string;
+  'api-version': string;
+  status: string;
 }
 
 export type PlayerScore = Record<string, number>;
@@ -23,7 +23,13 @@ export interface GameState {
 }
 
 export interface MoveRequest {
+  playerId: number;
   x: number;
   y: number;
   orientation: Orientation;
+}
+
+export interface NewGameRequest {
+  startingPlayer: number;
+  botModel: string;
 }

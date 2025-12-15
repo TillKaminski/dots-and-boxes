@@ -26,9 +26,11 @@ jobs:
         working-directory: ./frontend
         run: npm ci
 
-      - name: Lint
+      - name: Run Lint and Format Check
         working-directory: ./frontend
-        run: npm run lint
+        run: |
+          npx prettier --check .
+          npm run lint
 
       - name: Run Frontend Tests
         working-directory: ./frontend

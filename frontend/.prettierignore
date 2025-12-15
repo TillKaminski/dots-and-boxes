@@ -1,0 +1,11 @@
+# Dependencies
+/node_modules
+
+# Build artifacts
+/dist
+
+# Generated coverage reports
+/coverage
+
+# Static Index File
+/src/index.html

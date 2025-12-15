@@ -7,7 +7,7 @@ import { GameService } from './core/services/game.service';
   standalone: true,
   imports: [RouterOutlet],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
 })
 export class AppComponent implements OnInit {
   title = 'dots-and-boxes-frontend';
@@ -19,7 +19,7 @@ export class AppComponent implements OnInit {
     //
   }
 
-  ngOnInit(): void { 
+  ngOnInit(): void {
     this.gameService.checkStatus().subscribe({
       next: (data) => {
         this.backendStatus = `Backend running: ${data['api-version']} - ${data['root-message']}`;
@@ -28,7 +28,7 @@ export class AppComponent implements OnInit {
       error: (err) => {
         this.backendStatus = `ERROR: Failed to connect to backend.`;
         console.error('Connection Error:', err);
-      }
+      },
     });
   }
 }
