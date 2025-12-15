@@ -45,7 +45,7 @@ def test_new_game():
     assert isinstance(service.get_state("2"), dict)
 
     data = response.json()
-    assert data["meta"]["game_id"] == new_id
+    assert data["meta"]["gameId"] == new_id
 
 
 def test_get_state_initial():
@@ -54,7 +54,7 @@ def test_get_state_initial():
     assert response.status_code == 200
 
     # Matching Game-Id
-    assert response.json()["meta"]["game_id"] == game_id
+    assert response.json()["meta"]["gameId"] == game_id
 
     data = response.json()["state"]
     assert isinstance(data, dict)
@@ -70,7 +70,7 @@ def test_json_format():
     response = client.get(URL_PREFIX + f"/{game_id}/state")
     data = response.json()
     required_keys = {"size", "edges", "boxes", "scores", "currentPlayer", "finished"}
-    meta_keys = {"game_id", "version"}
+    meta_keys = {"gameId", "version"}
     assert required_keys.issubset(data["state"].keys())
     assert meta_keys.issubset(data["meta"].keys())
 
@@ -79,7 +79,7 @@ def test_post_move_updates_state():
     """Test Game-State after POST /move."""
     response = client.post(
         URL_PREFIX + f"/{game_id}/move",
-        json={"player_id": 1, "x": 0, "y": 0, "orientation": "horizontal"},
+        json={"playerId": 1, "x": 0, "y": 0, "orientation": "horizontal"},
     )
     assert response.status_code == 200
 
@@ -93,10 +93,10 @@ def test_post_move_updates_state():
 def test_multiple_moves():
     """Test if Board-Configuration is consistent after multiple Actions."""
     moves = [
-        {"player_id": 1, "x": 0, "y": 0, "orientation": "horizontal"},
-        {"player_id": 2, "x": 0, "y": 0, "orientation": "vertical"},
-        {"player_id": 1, "x": 1, "y": 0, "orientation": "horizontal"},
-        {"player_id": 2, "x": 0, "y": 1, "orientation": "vertical"},
+        {"playerId": 1, "x": 0, "y": 0, "orientation": "horizontal"},
+        {"playerId": 2, "x": 0, "y": 0, "orientation": "vertical"},
+        {"playerId": 1, "x": 1, "y": 0, "orientation": "horizontal"},
+        {"playerId": 2, "x": 0, "y": 1, "orientation": "vertical"},
     ]
     for move in moves:
         response = client.post(URL_PREFIX + f"/{game_id}/move", json=move)
@@ -114,11 +114,11 @@ def test_restart_game_resets_state():
     """Test POST /restart resets current Game."""
     client.post(
         URL_PREFIX + f"/{game_id}/move",
-        json={"player_id": 1, "x": 0, "y": 0, "orientation": "horizontal"},
+        json={"playerId": 1, "x": 0, "y": 0, "orientation": "horizontal"},
     )
     state_before = client.get(URL_PREFIX + f"/{game_id}/state").json()["state"]
 
-    response = client.post(URL_PREFIX + f"/{game_id}/restart")
+    response = client.get(URL_PREFIX + f"/{game_id}/restart")
     assert response.status_code == 200
     new_state = response.json()["state"]
 
@@ -138,7 +138,7 @@ def test_move_after_restart():
     client.post(URL_PREFIX + f"{game_id}/restart")
     response = client.post(
         URL_PREFIX + f"/{game_id}/move",
-        json={"player_id": 1, "x": 0, "y": 0, "orientation": "horizontal"},
+        json={"playerId": 1, "x": 0, "y": 0, "orientation": "horizontal"},
     )
     assert response.status_code == 200
 
@@ -147,7 +147,7 @@ def test_restart_invalid_id():
     """Test if Restarting a non-existing Game throws an Error."""
     invalid_game_id = "999"
     assert invalid_game_id not in service.games
-    response = client.post(URL_PREFIX + f"/{invalid_game_id}/restart")
+    response = client.get(URL_PREFIX + f"/{invalid_game_id}/restart")
     assert response.status_code == 404
     assert ERROR_GAME_NOT_FOUND["error"] in response.text
 
@@ -156,7 +156,7 @@ def test_move_out_of_bounds():
     """Tests if input is in the correct range."""
     response = client.post(
         URL_PREFIX + f"/{game_id}/move",
-        json={"player_id": 1, "x": 5, "y": 5, "orientation": "horizontal"},
+        json={"playerId": 1, "x": 5, "y": 5, "orientation": "horizontal"},
     )
     assert response.status_code == 400
     assert ERROR_OUT_OF_BOUNDS["error"] in response.text
@@ -166,7 +166,7 @@ def test_move_invalid_orientation():
     """Tests Invalid Orientation."""
     response = client.post(
         URL_PREFIX + f"/{game_id}/move",
-        json={"player_id": 1, "x": 0, "y": 0, "orientation": "invalid"},
+        json={"playerId": 1, "x": 0, "y": 0, "orientation": "invalid"},
     )
     assert response.status_code == 400
     assert ERROR_INVALID_ORIENTATION["error"] in response.text
@@ -176,11 +176,11 @@ def test_move_on_taken_edge():
     """Test Occupied Edges."""
     client.post(
         URL_PREFIX + f"/{game_id}/move",
-        json={"player_id": 1, "x": 0, "y": 0, "orientation": "horizontal"},
+        json={"playerId": 1, "x": 0, "y": 0, "orientation": "horizontal"},
     )
     response = client.post(
         URL_PREFIX + f"/{game_id}/move",
-        json={"player_id": 2, "x": 0, "y": 0, "orientation": "horizontal"},
+        json={"playerId": 2, "x": 0, "y": 0, "orientation": "horizontal"},
     )
     assert response.status_code == 409
     assert ERROR_EDGE_TAKEN["error"] in response.text
@@ -201,7 +201,7 @@ def test_move_after_game_finished():
 
     response = client.post(
         URL_PREFIX + f"/{game_id}/move",
-        json={"player_id": 1, "x": 0, "y": 0, "orientation": "horizontal"},
+        json={"playerId": 1, "x": 0, "y": 0, "orientation": "horizontal"},
     )
     assert response.status_code == 403
     assert ERROR_GAME_OVER["error"] in response.text
@@ -214,11 +214,11 @@ def test_multiple_games_parallel():
 
     client.post(
         URL_PREFIX + f"/{game_id}/move",
-        json={"player_id": 1, "x": 0, "y": 0, "orientation": "horizontal"},
+        json={"playerId": 1, "x": 0, "y": 0, "orientation": "horizontal"},
     )
     client.post(
         URL_PREFIX + f"/{id2}/move",
-        json={"player_id": 1, "x": 1, "y": 1, "orientation": "horizontal"},
+        json={"playerId": 1, "x": 1, "y": 1, "orientation": "horizontal"},
     )
 
     state1 = client.get(URL_PREFIX + f"/{game_id}/state").json()["state"]

@@ -46,7 +46,7 @@ class TestDataGeneratorLogging:
         error_result = {
             "error": "Invalid placement reason.",
             "scores": {},
-            "currentPlayer": 1,
+            "current_player": 1,
         }
 
         def side_effect_make_move(*args, **kwargs):
@@ -55,11 +55,11 @@ class TestDataGeneratorLogging:
                 return error_result
             else:
                 mock_game.game_finished = True
-                return {"error": None, "scores": {}, "currentPlayer": 2}
+                return {"error": None, "scores": {}, "current_player": 2}
 
         side_effect_make_move.call_count = 1
         service.make_move.side_effect = side_effect_make_move
-        service.get_state.return_value = {"state": "before", "currentPlayer": 1}
+        service.get_state.return_value = {"state": "before", "current_player": 1}
 
         with caplog.at_level(logging.WARNING, logger=generator_logger.name):
             data_gen.simulate_game("test_game", bot1, bot2, log=True)

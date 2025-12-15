@@ -53,7 +53,7 @@ class DataGenerator:
             state_before = self.service.get_state(game_id=game_id)
 
             # Execute Move
-            current_player = state_before["currentPlayer"]
+            current_player = state_before["current_player"]
             result = self.service.make_move(
                 game_id=game_id,
                 player_id=current_player,
@@ -92,7 +92,7 @@ class DataGenerator:
             # Get Bot for next Turn (result always
             # contains the current player, no matter
             # if a box was closed or not)
-            next_player = result["currentPlayer"]
+            next_player = result["current_player"]
             current_bot = bot1 if next_player == 1 else bot2
         return state_list
 

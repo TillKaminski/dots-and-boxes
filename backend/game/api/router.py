@@ -7,7 +7,6 @@ from game.game_service import GameService
 from .response import GameResponse, MoveRequest, ServiceInfoResponse, NewGameRequest
 
 router = APIRouter(prefix="/v1/games", tags=["Games"])
-# service = GameService()
 
 
 def get_game_service():
@@ -133,7 +132,7 @@ def move(
     return response
 
 
-@router.post("/{game_id}/bot_move", response_model=GameResponse)
+@router.get("/{game_id}/bot_move", response_model=GameResponse)
 def bot_move(game_id: str, service: GameService = Depends(get_game_service)):
     """Get an Action performed by the chosen Bot.
 
@@ -171,7 +170,7 @@ def bot_move(game_id: str, service: GameService = Depends(get_game_service)):
     return response
 
 
-@router.post("/{game_id}/restart", response_model=GameResponse)
+@router.get("/{game_id}/restart", response_model=GameResponse)
 def restart_game(game_id: str, service: GameService = Depends(get_game_service)):
     """Restart Game with given Game-ID.
 

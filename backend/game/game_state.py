@@ -9,7 +9,7 @@ class GameState:
     """Defines the Structure of a Game State."""
 
     size: int
-    currentPlayer: int
+    current_player: int
     finished: bool
     scores: Dict[int, int]
     edges: Dict[str, List[List[int]]]

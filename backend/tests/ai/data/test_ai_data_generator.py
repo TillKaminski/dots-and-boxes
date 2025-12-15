@@ -89,7 +89,7 @@ def test_invalid_move_rejected_and_updated():
             mock_game.game_finished = True
             return {
                 "scores": {},
-                "currentPlayer": 2,
+                "current_player": 2,
             }
 
     side_effect_make_move.call_count = 0
