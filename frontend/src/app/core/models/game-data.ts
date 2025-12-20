@@ -1,5 +1,10 @@
 export type Orientation = 'horizontal' | 'vertical';
 
+export interface MetaModel {
+  gameId: string;
+  version: string;
+}
+
 export interface StatusInfo {
   'root-message': string;
   'api-version': string;
@@ -29,7 +34,24 @@ export interface MoveRequest {
   orientation: Orientation;
 }
 
+export interface BotMoveOutput {
+  x: number;
+  y: number;
+  orientation: Orientation;
+}
+
+export interface BotGameState {
+  move: BotMoveOutput;
+  state: GameState;
+}
+
 export interface NewGameRequest {
   startingPlayer: number;
   botModel: string;
+}
+
+export interface GameResponse {
+  meta: MetaModel;
+  state: GameState;
+  move?: BotMoveOutput;
 }

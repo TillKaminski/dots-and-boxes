@@ -8,12 +8,7 @@ const eslintPluginPrettier = require("eslint-plugin-prettier");
 
 module.exports = tseslint.config(
   {
-    ignores: [
-      "coverage/**",
-      "dist/**",
-      "node_modules/**",
-      "src/index.html",
-   ],
+    ignores: ["coverage/**", "dist/**", "node_modules/**", "src/index.html"],
   },
   {
     files: ["**/*.ts"],
