@@ -91,7 +91,7 @@ describe('GameService', () => {
 
       let receivedData: GameState | undefined;
 
-      service.create_new_game(gameId, newGameRequest).subscribe((data) => {
+      service.createNewGame(gameId, newGameRequest).subscribe((data) => {
         receivedData = data;
       });
       const URL = API_URL + '/games/new_game/test_game';
@@ -117,7 +117,7 @@ describe('GameService', () => {
       // Signal should be 'null'
       expect(service.state()).toBeNull();
 
-      service.create_new_game(gameId, newGameRequest).subscribe();
+      service.createNewGame(gameId, newGameRequest).subscribe();
 
       const req = httpTestingController.expectOne(
         `http://localhost:8000/v1/games/new_game/${gameId}`,
@@ -134,7 +134,7 @@ describe('GameService', () => {
 
       let receivedData: GameState | undefined;
 
-      service.restart_game(gameId).subscribe((data) => {
+      service.restartGame(gameId).subscribe((data) => {
         receivedData = data;
       });
 
@@ -155,7 +155,7 @@ describe('GameService', () => {
 
       let receivedData: GameState | undefined;
 
-      service.get_game_state(gameId).subscribe((data) => {
+      service.getGameState(gameId).subscribe((data) => {
         receivedData = data;
       });
 
@@ -184,7 +184,7 @@ describe('GameService', () => {
 
       let receivedData: GameState | undefined;
 
-      service.make_move(gameId, mockMove).subscribe((data) => {
+      service.makeMove(gameId, mockMove).subscribe((data) => {
         receivedData = data;
       });
 
@@ -218,7 +218,7 @@ describe('GameService', () => {
 
       expect(service.botMove()).toBeNull();
 
-      service.get_bot_move(gameId).subscribe((data) => {
+      service.getBotMove(gameId).subscribe((data) => {
         receivedData = data;
       });
 
@@ -257,7 +257,7 @@ describe('GameService', () => {
 
       let receivedError: HttpErrorResponse | undefined;
 
-      service.create_new_game(gameId, newGameRequest).subscribe({
+      service.createNewGame(gameId, newGameRequest).subscribe({
         next: () => {
           fail('Should not be called.');
         },
@@ -294,7 +294,7 @@ describe('GameService', () => {
 
     let receivedError: Error | undefined;
 
-    service.get_bot_move(gameId).subscribe({
+    service.getBotMove(gameId).subscribe({
       next: () => {
         fail('Should not be called.');
       },

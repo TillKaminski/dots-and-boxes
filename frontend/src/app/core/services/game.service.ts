@@ -26,16 +26,27 @@ export class GameService {
   readonly state = computed(() => this._gameState());
   readonly botMove = computed(() => this._lastBotMove());
 
+  /**
+   * Checks the API connection and returns server status information.
+   */
   checkStatus(): Observable<StatusInfo> {
     return this.http.get<StatusInfo>(`${API_BASE_URL}/`);
   }
 
+  /**
+   * Clears the current game state and bot move signals.
+   */
   resetData() {
     this._gameState.set(null);
     this._lastBotMove.set(null);
   }
 
-  create_new_game(
+  /**
+   * Creates a new game instance on the server and updates the local state.
+   * @param gameId Unique identifier for the game.
+   * @param newGameData Configuration for the new game.
+   */
+  createNewGame(
     gameId: string,
     newGameData: NewGameRequest,
   ): Observable<GameState> {
@@ -50,7 +61,11 @@ export class GameService {
       );
   }
 
-  restart_game(gameId: string): Observable<GameState> {
+  /**
+   * Resets the game with the given ID to its starting state.
+   * @param gameId Unique identifier for the game.
+   */
+  restartGame(gameId: string): Observable<GameState> {
     return this.http
       .get<GameResponse>(
         `${API_BASE_URL}/${API_VERSION}/games/${gameId}/restart`,
@@ -61,7 +76,11 @@ export class GameService {
       );
   }
 
-  get_game_state(gameId: string): Observable<GameState> {
+  /**
+   * Fetches the current state of a game from the server.
+   * @param gameId Unique identifier for the game.
+   */
+  getGameState(gameId: string): Observable<GameState> {
     return this.http
       .get<GameResponse>(`${API_BASE_URL}/${API_VERSION}/games/${gameId}/state`)
       .pipe(
@@ -70,7 +89,13 @@ export class GameService {
       );
   }
 
-  make_move(gameId: string, move: MoveRequest): Observable<GameState> {
+  /**
+   * Sends a player's move to the server and updates the local state.
+   * @param gameId Unique identifier for the game.
+   * @param move The coordinates and orientation of the line.
+   * @returns New game state for valid moves, error otherwise.
+   */
+  makeMove(gameId: string, move: MoveRequest): Observable<GameState> {
     return this.http
       .post<GameResponse>(
         `${API_BASE_URL}/${API_VERSION}/games/${gameId}/move`,
@@ -82,7 +107,12 @@ export class GameService {
       );
   }
 
-  get_bot_move(gameId: string): Observable<BotGameState> {
+  /**
+   * Requests a move from the AI bot and updates the local state and last bot move.
+   * @param gameId Unique identifier for the game.
+   * @throws Error if the server response does not contain move details.
+   */
+  getBotMove(gameId: string): Observable<BotGameState> {
     return this.http
       .get<GameResponse>(
         `${API_BASE_URL}/${API_VERSION}/games/${gameId}/bot_move`,
