@@ -1,1 +1,17 @@
+* text=auto
+
+# Backend
 *.py text eol=lf
+
+# Frontend
+*.ts text eol=lf
+*.js text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.scss text eol=lf
+*.json text eol=lf
+
+# Doc and Config
+*.md text eol=lf
+.prettierrc text eol=lf
+.eslintrc.json text eol=lf
