@@ -10,7 +10,7 @@ import { BoardComponent } from '../../components/board/board.component';
   styleUrl: './game-page.component.css',
 })
 export class GamePageComponent {
-  // Create a default GameState for CSS Styling Tasks
+  /** Mock state used for testing and CSS styling */
   gameState = signal<GameState>({
     size: 4,
     edges: {
@@ -39,6 +39,7 @@ export class GamePageComponent {
     finished: false,
   });
 
+  /** Receives move requests from the board */
   handleMove(event: MoveRequest) {
     console.log('Move requested:', event);
   }

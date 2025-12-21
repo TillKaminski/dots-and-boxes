@@ -13,9 +13,13 @@
 .player-1 {
   background-color: #0099ff;
   color: white;
+  border-radius: 10%;
+  border-style: double;
 }
 
 .player-2 {
   background-color: #ff1900;
   color: white;
+  border-radius: 10%;
+  border-style: double;
 }

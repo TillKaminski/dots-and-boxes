@@ -25,6 +25,10 @@ const API_VERSION = `${environment.apiVersion}`;
 @Injectable({
   providedIn: 'root',
 })
+/**
+ * Service for communication with the backend API.
+ * Manages game state, bot moves, and HTTP request status using Signals.
+ */
 export class GameService {
   private http = inject(HttpClient);
 
