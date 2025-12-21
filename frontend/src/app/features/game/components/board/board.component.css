@@ -9,3 +9,13 @@
   justify-content: center;
   overflow: hidden;
 }
+
+.player-1 {
+  background-color: #0099ff;
+  color: white;
+}
+
+.player-2 {
+  background-color: #ff1900;
+  color: white;
+}

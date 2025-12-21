@@ -32,4 +32,9 @@ export class BoardComponent {
       width: 'fit-content',
     };
   });
+
+  getPlayerClass(playerId: number | undefined): string {
+    if (!playerId || playerId === 0) return '';
+    return `player-${playerId}`;
+  }
 }
