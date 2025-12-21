@@ -15,10 +15,6 @@ export class AppComponent implements OnInit {
 
   private gameService = inject(GameService);
 
-  constructor() {
-    //
-  }
-
   ngOnInit(): void {
     this.gameService.checkStatus().subscribe({
       next: (data) => {
