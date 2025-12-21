@@ -9,13 +9,14 @@ on:
         default: 'Cleanup'
 
   workflow_run:
-    workflows: ["compose-cd.yml"]
+    workflows: ["📦 CD - Build, Push & Compose Release"]
     types: [completed]
     branches: [main]
 
 jobs:
   cleanup_backend:
     name: Backend Image Cleanup
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -33,6 +34,7 @@ jobs:
 
   cleanup_frontend:
     name: Frontend Image Cleanup
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     permissions:
       packages: write
