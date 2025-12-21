@@ -115,7 +115,7 @@ class GameResponse(CamelCaseBaseModel):
 
     move: Optional[BotMoveOutput] = Field(
         default=None,
-        description="The executed move details, present only for /bot_move."
+        description="The executed move details, present only for /bot_move.",
     )
 
 
