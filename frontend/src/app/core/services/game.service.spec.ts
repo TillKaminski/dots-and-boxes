@@ -15,15 +15,16 @@ import {
   StatusInfo,
 } from '../models/game-data';
 import { HttpErrorResponse } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 describe('GameService', () => {
   let service: GameService;
   let httpTestingController: HttpTestingController;
 
-  const API_BASE_URL = 'http://localhost:8000/';
-  const API_VERSION = 'v1';
+  const API_BASE_URL = `${environment.apiUrl}`;
+  const API_VERSION = `${environment.apiVersion}`;
 
-  const API_URL = API_BASE_URL + API_VERSION;
+  const API_URL = API_BASE_URL + '/' + API_VERSION;
 
   const mockGameState: GameState = {
     size: 4,
@@ -70,7 +71,7 @@ describe('GameService', () => {
         receivedData = data;
       });
 
-      const req = httpTestingController.expectOne(API_BASE_URL);
+      const req = httpTestingController.expectOne(API_BASE_URL + '/');
 
       expect(req.request.method).toEqual('GET');
       req.flush(mockStatus);
@@ -124,7 +125,7 @@ describe('GameService', () => {
       expect(service.dataStatus()).toEqual({ status: 'LOADING', error: null });
 
       const req = httpTestingController.expectOne(
-        `http://localhost:8000/v1/games/new_game/${gameId}`,
+        API_URL + `/games/new_game/${gameId}`,
       );
       req.flush(mockGameResponse);
 
@@ -145,7 +146,7 @@ describe('GameService', () => {
       });
 
       const req = httpTestingController.expectOne(
-        'http://localhost:8000/v1/games/test_game/restart',
+        API_URL + '/games/test_game/restart',
       );
       expect(req.request.method).toEqual('GET');
       req.flush(mockGameResponse);
@@ -166,7 +167,7 @@ describe('GameService', () => {
       });
 
       const req = httpTestingController.expectOne(
-        'http://localhost:8000/v1/games/test_game/state',
+        API_URL + '/games/test_game/state',
       );
 
       expect(req.request.method).toEqual('GET');
@@ -195,7 +196,7 @@ describe('GameService', () => {
       });
 
       const req = httpTestingController.expectOne(
-        'http://localhost:8000/v1/games/test_game/move',
+        API_URL + '/games/test_game/move',
       );
 
       expect(req.request.method).toEqual('POST');
@@ -229,7 +230,7 @@ describe('GameService', () => {
       });
 
       const req = httpTestingController.expectOne(
-        'http://localhost:8000/v1/games/test_game/bot_move',
+        API_URL + '/games/test_game/bot_move',
       );
 
       expect(req.request.method).toEqual('GET');
@@ -276,7 +277,7 @@ describe('GameService', () => {
       });
 
       const req = httpTestingController.expectOne(
-        'http://localhost:8000/v1/games/new_game/test_game',
+        API_URL + '/games/new_game/test_game',
       );
 
       req.flush(errorMessage, mockErrorResponse);
@@ -317,7 +318,7 @@ describe('GameService', () => {
     });
 
     const req = httpTestingController.expectOne(
-      'http://localhost:8000/v1/games/test_game/bot_move',
+      API_URL + '/games/test_game/bot_move',
     );
 
     expect(req.request.method).toEqual('GET');
