@@ -78,6 +78,7 @@ class NewGameRequest(CamelCaseBaseModel):
         examples=["random", "ffn-bot"],
     )
 
+
 class MoveRequest(CamelCaseBaseModel):
     """Input format for a player move action."""
 
@@ -92,6 +93,7 @@ class MoveRequest(CamelCaseBaseModel):
         description="Orientation of the edge: 'horizontal' or 'vertical'.",
         examples=["horizontal"],
     )
+
 
 class BotMoveOutput(CamelCaseBaseModel):
     """Output format for a bot move action, without player_id."""
@@ -110,11 +112,12 @@ class GameResponse(CamelCaseBaseModel):
 
     meta: MetaModel = Field(..., description="Meta information about the request.")
     state: StateModel = Field(..., description="Current game state.")
-    
+
     move: Optional[BotMoveOutput] = Field(
-        default=None, 
+        default=None,
         description="The executed move details, present only for /bot_move."
     )
+
 
 class ErrorResponse(CamelCaseBaseModel):
     """Error Response Format."""
@@ -125,6 +128,7 @@ class ErrorResponse(CamelCaseBaseModel):
         description="HTTP status code corresponding to the error.",
         examples=[400, 404, 409],
     )
+
 
 class ServiceInfoResponse(CamelCaseBaseModel):
     """Format for Health-Checks."""
