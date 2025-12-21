@@ -327,7 +327,7 @@ def test_game_state_to_json(create_test_board):
     # Check JSON-Fields
     assert "size" in json_state
     assert "finished" in json_state
-    assert "currentPlayer" in json_state
+    assert "current_player" in json_state
     assert "scores" in json_state
     assert "edges" in json_state
     assert "boxes" in json_state
@@ -338,7 +338,7 @@ def test_game_state_to_json(create_test_board):
     assert isinstance(json_state["boxes"], list)
 
     # Game State
-    assert json_state["currentPlayer"] in [1, 2]
+    assert json_state["current_player"] in [1, 2]
     assert sum(json_state["scores"].values()) == 0
     assert not json_state["finished"]
 

@@ -50,7 +50,7 @@ def test_initial_state(services):
     assert "boxes" in state
     assert state["scores"] == {1: 0, 2: 0}
     assert state["finished"] is False
-    assert state["currentPlayer"] == 1
+    assert state["current_player"] == 1
 
     # All Edges free
     assert all(val == 0 for row in state["edges"]["horizontal"] for val in row)
@@ -76,7 +76,7 @@ def test_make_move_changes_state(services):
 
     result = service.get_state(game_id)
 
-    assert result["currentPlayer"] == 2
+    assert result["current_player"] == 2
     assert result["edges"]["horizontal"][0][0] == 1
     assert result["edges"]["horizontal"][0][1] == 2
     assert result["edges"]["vertical"][0][0] == 1
@@ -94,7 +94,7 @@ def test_restart_game_resets_everything(services):
 
     new_state = service.restart_game(game_id)
 
-    assert new_state["currentPlayer"] == 1
+    assert new_state["current_player"] == 1
     assert new_state["scores"] == {1: 0, 2: 0}
     # Check Board is empty
     assert all(val == 0 for row in new_state["edges"]["horizontal"] for val in row)

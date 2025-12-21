@@ -117,7 +117,7 @@ class TestDataPreprocessor(unittest.TestCase):
             },
             "state_before": {
                 "size": 2,
-                "currentPlayer": 1,
+                "current_player": 1,
                 "finished": False,
                 "scores": {"1": 0, "2": 0},
                 "edges": {

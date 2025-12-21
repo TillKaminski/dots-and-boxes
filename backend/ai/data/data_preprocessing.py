@@ -32,12 +32,12 @@ class DataPreprocessor:
             horizontal_edges = np.array(state.edges["horizontal"]).flatten()
             vertical_edges = np.array(state.edges["vertical"]).flatten()
             boxes_raw = np.array(state.boxes).flatten()
-            current_player = state.currentPlayer
+            current_player = state.current_player
         else:
             horizontal_edges = np.array(state["edges"]["horizontal"]).flatten()
             vertical_edges = np.array(state["edges"]["vertical"]).flatten()
             boxes_raw = np.array(state["boxes"]).flatten()
-            current_player = state["currentPlayer"]
+            current_player = state["current_player"]
 
         horizontal_norm = self._normalize_edges(horizontal_edges)
         vertical_norm = self._normalize_edges(vertical_edges)

@@ -88,7 +88,7 @@ class GameBoard:
         """Create GameState-Object."""
         return GameState(
             size=self.size,
-            currentPlayer=self.current_player,
+            current_player=self.current_player,
             finished=self.game_finished,
             scores=self.scores.copy(),
             edges={

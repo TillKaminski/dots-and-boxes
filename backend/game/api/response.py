@@ -4,7 +4,27 @@ from pydantic import BaseModel, Field
 from typing import Dict, List, Optional
 
 
-class MetaModel(BaseModel):
+def to_camel_case(snake_str: str) -> str:
+    """Convert snake_case to camelCase."""
+    components = snake_str.split("_")
+    return components[0] + "".join(x.title() for x in components[1:])
+
+
+class CamelCaseBaseModel(BaseModel):
+    """Base model with configuration for automatic camelCase conversion.
+
+    All other API models should inherit from this class.
+    """
+
+    class Config:
+        """Pydantic configuration for camelCase serialization."""
+
+        alias_generator = to_camel_case
+        populate_by_name = True
+        by_alias = True
+
+
+class MetaModel(CamelCaseBaseModel):
     """Meta-Data Definition for API Responses."""
 
     game_id: str = Field(
@@ -19,7 +39,7 @@ class MetaModel(BaseModel):
     )
 
 
-class StateModel(BaseModel):
+class StateModel(CamelCaseBaseModel):
     """Game state returned by the Service Layer."""
 
     size: int = Field(..., description="Size of the game board.")
@@ -42,10 +62,10 @@ class StateModel(BaseModel):
         examples=[{"1": 2, "2": 1}],
     )
     finished: bool = Field(..., description="Whether the game is finished.")
-    currentPlayer: int = Field(..., description="ID of the player whose turn it is.")
+    current_player: int = Field(..., description="ID of the player whose turn it is.")
 
 
-class NewGameRequest(BaseModel):
+class NewGameRequest(CamelCaseBaseModel):
     """Input format for creating a new game, including optional bot data."""
 
     starting_player: Optional[int] = Field(
@@ -59,25 +79,7 @@ class NewGameRequest(BaseModel):
     )
 
 
-class GameResponse(BaseModel):
-    """Standard API Response Format."""
-
-    meta: MetaModel = Field(..., description="Meta information about the request.")
-    state: StateModel = Field(..., description="Current game state.")
-
-
-class ErrorResponse(BaseModel):
-    """Error Response Format."""
-
-    error: str = Field(..., description="Error message explaining what went wrong.")
-    code: Optional[int] = Field(
-        default=None,
-        description="HTTP status code corresponding to the error.",
-        examples=[400, 404, 409],
-    )
-
-
-class MoveRequest(BaseModel):
+class MoveRequest(CamelCaseBaseModel):
     """Input format for a player move action."""
 
     player_id: int = Field(
@@ -93,7 +95,42 @@ class MoveRequest(BaseModel):
     )
 
 
-class ServiceInfoResponse(BaseModel):
+class BotMoveOutput(CamelCaseBaseModel):
+    """Output format for a bot move action, without player_id."""
+
+    x: int = Field(..., description="X coordinate of the edge.", examples=[0])
+    y: int = Field(..., description="Y coordinate of the edge.", examples=[1])
+    orientation: str = Field(
+        ...,
+        description="Orientation of the edge: 'horizontal' or 'vertical'.",
+        examples=["horizontal"],
+    )
+
+
+class GameResponse(CamelCaseBaseModel):
+    """Standard API Response Format."""
+
+    meta: MetaModel = Field(..., description="Meta information about the request.")
+    state: StateModel = Field(..., description="Current game state.")
+
+    move: Optional[BotMoveOutput] = Field(
+        default=None,
+        description="The executed move details, present only for /bot_move.",
+    )
+
+
+class ErrorResponse(CamelCaseBaseModel):
+    """Error Response Format."""
+
+    error: str = Field(..., description="Error message explaining what went wrong.")
+    code: Optional[int] = Field(
+        default=None,
+        description="HTTP status code corresponding to the error.",
+        examples=[400, 404, 409],
+    )
+
+
+class ServiceInfoResponse(CamelCaseBaseModel):
     """Format for Health-Checks."""
 
     service: str
