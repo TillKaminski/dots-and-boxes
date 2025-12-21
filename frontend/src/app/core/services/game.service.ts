@@ -17,9 +17,10 @@ import {
   NewGameRequest,
   StatusInfo,
 } from '../models/game-data';
+import { environment } from '../../../environments/environment';
 
-const API_BASE_URL = 'http://localhost:8000';
-const API_VERSION = 'v1';
+const API_BASE_URL = `${environment.apiUrl}`;
+const API_VERSION = `${environment.apiVersion}`;
 
 @Injectable({
   providedIn: 'root',
