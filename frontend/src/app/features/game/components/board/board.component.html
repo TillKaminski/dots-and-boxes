@@ -1,0 +1,34 @@
+@if (state(); as s) {
+  <div class="board-container" [ngStyle]="gridStyle()">
+    @for (x of gridIndexes(); track x) {
+      <div style="display: contents">
+        @for (y of gridIndexes(); track y) {
+          <div class="dot">🔵</div>
+          @if (y < s.size) {
+            <div class="edge-h">
+              {{
+                s.edges.horizontal[x][y] !== 0 ? s.edges.horizontal[x][y] : "-"
+              }}
+            </div>
+          }
+        }
+      </div>
+
+      @if (x < s.size) {
+        <div style="display: contents">
+          @for (y of gridIndexes(); track y) {
+            <div class="edge-v">
+              {{ s.edges.vertical[x][y] !== 0 ? s.edges.vertical[x][y] : "|" }}
+            </div>
+
+            @if (y < s.size) {
+              <div class="box">
+                {{ s.boxes[x][y] !== 0 ? s.boxes[x][y] : "🟨" }}
+              </div>
+            }
+          }
+        </div>
+      }
+    }
+  </div>
+}
