@@ -107,7 +107,7 @@ describe('GameService', () => {
       expect(receivedData?.size).toBe(4);
     }));
 
-    it('should update the signal state when a new game is created', fakeAsync(() => {
+    it('should update the signal state and dataStatus when a new game is created', fakeAsync(() => {
       const gameId = 'test_game';
       const newGameRequest: NewGameRequest = {
         startingPlayer: 1,
@@ -116,15 +116,21 @@ describe('GameService', () => {
 
       // Signal should be 'null'
       expect(service.state()).toBeNull();
+      expect(service.dataStatus()).toEqual({ status: 'INITIAL', error: null });
 
       service.createNewGame(gameId, newGameRequest).subscribe();
+
+      // Data status should be 'LOADING' before flush
+      expect(service.dataStatus()).toEqual({ status: 'LOADING', error: null });
 
       const req = httpTestingController.expectOne(
         `http://localhost:8000/v1/games/new_game/${gameId}`,
       );
       req.flush(mockGameResponse);
+
       tick();
 
+      expect(service.dataStatus()).toEqual({ status: 'COMPLETE', error: null });
       expect(service.state()).toEqual(mockGameState);
       expect(service.state()?.size).toBe(4);
     }));
@@ -276,6 +282,10 @@ describe('GameService', () => {
       req.flush(errorMessage, mockErrorResponse);
 
       tick();
+
+      // Data status signal should be set
+      expect(service.dataStatus().status).toBe('ERROR');
+      expect(service.dataStatus().error).toBeDefined();
 
       expect(receivedError).toBeDefined();
       expect(receivedError!.status).toEqual(mockErrorResponse.status);

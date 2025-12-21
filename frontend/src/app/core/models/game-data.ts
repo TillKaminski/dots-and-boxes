@@ -55,3 +55,10 @@ export interface GameResponse {
   state: GameState;
   move?: BotMoveOutput;
 }
+
+export type RequestStatus = 'INITIAL' | 'LOADING' | 'COMPLETE' | 'ERROR';
+
+export interface DataRequestState {
+  status: RequestStatus;
+  error: string | null;
+}

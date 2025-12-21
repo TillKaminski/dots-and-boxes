@@ -1,9 +1,16 @@
 import { HttpClient } from '@angular/common/http';
-import { computed, inject, Injectable, signal } from '@angular/core';
-import { map, Observable, tap } from 'rxjs';
+import {
+  computed,
+  inject,
+  Injectable,
+  signal,
+  WritableSignal,
+} from '@angular/core';
+import { catchError, map, Observable, tap, throwError } from 'rxjs';
 import {
   BotGameState,
   BotMoveOutput,
+  DataRequestState,
   GameResponse,
   GameState,
   MoveRequest,
@@ -22,9 +29,14 @@ export class GameService {
 
   private _gameState = signal<GameState | null>(null);
   private _lastBotMove = signal<BotMoveOutput | null>(null);
+  private _dataState = signal<DataRequestState>({
+    status: 'INITIAL',
+    error: null,
+  });
 
   readonly state = computed(() => this._gameState());
   readonly botMove = computed(() => this._lastBotMove());
+  readonly dataStatus = computed(() => this._dataState());
 
   /**
    * Checks the API connection and returns server status information.
@@ -39,6 +51,27 @@ export class GameService {
   resetData() {
     this._gameState.set(null);
     this._lastBotMove.set(null);
+    this._dataState.set({ status: 'INITIAL', error: null });
+  }
+
+  /**
+   * Helper Function to track the state of an HTTP Request.
+   */
+  trackState<T>(statusSignal: WritableSignal<DataRequestState>) {
+    return (source: Observable<T>) => {
+      statusSignal.set({ status: 'LOADING', error: null });
+
+      return source.pipe(
+        tap(() => {
+          statusSignal.set({ status: 'COMPLETE', error: null });
+        }),
+        catchError((error) => {
+          const errorMessage = error.error?.detail || 'Error unknown.';
+          statusSignal.set({ status: 'ERROR', error: errorMessage });
+          return throwError(() => error);
+        }),
+      );
+    };
   }
 
   /**
@@ -56,6 +89,7 @@ export class GameService {
         newGameData,
       )
       .pipe(
+        this.trackState(this._dataState),
         tap((response) => this._gameState.set(response.state)),
         map((response) => response.state),
       );
@@ -71,6 +105,7 @@ export class GameService {
         `${API_BASE_URL}/${API_VERSION}/games/${gameId}/restart`,
       )
       .pipe(
+        this.trackState(this._dataState),
         tap((response) => this._gameState.set(response.state)),
         map((response) => response.state),
       );
@@ -84,6 +119,7 @@ export class GameService {
     return this.http
       .get<GameResponse>(`${API_BASE_URL}/${API_VERSION}/games/${gameId}/state`)
       .pipe(
+        this.trackState(this._dataState),
         tap((response) => this._gameState.set(response.state)),
         map((response) => response.state),
       );
@@ -102,6 +138,7 @@ export class GameService {
         move,
       )
       .pipe(
+        this.trackState(this._dataState),
         tap((response) => this._gameState.set(response.state)),
         map((response) => response.state),
       );
@@ -118,6 +155,8 @@ export class GameService {
         `${API_BASE_URL}/${API_VERSION}/games/${gameId}/bot_move`,
       )
       .pipe(
+        this.trackState(this._dataState),
+        // Transform data before Signal-update
         map((response) => {
           if (!response.move) {
             throw new Error("Response should contain 'move' details.");
