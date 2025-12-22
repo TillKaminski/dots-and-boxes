@@ -199,8 +199,14 @@ def restart_game(game_id: str, service: GameService = Depends(get_game_service))
 
 def _check_error_message(result):
     """Raises an HTTPException if the service returned an error."""
-    if "error" in result and result["error"]:
-        error_obj, status_code = get_error_response(result["error"])
+    error_val = None
+    if isinstance(result, dict):
+        error_val = result.get("error")
+    else:
+        error_val = getattr(result, "error", None)
+
+    if error_val:
+        error_obj, status_code = get_error_response(error_val)
         raise HTTPException(status_code=status_code, detail=error_obj["error"])
 
 

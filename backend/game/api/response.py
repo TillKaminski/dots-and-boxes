@@ -3,6 +3,8 @@
 from pydantic import BaseModel, Field
 from typing import Dict, List, Optional
 
+from game.game_board import Orientation
+
 
 def to_camel_case(snake_str: str) -> str:
     """Convert snake_case to camelCase."""
@@ -100,7 +102,7 @@ class BotMoveOutput(CamelCaseBaseModel):
 
     x: int = Field(..., description="X coordinate of the edge.", examples=[0])
     y: int = Field(..., description="Y coordinate of the edge.", examples=[1])
-    orientation: str = Field(
+    orientation: Orientation = Field(
         ...,
         description="Orientation of the edge: 'horizontal' or 'vertical'.",
         examples=["horizontal"],

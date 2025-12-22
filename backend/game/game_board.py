@@ -12,11 +12,11 @@ from .errors import (
 )
 
 
-class Orientation(Enum):
+class Orientation(str, Enum):
     """Enumeration to distinguish between Edge orientation."""
 
-    HORIZONTAL = auto()
-    VERTICAL = auto()
+    HORIZONTAL = "horizontal"
+    VERTICAL = "vertical"
 
 
 class GameBoard:
