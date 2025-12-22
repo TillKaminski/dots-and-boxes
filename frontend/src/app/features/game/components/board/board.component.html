@@ -1,35 +1,43 @@
 @if (state(); as s) {
   <div class="board-container" [ngStyle]="gridStyle()">
-    @for (x of gridIndexes(); track x) {
+    @for (y of gridIndexes(); track y) {
       <div style="display: contents">
-        @for (y of gridIndexes(); track y) {
+        @for (x of gridIndexes(); track x) {
           <div class="dot">🔵</div>
-          @if (y < s.size) {
+          @if (x < s.size) {
             <div
               class="edge-h"
-              [class]="getPlayerClass(s.edges.horizontal[x][y])"
+              [class]="getPlayerClass(s.edges.horizontal[y][x])"
+              role="button"
+              [tabindex]="s.edges.horizontal[y][x] === 0 ? 0 : -1"
+              (click)="onEdgeClick(x, y, 'horizontal')"
+              (keydown.enter)="onEdgeClick(x, y, 'horizontal')"
             >
               {{
-                s.edges.horizontal[x][y] !== 0 ? s.edges.horizontal[x][y] : "-"
+                s.edges.horizontal[y][x] !== 0 ? s.edges.horizontal[y][x] : "-"
               }}
             </div>
           }
         }
       </div>
 
-      @if (x < s.size) {
+      @if (y < s.size) {
         <div style="display: contents">
-          @for (y of gridIndexes(); track y) {
+          @for (x of gridIndexes(); track x) {
             <div
               class="edge-v"
-              [class]="getPlayerClass(s.edges.vertical[x][y])"
+              [class]="getPlayerClass(s.edges.vertical[y][x])"
+              role="button"
+              [tabindex]="s.edges.vertical[y][x] === 0 ? 0 : -1"
+              (click)="onEdgeClick(x, y, 'vertical')"
+              (keydown.enter)="onEdgeClick(x, y, 'vertical')"
             >
-              {{ s.edges.vertical[x][y] !== 0 ? s.edges.vertical[x][y] : "|" }}
+              {{ s.edges.vertical[y][x] !== 0 ? s.edges.vertical[y][x] : "|" }}
             </div>
 
-            @if (y < s.size) {
-              <div class="box" [class]="getPlayerClass(s.boxes[x][y])">
-                {{ s.boxes[x][y] !== 0 ? s.boxes[x][y] : "◻️" }}
+            @if (x < s.size) {
+              <div class="box" [class]="getPlayerClass(s.boxes[y][x])">
+                {{ s.boxes[y][x] !== 0 ? s.boxes[y][x] : "◻️" }}
               </div>
             }
           }
