@@ -1,4 +1,30 @@
 <div align="center" class="game-container">
   <h1>Dots and Boxes</h1>
-  <app-board [state]="gameState()" (makeMove)="handleMove($event)"></app-board>
+  <div class="game-info">
+    <div class="score-card player-1">
+      <span>Player 1: </span>
+      <strong>{{ gameState()?.scores?.["1"] || 0 }} </strong>
+    </div>
+    <div class="score-card player-1">
+      <span>Player 2: </span>
+      <strong>{{ gameState()?.scores?.["2"] || 0 }} </strong>
+    </div>
+    @if (isFinished()) {
+      <span>Game finished</span>
+    }
+    <h3>Player {{ gameState()?.currentPlayer }}'s Turn</h3>
+    <div class="bot-control">
+      <label>
+        <input type="checkbox" [(ngModel)]="autoBot" /> Enable Auto-Bot
+      </label>
+      @if (isBotThinking()) {
+        <span class="thinking-loader">Bot is thinking...</span>
+      }
+    </div>
+  </div>
+  <app-board
+    [state]="gameState()"
+    [localPlayerId]="localPlayerId()"
+    (makeMove)="handleMove($event)"
+  ></app-board>
 </div>
