@@ -4,9 +4,6 @@ import { GameState, MoveRequest } from '../../../../core/models/game-data';
 
 /**
  * Visualizes the Dots and Boxes game board using CSS Grid.
- * * Note: While the game uses (x, y) coordinates for moves, the internal
- * GameState arrays are indexed as [y][x] to ensure that elements are
- * rendered row-by-row correctly. (x=2, y=0) -> array[0][x]
  */
 @Component({
   selector: 'app-board',
@@ -18,6 +15,7 @@ import { GameState, MoveRequest } from '../../../../core/models/game-data';
 export class BoardComponent {
   /** Required input: The current state of the game from the backend */
   state = input.required<GameState | null>();
+  localPlayerId = input.required<number>();
   /** Output: Sends a move request when a user clicks an edge */
   makeMove = output<MoveRequest>();
 
@@ -57,16 +55,23 @@ export class BoardComponent {
     orientation: 'horizontal' | 'vertical',
   ): void {
     const currentState = this.state();
-    if (!currentState) return;
+    const localId = this.localPlayerId();
+    if (
+      !currentState ||
+      currentState.currentPlayer !== localId ||
+      currentState.finished
+    ) {
+      return;
+    }
 
     const isTaken =
       orientation === 'horizontal'
-        ? currentState.edges.horizontal[y][x] !== 0
-        : currentState.edges.vertical[y][x] !== 0;
+        ? currentState.edges.horizontal[x][y] !== 0
+        : currentState.edges.vertical[x][y] !== 0;
 
     if (!isTaken) {
       this.makeMove.emit({
-        playerId: currentState.currentPlayer,
+        playerId: localId,
         x,
         y,
         orientation,

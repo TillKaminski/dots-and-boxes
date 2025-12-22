@@ -10,7 +10,8 @@
   overflow: hidden;
 }
 
-.edge-h:focus, .edge-v:focus {
+.edge-h:focus,
+.edge-v:focus {
   outline: 2px solid #a3a3a3;
   outline-offset: 1px;
   z-index: 10;
