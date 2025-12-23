@@ -55,10 +55,10 @@ export class BoardComponent {
     orientation: 'horizontal' | 'vertical',
   ): void {
     const currentState = this.state();
-    const localId = this.localPlayerId();
+    const localPlayerId = this.localPlayerId();
     if (
       !currentState ||
-      currentState.currentPlayer !== localId ||
+      currentState.currentPlayer !== localPlayerId ||
       currentState.finished
     ) {
       return;
@@ -71,7 +71,7 @@ export class BoardComponent {
 
     if (!isTaken) {
       this.makeMove.emit({
-        playerId: localId,
+        playerId: localPlayerId,
         x,
         y,
         orientation,
