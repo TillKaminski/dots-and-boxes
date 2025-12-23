@@ -1,7 +1,7 @@
 """Class for Game Objects and Logic."""
 
 import numpy as np
-from enum import Enum, auto
+from enum import Enum
 
 from game.game_state import GameState
 from .errors import (
