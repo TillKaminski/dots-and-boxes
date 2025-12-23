@@ -1,3 +1,13 @@
+:host {
+  width: 350px;
+  margin: 0 auto;
+}
+
+.board-wrapper {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+}
+
 .dot,
 .edge-h,
 .edge-v,

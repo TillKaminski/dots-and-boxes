@@ -1,0 +1,12 @@
+<div class="game-info">
+  <h1>Scores:</h1>
+  <div class="score-card player-1" [class]="isCurrentPlayer(1)">
+    <span>Player 1: </span>
+    <strong>{{ gameState()?.scores?.["1"] || 0 }} </strong>
+  </div>
+  <div class="score-card player-1" [class]="isCurrentPlayer(2)">
+    <span>Player 2: </span>
+    <strong>{{ gameState()?.scores?.["2"] || 0 }} </strong>
+  </div>
+  <ng-content></ng-content>
+</div>
