@@ -47,6 +47,9 @@ class GameService:
         if board.current_player != player_id:
             return ERROR_NOT_YOUR_TURN
         board.move(x, y, orientation)
+        # TODO: Fix for Player vs. Player
+        if board.bot_model:
+            bot_service.update_possible_moves(game_id, x, y, orientation)
         return self.get_state(game_id)
 
     def make_bot_move(self, game_id: str):
@@ -65,6 +68,8 @@ class GameService:
 
         move = bot_service.get_move(game_id=game_id, game_state=current_state)
         board.move(move.x, move.y, move.orientation)
+
+        bot_service.update_possible_moves(game_id, move.x, move.y, move.orientation)
 
         return move
 

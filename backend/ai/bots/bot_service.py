@@ -5,6 +5,7 @@ from ai.bots.ffn_bot import FFNBot
 from ai.bots.move import Move
 from ai.bots.random_bot import RandomBot
 from ai.bots.rule_based_bot import RuleBasedBot
+from game.game_board import Orientation
 from game.game_state import GameState
 
 BOT_MODEL: dict[str, BasicBot] = {
@@ -51,6 +52,13 @@ class BotService:
             # Update current Game State
             bot_model.update_state(game_state)
         return bot_model.move()
+
+    def update_possible_moves(
+        self, game_id: str, x: int, y: int, orientation: Orientation
+    ):
+        """Updates possible Moves Array."""
+        bot_model = self.get_bot(game_id)
+        bot_model.update(x, y, orientation)
 
     def register_bot(self, game_id: str, size: int, bot_model: str):
         """Registers Bot Model by Game ID."""

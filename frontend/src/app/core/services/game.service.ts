@@ -38,10 +38,21 @@ export class GameService {
     status: 'INITIAL',
     error: null,
   });
+  private _localPlayerId = signal<number>(1); // Local Player always Id: 1
+  private _finished = signal<boolean>(false);
 
   readonly state = computed(() => this._gameState());
   readonly botMove = computed(() => this._lastBotMove());
   readonly dataStatus = computed(() => this._dataState());
+  readonly localPlayerId = computed(() => this._localPlayerId());
+  readonly isFinished = computed(() => this._finished());
+
+  /**
+   * Setter for Local Player Id.
+   */
+  setLocalPlayer(id: number) {
+    this._localPlayerId.set(id);
+  }
 
   /**
    * Checks the API connection and returns server status information.
@@ -57,6 +68,7 @@ export class GameService {
     this._gameState.set(null);
     this._lastBotMove.set(null);
     this._dataState.set({ status: 'INITIAL', error: null });
+    this._finished.set(false);
   }
 
   /**
@@ -144,7 +156,10 @@ export class GameService {
       )
       .pipe(
         this.trackState(this._dataState),
-        tap((response) => this._gameState.set(response.state)),
+        tap((response) => {
+          this._gameState.set(response.state);
+          this._finished.set(response.state.finished);
+        }),
         map((response) => response.state),
       );
   }
@@ -174,6 +189,7 @@ export class GameService {
         tap((response) => {
           this._gameState.set(response.state);
           this._lastBotMove.set(response.move);
+          this._finished.set(response.state.finished);
         }),
       );
   }

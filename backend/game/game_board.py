@@ -1,7 +1,7 @@
 """Class for Game Objects and Logic."""
 
 import numpy as np
-from enum import Enum, auto
+from enum import Enum
 
 from game.game_state import GameState
 from .errors import (
@@ -12,11 +12,11 @@ from .errors import (
 )
 
 
-class Orientation(Enum):
+class Orientation(str, Enum):
     """Enumeration to distinguish between Edge orientation."""
 
-    HORIZONTAL = auto()
-    VERTICAL = auto()
+    HORIZONTAL = "horizontal"
+    VERTICAL = "vertical"
 
 
 class GameBoard:

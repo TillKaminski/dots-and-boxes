@@ -22,7 +22,7 @@ URL_PREFIX = "/v1/games"
 def setup_game():
     """Creates a new Game-Service Object with 2x2 Board."""
     if game_id not in service.games:
-        service.create_game(game_id=game_id, size=2)
+        service.create_game(game_id=game_id, size=2, bot_model="random")
     else:
         service.restart_game(game_id=game_id)
     print(service.games)

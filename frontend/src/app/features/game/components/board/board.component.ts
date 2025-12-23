@@ -2,6 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, input, output } from '@angular/core';
 import { GameState, MoveRequest } from '../../../../core/models/game-data';
 
+/**
+ * Visualizes the Dots and Boxes game board using CSS Grid.
+ */
 @Component({
   selector: 'app-board',
   standalone: true,
@@ -9,12 +12,10 @@ import { GameState, MoveRequest } from '../../../../core/models/game-data';
   templateUrl: './board.component.html',
   styleUrl: './board.component.css',
 })
-/**
- * Visualizes the Dots and Boxes game board using CSS Grid.
- */
 export class BoardComponent {
   /** Required input: The current state of the game from the backend */
   state = input.required<GameState | null>();
+  localPlayerId = input.required<number>();
   /** Output: Sends a move request when a user clicks an edge */
   makeMove = output<MoveRequest>();
 
@@ -43,5 +44,38 @@ export class BoardComponent {
   getPlayerClass(playerId: number | undefined): string {
     if (!playerId || playerId === 0) return '';
     return `player-${playerId}`;
+  }
+
+  /**
+   * Handles edge clicks. Checks if edge is already taken.
+   */
+  onEdgeClick(
+    x: number,
+    y: number,
+    orientation: 'horizontal' | 'vertical',
+  ): void {
+    const currentState = this.state();
+    const localPlayerId = this.localPlayerId();
+    if (
+      !currentState ||
+      currentState.currentPlayer !== localPlayerId ||
+      currentState.finished
+    ) {
+      return;
+    }
+
+    const isTaken =
+      orientation === 'horizontal'
+        ? currentState.edges.horizontal[x][y] !== 0
+        : currentState.edges.vertical[x][y] !== 0;
+
+    if (!isTaken) {
+      this.makeMove.emit({
+        playerId: localPlayerId,
+        x,
+        y,
+        orientation,
+      });
+    }
   }
 }
