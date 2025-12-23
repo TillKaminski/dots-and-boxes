@@ -40,12 +40,15 @@ export class GameService {
   });
   private _localPlayerId = signal<number>(1); // Local Player always Id: 1
   private _finished = signal<boolean>(false);
+  private _botModel = signal<string>('rule');
 
   readonly state = computed(() => this._gameState());
   readonly botMove = computed(() => this._lastBotMove());
   readonly dataStatus = computed(() => this._dataState());
   readonly localPlayerId = computed(() => this._localPlayerId());
-  readonly isFinished = computed(() => this._finished());
+  readonly isFinished = computed(() => this._gameState()?.finished ?? false);
+
+  readonly botModel = computed(() => this._botModel());
 
   /**
    * Setter for Local Player Id.
