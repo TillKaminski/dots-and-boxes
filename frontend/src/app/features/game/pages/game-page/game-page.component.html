@@ -1,30 +1,118 @@
-<div align="center" class="game-container">
-  <h1>Dots and Boxes</h1>
-  <div class="game-info">
-    <div class="score-card player-1">
-      <span>Player 1: </span>
-      <strong>{{ gameState()?.scores?.["1"] || 0 }} </strong>
-    </div>
-    <div class="score-card player-1">
-      <span>Player 2: </span>
-      <strong>{{ gameState()?.scores?.["2"] || 0 }} </strong>
-    </div>
-    @if (isFinished()) {
-      <span>Game finished</span>
+<div class="game-page">
+  <app-header
+    (settingsRequest)="showSettings.set(true)"
+    (helpRequest)="showHelp.set(true)"
+  ></app-header>
+
+  <div class="message-bar">
+    @if (errorMessage()) {
+      <div class="alert error">{{ errorMessage() }}</div>
+    } @else if (isFinished()) {
+      <div class="alert success">{{ winner() }}</div>
+    } @else if (isBotThinking()) {
+      <div class="alert info">🤖 Bot is thinking...</div>
     }
-    <h3>Player {{ gameState()?.currentPlayer }}'s Turn</h3>
-    <div class="bot-control">
-      <label>
-        <input type="checkbox" [(ngModel)]="autoBot" /> Enable Auto-Bot
-      </label>
-      @if (isBotThinking()) {
-        <span class="thinking-loader">Bot is thinking...</span>
-      }
+  </div>
+  <div class="game-container">
+    <main class="board-container">
+      <app-board
+        [state]="gameState()"
+        [localPlayerId]="localPlayerId()"
+        (makeMove)="handleMove($event)"
+      ></app-board>
+    </main>
+
+    <aside class="sidebar">
+      <app-status
+        [gameState]="gameState()"
+        [isFinished]="isFinished()"
+        [isBotThinking]="isBotThinking()"
+      ></app-status>
+      <div class="sidebar-actions">
+        @if (!isFinished()) {
+          <button class="btn-action" (click)="makeRandomMove()">
+            Random Move
+          </button>
+        } @else {
+          <button class="btn-action restart" (click)="restartGame()">
+            Restart Game
+          </button>
+        }
+      </div>
+    </aside>
+  </div>
+</div>
+
+@if (showSettings()) {
+  <div
+    class="modal-overlay"
+    role="button"
+    tabindex="0"
+    (click)="showSettings.set(false)"
+    (keydown.enter)="showSettings.set(false)"
+    aria-label="Close settings"
+  >
+    <div
+      class="modal-content"
+      (click)="$event.stopPropagation()"
+      (keydown.enter)="$event.stopPropagation()"
+      role="dialog"
+      aria-modal="true"
+    >
+      <h2>Game Settings</h2>
+
+      <div class="settings-grid">
+        <label for="speedRange">Bot Speed: {{ botSpeed() }}ms</label>
+        <input
+          id="speedRange"
+          type="range"
+          min="200"
+          max="3000"
+          step="200"
+          [(ngModel)]="botSpeed"
+        />
+
+        <label for="autoBotCheck">Bot Auto-Play</label>
+        <input id="autoBotCheck" type="checkbox" [(ngModel)]="autoBot" />
+      </div>
+      <div class="setting-buttons">
+        <button type="button" class="btn-secondary" (click)="restartGame()">
+          Restart
+        </button>
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="showSettings.set(false)"
+        >
+          Close
+        </button>
+      </div>
     </div>
   </div>
-  <app-board
-    [state]="gameState()"
-    [localPlayerId]="localPlayerId()"
-    (makeMove)="handleMove($event)"
-  ></app-board>
-</div>
+}
+
+@if (showHelp()) {
+  <div
+    class="modal-overlay"
+    role="button"
+    tabindex="0"
+    (click)="showHelp.set(false)"
+    (keydown.enter)="showHelp.set(false)"
+    aria-label="Close help"
+  >
+    <div
+      class="modal-content"
+      (click)="$event.stopPropagation()"
+      (keydown.enter)="$event.stopPropagation()"
+      role="alertdialog"
+      aria-modal="true"
+    >
+      <h2>How to play</h2>
+      <p>Connect the dots! Completing a box gives you a point...</p>
+
+      <button type="button" class="btn-primary" (click)="showHelp.set(false)">
+        Got it!
+      </button>
+    </div>
+  </div>
+}

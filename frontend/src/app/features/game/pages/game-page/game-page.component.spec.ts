@@ -18,6 +18,9 @@ describe('GamePageComponent', () => {
   let fixture: ComponentFixture<GamePageComponent>;
   let mockGameService: GameService;
 
+  const mockState = signal<GameState | null>(null);
+  const mockIsFinished = signal(false);
+
   beforeEach(async () => {
     const mockValue = {
       state: signal({
@@ -30,6 +33,7 @@ describe('GamePageComponent', () => {
       }),
       localPlayerId: signal(1),
       isFinished: signal(false),
+      botModel: signal('random'),
       createNewGame: jest.fn().mockReturnValue(of({ success: true })),
       restartGame: jest.fn().mockReturnValue(of({ success: true })),
       getBotMove: jest.fn().mockReturnValue(of({ success: true })),
@@ -57,7 +61,7 @@ describe('GamePageComponent', () => {
   it('should create and initialize game on start', () => {
     fixture.detectChanges();
     expect(mockGameService.createNewGame).toHaveBeenCalledWith(
-      'mock-game',
+      'initial-game',
       expect.any(Object),
     );
   });
@@ -95,4 +99,33 @@ describe('GamePageComponent', () => {
     tick(800);
     expect(mockGameService.getBotMove).not.toHaveBeenCalled();
   }));
+
+  it('should open settings and close them on restart', () => {
+    component.showSettings.set(true);
+
+    component.restartGame();
+
+    expect(mockGameService.restartGame).toHaveBeenCalled();
+    expect(component.showSettings()).toBe(false);
+  });
+
+  it('should not allow random move if game is finished', () => {
+    const handleMoveSpy = jest.spyOn(component, 'handleMove');
+    mockIsFinished.set(true);
+    mockState.set({
+      finished: true,
+      size: 0,
+      edges: {
+        horizontal: [],
+        vertical: [],
+      },
+      boxes: [],
+      scores: { '1': 0, '2': 0 },
+      currentPlayer: 0,
+    });
+
+    component.makeRandomMove();
+
+    expect(handleMoveSpy).not.toHaveBeenCalled();
+  });
 });
