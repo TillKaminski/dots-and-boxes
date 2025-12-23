@@ -1,0 +1,27 @@
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #ddd;
+  height: 60px;
+
+  .game-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #991a1a;
+  }
+
+  .icon-button {
+    background: none;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover { background-color: #e9ecef; }
+    .icon { font-size: 1.2rem; }
+  }
+}
