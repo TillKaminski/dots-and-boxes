@@ -32,8 +32,9 @@
   padding: 2rem;
   z-index: 1;
 
-  &::before, &::after {
-    content: '';
+  &::before,
+  &::after {
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
@@ -60,7 +61,7 @@
   flex-direction: column;
   position: relative;
   width: fit-content;
-  height: auto; 
+  height: auto;
   align-self: start;
   /* background-color: #b1d8ff; */
   /* border: 1px solid rgba(0,0,0,0.1); */
@@ -68,8 +69,9 @@
   padding: 1rem;
   z-index: 1;
 
-  &::before, &::after {
-    content: '';
+  &::before,
+  &::after {
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
@@ -91,11 +93,11 @@
   }
 
   .sidebar-actions {
-  margin-top: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .btn-action {
@@ -107,19 +109,28 @@
     color: white;
     cursor: pointer;
     font-weight: bold;
-    transition: transform 0.1s, background 0.2s;
+    transition:
+      transform 0.1s,
+      background 0.2s;
 
-    &:hover { background-color: #2563eb; }
-    &:active { transform: scale(0.98); }
-    &.restart { background-color: #10b981; }
+    &:hover {
+      background-color: #2563eb;
+    }
+    &:active {
+      transform: scale(0.98);
+    }
+    &.restart {
+      background-color: #10b981;
+    }
   }
-
 }
 
 .modal-overlay {
   position: fixed;
-  top: 0; left: 0;
-  width: 100vw; height: 100vh;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
@@ -135,7 +146,7 @@
   padding: 2rem;
   border-radius: 12px;
   min-width: 300px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
 .settings-grid {
