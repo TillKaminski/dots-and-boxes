@@ -1,15 +1,17 @@
 <header class="game-header">
   <div class="header-left">
-    <button (click)="openHelp()" class="icon-button" aria-label="Help">
-      <span class="icon">❓</span>
+    <button (click)="openHelp()" class="help" aria-label="Help">
+      <span>?</span>
     </button>
   </div>
 
   <h1 class="game-title">Dots and Boxes</h1>
 
   <div class="header-right">
-    <button (click)="openSettings()" class="icon-button" aria-label="Settings">
-      <span class="icon">⚙️</span>
+    <button class="menu" (click)="openSettings()" aria-label="Settings">
+      <span></span>
+      <span></span>
+      <span></span>
     </button>
   </div>
 </header>

@@ -1,12 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
+
 :root {
-  --app-bg: #157a3f;
+  --app-bg: #1E1C25;
   --panel-bg: #ffffff;
   --primary-color: #3b82f6;
+  --font-action: 'Bangers', system-ui;
 }
 
 body {
   margin: 0;
   padding: 0;
   background-color: var(--app-bg);
-  font-family: "Inter", sans-serif;
+  background-color: linear-gradient(#1B0D93, 50%);
+  /* font-family: "Bangers", sans-serif; */
+  font-family: Bangers;
+  letter-spacing: 5px;
 }

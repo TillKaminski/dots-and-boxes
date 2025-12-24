@@ -9,6 +9,9 @@
   justify-content: center;
   align-items: center;
   margin-bottom: 1rem;
+  font-size: 25px;
+  color: #E9B934;
+  stroke: #455527;
 }
 
 .game-container {
@@ -46,12 +49,12 @@
   }
 
   &::before {
-    background-color: rgba(177, 216, 255, 0.4);
+    background-color: rgba(177, 216, 255, 5%);
     transform: rotate(-3deg);
   }
 
   &::after {
-    background-color: rgba(177, 216, 255, 0.4);
+    background-color: rgba(177, 216, 255, 5%);
     transform: rotate(3deg);
   }
 }
@@ -63,6 +66,9 @@
   width: fit-content;
   height: auto;
   align-self: start;
+  color: #E9B934;
+  stroke: #455527;
+  stroke-opacity: 25%;
   /* background-color: #b1d8ff; */
   /* border: 1px solid rgba(0,0,0,0.1); */
   /* border-radius: 20px; */
@@ -83,12 +89,12 @@
   }
 
   &::before {
-    background-color: rgba(177, 216, 255, 0.4);
+    background-color: rgba(177, 216, 255, 5%);
     transform: rotate(-3deg);
   }
 
   &::after {
-    background-color: rgba(177, 216, 255, 0.4);
+    background-color: rgba(177, 216, 255, 5%);
     transform: rotate(3deg);
   }
 
@@ -105,10 +111,12 @@
     padding: 1rem;
     border: none;
     border-radius: 12px;
-    background-color: #3b82f6;
-    color: white;
+    background-color: rgba(0, 0, 0, 0.1);
     cursor: pointer;
-    font-weight: bold;
+    font-family: Bangers;
+    font-size: 20px;
+    color: #E9B934;
+    stroke: #455527;
     transition:
       transform 0.1s,
       background 0.2s;
@@ -132,6 +140,9 @@
   width: 100vw;
   height: 100vh;
   background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  color: #E9B934;
+  stroke: #455527;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -142,7 +153,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: rgb(168, 94, 94);
+  background-color: rgba(177, 216, 255, 25%);
   padding: 2rem;
   border-radius: 12px;
   min-width: 300px;
@@ -160,7 +171,8 @@
 
 label {
   font-weight: 500;
-  color: #333;
+  color: #E9B934;
+  stroke: #455527;
 }
 
 input[type="range"] {
@@ -181,6 +193,33 @@ select {
   border: 1px solid #ccc;
   background: white;
   width: 100%;
+}
+
+.btn-primary, 
+.btn-secondary {
+  width: 70%;
+  padding: 1rem;
+  border: none;
+  border-radius: 12px;
+  background-color: rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  font-family: Bangers;
+  font-size: 20px;
+  color: #E9B934;
+  stroke: #455527;
+  transition:
+    transform 0.1s,
+    background 0.2s;
+
+  &:hover {
+    background-color: #2563eb;
+  }
+  &:active {
+    transform: scale(0.98);
+  }
+  &.restart {
+    background-color: #10b981;
+  }
 }
 
 .setting-buttons {

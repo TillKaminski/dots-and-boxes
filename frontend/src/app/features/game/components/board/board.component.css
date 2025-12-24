@@ -1,5 +1,5 @@
 :host {
-  width: 350px;
+  width: 420px;
   margin: 0 auto;
 }
 
@@ -13,30 +13,85 @@
 .edge-v,
 .box {
   margin: 0;
-  padding: 0;
+  padding: 9px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
 }
 
+.dot {
+  width: 8px;
+  height: 8px;
+  background-color: #319CC9;
+  border: 1.5px solid #14475D;
+  box-shadow: inset 4px 1px 2px rgba(0, 0, 0, 0.25);
+  border-radius: 50%;
+}
+
+.edge-h {
+  width: 58px;
+  height: 1px;
+  background-color: #D9D9D9;
+  box-shadow: inset 4px 1px 2px rgba(0, 0, 0, 0.25);
+  border-radius: 999px;
+
+  &:hover {
+    cursor: pointer;
+    background-color: #E9B934;
+  }
+}
+
+.edge-v {
+  width: 1px;
+  height: 58px;
+  background-color: #D9D9D9;
+  box-shadow: inset 4px 1px 2px rgba(0, 0, 0, 0.25);
+  /* box-shadow: inset 25px 25px rgba(0, 0, 0, 0.25); */
+  border-radius: 999px;
+
+  &:hover {
+    cursor: pointer;
+    background-color: #E9B934;
+  }
+}
+
+.box {
+  width: 50px;
+  height: 50px;
+  background-color: none;
+  box-shadow: inset 4px 1px 2px rgba(0, 0, 0, 0.25);
+  border-radius: 10%;
+}
+
+/*
 .edge-h:focus,
 .edge-v:focus {
   outline: 2px solid #a3a3a3;
   outline-offset: 1px;
   z-index: 10;
 }
+  */
 
 .player-1 {
-  background-color: #0099ff;
-  color: white;
-  border-radius: 10%;
-  border-style: double;
+  background-color: #28E360;
+  border: 1.5px solid #1DAA47;
+  box-shadow: 4px 1px 2px rgba(0, 0, 0, 0.25), inset 4px 1px 2px rgba(255, 255, 255, 0.25);
+
+
+  &:hover {
+    cursor: pointer;
+    background-color: #28E360;
+  }
 }
 
 .player-2 {
-  background-color: #ff1900;
-  color: white;
-  border-radius: 10%;
-  border-style: double;
+  background-color: #A632F3;
+  border: 1.5px solid #7304BD;
+  box-shadow: 4px 1px 2px rgba(0, 0, 0, 0.25), inset 4px 1px 2px rgba(255, 255, 255, 0.25);
+
+  &:hover {
+    cursor: pointer;
+    background-color: #A632F3;
+  }
 }
