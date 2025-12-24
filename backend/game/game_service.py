@@ -42,6 +42,8 @@ class GameService:
     ):
         """Handle Move-Logic."""
         board = self._get_game(game_id)
+        if isinstance(board, dict):
+            return board
         if board.is_game_over() or board.game_finished:
             return ERROR_GAME_OVER
         if board.current_player != player_id:
@@ -55,6 +57,8 @@ class GameService:
     def make_bot_move(self, game_id: str):
         """Redirects Request to BotService to perform a Bot Move."""
         board = self._get_game(game_id)
+        if isinstance(board, dict):
+            return board
         bot_model_name = board.bot_model
         if bot_model_name is None:
             return ERROR_BOT_NOT_SET
@@ -82,12 +86,17 @@ class GameService:
 
     def get_state_object(self, game_id: str):
         """Return Game-State Object."""
-        game: GameBoard = self._get_game(game_id)
+        game = self._get_game(game_id)
+        if isinstance(game, dict):
+            return game
         return game.get_state_object()
 
     def restart_game(self, game_id: str):
         """Restart current Game-Session."""
         board = self._get_game(game_id)
+        # Check for error
+        if isinstance(board, dict):
+            return board
         if isinstance(board, GameBoard):
             size = board.size
             bot = board.bot_model
