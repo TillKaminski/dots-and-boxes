@@ -7,12 +7,33 @@
   --font-action: 'Bangers', system-ui;
 }
 
+:focus-visible {
+  outline: 2px solid #E9B934; 
+  outline-offset: 1px;
+  z-index: 99;
+}
+
+:focus {
+  outline: 2px solid #E9B934;
+  outline-offset: 2px;
+}
+
 body {
   margin: 0;
   padding: 0;
   background-color: var(--app-bg);
-  background-color: linear-gradient(#1B0D93, 50%);
-  /* font-family: "Bangers", sans-serif; */
-  font-family: Bangers;
+  /* background: linear-gradient(#0b063d, #000000); */
+  /* background: linear-gradient(
+    to bottom, 
+    #000000 0%, 
+    #0b063d 50%, 
+    #000000 100%
+  );
+  */
+  background: radial-gradient(circle, #000000 0%, #0b063d 100%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+  font-family: "Bangers";
   letter-spacing: 5px;
 }

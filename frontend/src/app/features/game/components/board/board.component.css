@@ -1,4 +1,5 @@
 :host {
+  display: block;
   width: 420px;
   margin: 0 auto;
 }
@@ -25,15 +26,21 @@
   height: 8px;
   background-color: #319CC9;
   border: 1.5px solid #14475D;
-  box-shadow: inset 4px 1px 2px rgba(0, 0, 0, 0.25);
   border-radius: 50%;
+  margin: auto;
+  box-shadow: inset 4px 4px 2px rgba(0, 0, 0, 0.25);
+  z-index: 2;
 }
 
 .edge-h {
-  width: 58px;
+  width: 66%;
   height: 1px;
   background-color: #D9D9D9;
-  box-shadow: inset 4px 1px 2px rgba(0, 0, 0, 0.25);
+  border: 1.5px solid transparent;
+  background-clip: padding-box;
+  margin: auto 0;
+  transition: all 0.2s ease;
+  box-shadow: inset 4px 4px 2px rgba(0, 0, 0, 0.25);
   border-radius: 999px;
 
   &:hover {
@@ -44,10 +51,13 @@
 
 .edge-v {
   width: 1px;
-  height: 58px;
+  height: 66%;
   background-color: #D9D9D9;
-  box-shadow: inset 4px 1px 2px rgba(0, 0, 0, 0.25);
-  /* box-shadow: inset 25px 25px rgba(0, 0, 0, 0.25); */
+  border: 1.5px solid transparent;
+  background-clip: padding-box;
+  margin: 0 auto;
+  transition: all 0.2s ease;
+  box-shadow: inset 4px 4px 2px rgba(0, 0, 0, 0.25);
   border-radius: 999px;
 
   &:hover {
@@ -57,41 +67,54 @@
 }
 
 .box {
-  width: 50px;
-  height: 50px;
+  width: 66%;
+  height: 66%;
   background-color: none;
-  box-shadow: inset 4px 1px 2px rgba(0, 0, 0, 0.25);
+  border: 1.5px solid transparent;
+  box-shadow: inset 4px 4px 2px rgba(0, 0, 0, 0.25);
   border-radius: 10%;
 }
-
-/*
-.edge-h:focus,
-.edge-v:focus {
-  outline: 2px solid #a3a3a3;
-  outline-offset: 1px;
-  z-index: 10;
-}
-  */
 
 .player-1 {
   background-color: #28E360;
   border: 1.5px solid #1DAA47;
-  box-shadow: 4px 1px 2px rgba(0, 0, 0, 0.25), inset 4px 1px 2px rgba(255, 255, 255, 0.25);
-
+  box-shadow: 4px 4px 2px rgba(0, 0, 0, 0.25), inset 4px 4px 2px rgba(255, 255, 255, 0.25), inset -2px -2px 1px rgba(0, 0, 0, 0.25);
 
   &:hover {
-    cursor: pointer;
+    cursor: default;
     background-color: #28E360;
+  }
+
+  &:focus-visible {
+    outline: none; 
+    outline-offset: none;
+    z-index: 0;
+  }
+
+  &:focus {
+    outline: none;
+    outline-offset: none;
   }
 }
 
 .player-2 {
   background-color: #A632F3;
   border: 1.5px solid #7304BD;
-  box-shadow: 4px 1px 2px rgba(0, 0, 0, 0.25), inset 4px 1px 2px rgba(255, 255, 255, 0.25);
+  box-shadow: 4px 4px 2px rgba(0, 0, 0, 0.25), inset 4px 4px 2px rgba(255, 255, 255, 0.25), inset -2px -2px 1px rgba(0, 0, 0, 0.25);
 
   &:hover {
-    cursor: pointer;
+    cursor: default;
     background-color: #A632F3;
+  }
+
+  &:focus-visible {
+    outline: none; 
+    outline-offset: none;
+    z-index: 0;
+  }
+
+  &:focus {
+    outline: none;
+    outline-offset: none;
   }
 }
