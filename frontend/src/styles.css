@@ -1,20 +1,20 @@
-@import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Bangers&display=swap");
 
 :root {
-  --app-bg: #1E1C25;
+  --app-bg: #1e1c25;
   --panel-bg: #ffffff;
   --primary-color: #3b82f6;
-  --font-action: 'Bangers', system-ui;
+  --font-action: "Bangers", system-ui;
 }
 
 :focus-visible {
-  outline: 2px solid #E9B934; 
+  outline: 2px solid #e9b934;
   outline-offset: 1px;
   z-index: 99;
 }
 
 :focus {
-  outline: 2px solid #E9B934;
+  outline: 2px solid #e9b934;
   outline-offset: 2px;
 }
 

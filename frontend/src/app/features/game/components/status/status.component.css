@@ -11,7 +11,7 @@
 
 .score-card {
   padding: 1.5rem;
-  border: 2px solid #5D5D5D;
+  border: 2px solid #5d5d5d;
   border-radius: 12px;
   text-align: center;
   display: flex;
@@ -31,13 +31,13 @@
 }
 
 .score-card.player-1 {
-  color: #28E360;
-  stroke: #1DAA47;
+  color: #28e360;
+  stroke: #1daa47;
 }
 
 .score-card.player-2 {
-  color: #A632F3;
-  stroke: #7304BD;
+  color: #a632f3;
+  stroke: #7304bd;
 }
 
 .winner-display {

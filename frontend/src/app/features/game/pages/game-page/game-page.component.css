@@ -5,7 +5,7 @@
   align-items: center;
   margin-bottom: 1rem;
   font-size: 25px;
-  color: #E9B934;
+  color: #e9b934;
   stroke: #455527;
 }
 
@@ -59,7 +59,7 @@
   width: fit-content;
   height: auto;
   align-self: start;
-  color: #E9B934;
+  color: #e9b934;
   stroke: #455527;
   stroke-opacity: 25%;
   padding: 1rem;
@@ -105,7 +105,7 @@
     cursor: pointer;
     font-family: Bangers;
     font-size: 20px;
-    color: #E9B934;
+    color: #e9b934;
     stroke: #455527;
     transition:
       transform 0.1s,
@@ -131,7 +131,7 @@
   height: 100vh;
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(10px);
-  color: #E9B934;
+  color: #e9b934;
   stroke: #455527;
   display: flex;
   justify-content: center;
@@ -162,7 +162,7 @@
 
 label {
   font-weight: 500;
-  color: #E9B934;
+  color: #e9b934;
   stroke: #455527;
 }
 
@@ -186,7 +186,7 @@ select {
   width: 100%;
 }
 
-.btn-primary, 
+.btn-primary,
 .btn-secondary {
   width: 70%;
   padding: 1rem;
@@ -196,7 +196,7 @@ select {
   cursor: pointer;
   font-family: "Bangers";
   font-size: 20px;
-  color: #E9B934;
+  color: #e9b934;
   stroke: #455527;
   transition:
     transform 0.1s,
