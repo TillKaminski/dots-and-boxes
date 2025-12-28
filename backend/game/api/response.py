@@ -81,6 +81,14 @@ class NewGameRequest(CamelCaseBaseModel):
     )
 
 
+class RestartGameRequest(CamelCaseBaseModel):
+    """Input format for restarting a game, including starting player."""
+
+    starting_player: Optional[int] = Field(
+        default=1, description="Choose the starting player.", examples=[1, 2]
+    )
+
+
 class MoveRequest(CamelCaseBaseModel):
     """Input format for a player move action."""
 

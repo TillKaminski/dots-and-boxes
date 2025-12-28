@@ -91,7 +91,7 @@ class GameService:
             return game
         return game.get_state_object()
 
-    def restart_game(self, game_id: str):
+    def restart_game(self, game_id: str, starting_player: int = 1):
         """Restart current Game-Session."""
         board = self._get_game(game_id)
         # Check for error
@@ -102,7 +102,7 @@ class GameService:
             bot = board.bot_model
             if bot:
                 bot_service.delete_bot(game_id)
-            self.games[game_id] = GameBoard(size=size, bot_model=bot)
+            self.games[game_id] = GameBoard(size=size, bot_model=bot, starting_player=starting_player)
             if bot:
                 bot_service.register_bot(game_id, size, bot)
             return self.get_state(game_id)
