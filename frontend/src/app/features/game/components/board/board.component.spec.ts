@@ -83,7 +83,7 @@ describe('BoardComponent', () => {
     const style = component.gridStyle();
 
     expect(style['grid-template-columns']).toBe('repeat(0, auto 60px) auto');
-    expect(style.width).toBe('fit-content');
+    expect(style.width).toBe('100%');
   });
 
   describe('onEdgeClick', () => {
