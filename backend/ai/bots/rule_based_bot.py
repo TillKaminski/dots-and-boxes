@@ -39,6 +39,7 @@ class RuleBasedBot(BasicBot):
         """Resets the Bot for following Games."""
         self.positions.clear()
         self._init_positions()
+        self.boxes = np.full((self.size, self.size), -4, dtype=int)
 
     def update_game_state(self):
         """Update Game State."""
