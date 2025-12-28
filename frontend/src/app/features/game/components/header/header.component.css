@@ -3,29 +3,70 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  border-bottom: 1px solid #ddd;
   height: 60px;
 
   .game-title {
     margin: 0;
-    font-size: 1.5rem;
+    font-size: 3.5rem;
     font-weight: 700;
-    color: #991a1a;
+    color: #e9b934;
+    stroke: #455527;
+    stroke-opacity: 25%;
+    text-shadow: 2px 2px 1px rgba(0, 0, 0, 0.25);
   }
 
-  .icon-button {
-    background: none;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 0.5rem;
+  .menu,
+  .help {
+    width: 50px;
+    height: 42px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: transparent;
+    border: none;
+    /* border: 1px solid #5d5d5d; */
+    border-radius: 4px;
     cursor: pointer;
-    transition: background 0.2s;
+    padding: 2px;
+    box-shadow:
+      2px 2px 1px rgba(0, 0, 0, 0.25),
+      inset 2px 2px 1px rgba(255, 255, 255, 0.25),
+      inset -2px -2px 1px rgba(0, 0, 0, 0.5);
 
-    &:hover {
-      background-color: #e9ecef;
+    &:hover span {
+      background-color: #3b82f6;
     }
-    .icon {
-      font-size: 1.2rem;
+  }
+
+  .menu {
+    span {
+      display: block;
+      width: 80%;
+      height: 4px;
+      align-self: center;
+      background-color: #e9b934;
+      stroke: #455527;
+      border-radius: 3px;
+      transition: all 0.3s ease;
+      margin: 2px;
+    }
+  }
+
+  .help {
+    span {
+      display: block;
+      width: 90%;
+      color: #e9b934;
+      font-family: "Bangers";
+      background-color: none;
+      stroke: none;
+      font-size: 36px;
+      transition: all 0.3s ease;
+    }
+
+    &:hover span {
+      color: #3b82f6;
+      background-color: transparent;
     }
   }
 }

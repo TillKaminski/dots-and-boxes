@@ -1,5 +1,6 @@
 :host {
-  width: 350px;
+  display: block;
+  width: 420px;
   margin: 0 auto;
 }
 
@@ -13,30 +14,113 @@
 .edge-v,
 .box {
   margin: 0;
-  padding: 0;
+  padding: 9px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
 }
 
-.edge-h:focus,
-.edge-v:focus {
-  outline: 2px solid #a3a3a3;
-  outline-offset: 1px;
-  z-index: 10;
+.dot {
+  width: 8px;
+  height: 8px;
+  background-color: #319cc9;
+  border: 1.5px solid #14475d;
+  border-radius: 50%;
+  margin: auto;
+  box-shadow: inset 4px 4px 2px rgba(0, 0, 0, 0.25);
+  z-index: 2;
+}
+
+.edge-h {
+  width: 66%;
+  height: 1px;
+  background-color: #d9d9d9;
+  border: 1.5px solid transparent;
+  background-clip: padding-box;
+  margin: auto 0;
+  transition: all 0.2s ease;
+  box-shadow: inset 4px 4px 2px rgba(0, 0, 0, 0.25);
+  border-radius: 999px;
+
+  &:hover {
+    cursor: pointer;
+    background-color: #e9b934;
+  }
+}
+
+.edge-v {
+  width: 1px;
+  height: 66%;
+  background-color: #d9d9d9;
+  border: 1.5px solid transparent;
+  background-clip: padding-box;
+  margin: 0 auto;
+  transition: all 0.2s ease;
+  box-shadow: inset 4px 4px 2px rgba(0, 0, 0, 0.25);
+  border-radius: 999px;
+
+  &:hover {
+    cursor: pointer;
+    background-color: #e9b934;
+  }
+}
+
+.box {
+  width: 66%;
+  height: 66%;
+  background-color: none;
+  border: 1.5px solid transparent;
+  box-shadow: inset 4px 4px 2px rgba(0, 0, 0, 0.25);
+  border-radius: 10%;
 }
 
 .player-1 {
-  background-color: #0099ff;
-  color: white;
-  border-radius: 10%;
-  border-style: double;
+  background-color: #28e360;
+  border: 1.5px solid #1daa47;
+  box-shadow:
+    4px 4px 2px rgba(0, 0, 0, 0.25),
+    inset 4px 4px 2px rgba(255, 255, 255, 0.25),
+    inset -2px -2px 1px rgba(0, 0, 0, 0.25);
+
+  &:hover {
+    cursor: default;
+    background-color: #28e360;
+  }
+
+  &:focus-visible {
+    outline: none;
+    outline-offset: none;
+    z-index: 0;
+  }
+
+  &:focus {
+    outline: none;
+    outline-offset: none;
+  }
 }
 
 .player-2 {
-  background-color: #ff1900;
-  color: white;
-  border-radius: 10%;
-  border-style: double;
+  background-color: #a632f3;
+  border: 1.5px solid #7304bd;
+  box-shadow:
+    4px 4px 2px rgba(0, 0, 0, 0.25),
+    inset 4px 4px 2px rgba(255, 255, 255, 0.25),
+    inset -2px -2px 1px rgba(0, 0, 0, 0.25);
+
+  &:hover {
+    cursor: default;
+    background-color: #a632f3;
+  }
+
+  &:focus-visible {
+    outline: none;
+    outline-offset: none;
+    z-index: 0;
+  }
+
+  &:focus {
+    outline: none;
+    outline-offset: none;
+  }
 }

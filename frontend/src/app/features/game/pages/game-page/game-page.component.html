@@ -62,7 +62,7 @@
       <h2>Game Settings</h2>
 
       <div class="settings-grid">
-        <label for="speedRange">Bot Speed: {{ botSpeed() }}ms</label>
+        <label for="speedRange">Bot Speed [{{ botSpeed() }}ms]</label>
         <input
           id="speedRange"
           type="range"
@@ -108,8 +108,23 @@
       aria-modal="true"
     >
       <h2>How to play</h2>
-      <p>Connect the dots! Completing a box gives you a point...</p>
-
+      <ul class="rules-list">
+        <li>
+          <strong>Connect</strong>: On your turn, click on an empty line between
+          two dots.
+        </li>
+        <li>
+          <strong>Score</strong>: Complete a box to score a point. The box will
+          will be filled with your color.
+        </li>
+        <li>
+          <strong>Bonus</strong>: If you complete a box, you have to move again!
+        </li>
+        <li>
+          <strong>Winning</strong>: The game ends when one player holds more
+          than half of all possible points, or all boxes are filled.
+        </li>
+      </ul>
       <button type="button" class="btn-primary" (click)="showHelp.set(false)">
         Got it!
       </button>

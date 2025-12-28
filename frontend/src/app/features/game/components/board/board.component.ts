@@ -34,9 +34,9 @@ export class BoardComponent {
       display: 'grid',
       'grid-template-columns': template,
       'grid-template-rows': template,
-      'justify-content': 'start',
       gap: '0',
-      width: 'fit-content',
+      width: '100%',
+      height: '100%',
     };
   });
 

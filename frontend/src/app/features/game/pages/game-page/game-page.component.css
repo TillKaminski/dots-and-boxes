@@ -1,21 +1,20 @@
-/* .game-page {
-    background-color: rgb(142, 173, 173);
-}
-*/
-
 .message-bar {
   height: 60px;
   display: flex;
   justify-content: center;
   align-items: center;
   margin-bottom: 1rem;
+  font-size: 25px;
+  color: #e9b934;
+  stroke: #455527;
 }
 
 .game-container {
   display: grid;
-  grid-template-columns: 1fr 300px;
+  grid-template-columns: auto auto;
+  justify-content: center;
   gap: 2rem;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   align-items: center;
   padding: 2rem;
@@ -26,9 +25,6 @@
   justify-content: center;
   position: relative;
   width: fit-content;
-  /* background-color: #b1d8ff; */
-  /* border: 1px solid rgba(0,0,0,0.1); */
-  /* border-radius: 20px; */
   padding: 2rem;
   z-index: 1;
 
@@ -46,12 +42,12 @@
   }
 
   &::before {
-    background-color: rgba(177, 216, 255, 0.4);
+    background-color: rgba(177, 216, 255, 5%);
     transform: rotate(-3deg);
   }
 
   &::after {
-    background-color: rgba(177, 216, 255, 0.4);
+    background-color: rgba(177, 216, 255, 5%);
     transform: rotate(3deg);
   }
 }
@@ -63,9 +59,9 @@
   width: fit-content;
   height: auto;
   align-self: start;
-  /* background-color: #b1d8ff; */
-  /* border: 1px solid rgba(0,0,0,0.1); */
-  /* border-radius: 20px; */
+  color: #e9b934;
+  stroke: #455527;
+  stroke-opacity: 25%;
   padding: 1rem;
   z-index: 1;
 
@@ -83,12 +79,12 @@
   }
 
   &::before {
-    background-color: rgba(177, 216, 255, 0.4);
+    background-color: rgba(177, 216, 255, 5%);
     transform: rotate(-3deg);
   }
 
   &::after {
-    background-color: rgba(177, 216, 255, 0.4);
+    background-color: rgba(177, 216, 255, 5%);
     transform: rotate(3deg);
   }
 
@@ -105,10 +101,12 @@
     padding: 1rem;
     border: none;
     border-radius: 12px;
-    background-color: #3b82f6;
-    color: white;
+    background-color: rgba(0, 0, 0, 0.1);
     cursor: pointer;
-    font-weight: bold;
+    font-family: Bangers;
+    font-size: 20px;
+    color: #e9b934;
+    stroke: #455527;
     transition:
       transform 0.1s,
       background 0.2s;
@@ -132,6 +130,9 @@
   width: 100vw;
   height: 100vh;
   background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  color: #e9b934;
+  stroke: #455527;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -142,16 +143,17 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: rgb(168, 94, 94);
+  background-color: rgba(177, 216, 255, 25%);
   padding: 2rem;
   border-radius: 12px;
   min-width: 300px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
 }
 
 .settings-grid {
   display: grid;
-  grid-template-columns: 180px 1fr;
+  grid-template-columns: 210px 1fr;
   gap: 1.5rem 2rem;
   align-items: center;
   margin: 2rem 0;
@@ -160,7 +162,8 @@
 
 label {
   font-weight: 500;
-  color: #333;
+  color: #e9b934;
+  stroke: #455527;
 }
 
 input[type="range"] {
@@ -183,10 +186,71 @@ select {
   width: 100%;
 }
 
+.btn-primary,
+.btn-secondary {
+  width: 70%;
+  padding: 1rem;
+  border: none;
+  border-radius: 12px;
+  background-color: rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  font-family: "Bangers";
+  font-size: 20px;
+  color: #e9b934;
+  stroke: #455527;
+  transition:
+    transform 0.1s,
+    background 0.2s;
+
+  &:hover {
+    background-color: #2563eb;
+  }
+  &:active {
+    transform: scale(0.98);
+  }
+  &.restart {
+    background-color: #10b981;
+  }
+}
+
 .setting-buttons {
-  margin-top: 1.5rem;
+  margin: 1.5rem;
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 0.5rem;
+}
+
+.modal-content h2 {
+  font-size: 2.5rem;
+  margin-top: 0;
+  letter-spacing: 2px;
+}
+
+.rules-list {
+  text-align: left;
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0;
+  line-height: 1.4;
+}
+
+.rules-list li {
+  margin-bottom: 12px;
+  position: relative;
+  padding-left: 25px;
+}
+
+.rules-list li::before {
+  content: "•";
+  color: var(--primary-color);
+  font-weight: bold;
+  position: absolute;
+  left: 5px;
+  font-size: 1.2rem;
+}
+
+.rules-list strong {
+  text-transform: uppercase;
+  text-decoration: underline;
 }
