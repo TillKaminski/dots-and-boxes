@@ -20,10 +20,12 @@ export class AppComponent implements OnInit {
       next: (data) => {
         this.backendStatus = `Backend running: ${data['api-version']} - ${data['root-message']}`;
         console.log('Backend Status:', data);
+        this.gameService.isOffline.set(false);
       },
       error: (err) => {
         this.backendStatus = `ERROR: Failed to connect to backend.`;
         console.error('Connection Error:', err);
+        this.gameService.isOffline.set(true);
       },
     });
   }

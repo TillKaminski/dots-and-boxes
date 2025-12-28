@@ -1,22 +1,32 @@
-<div class="game-page">
+<div class="game-page" [class.processing]="isProcessing()">
   <app-header
     (settingsRequest)="showSettings.set(true)"
     (helpRequest)="showHelp.set(true)"
   ></app-header>
 
   <div class="message-bar">
-    @if (errorMessage()) {
-      <div class="alert error">{{ errorMessage() }}</div>
+    @if (isOffline()) {
+      <div class="alert error">
+        🛜 Connection lost. Please check if the server is running.
+      </div>
+    } @else if (errorMessage()) {
+      <div class="alert error">⚠️ {{ errorMessage() }}</div>
     } @else if (isFinished()) {
       <div class="alert success">{{ winner() }}</div>
     } @else if (isBotThinking()) {
       <div class="alert info">🤖 Bot is thinking...</div>
+    } @else if (gameMessage()) {
+      <div class="alert message">{{ gameMessage() }}</div>
     }
   </div>
   <div class="game-container">
-    <main class="board-container">
+    <main
+      class="board-container"
+      [class.isBusy]="isProcessing() || isOffline()"
+    >
       <app-board
         [state]="gameState()"
+        [disabled]="isInteractionDisabled()"
         [localPlayerId]="localPlayerId()"
         (makeMove)="handleMove($event)"
       ></app-board>
@@ -30,11 +40,29 @@
       ></app-status>
       <div class="sidebar-actions">
         @if (!isFinished()) {
-          <button class="btn-action" (click)="makeRandomMove()">
-            Random Move
-          </button>
+          @if (autoBot() || !botTurn()) {
+            <button
+              class="btn-action"
+              (click)="makeRandomMove()"
+              [disabled]="isInteractionDisabled()"
+            >
+              <span class="icon">🎲</span> Random Move
+            </button>
+          } @else {
+            <button
+              class="btn-action"
+              (click)="triggerBotMove()"
+              [disabled]="isInteractionDisabled()"
+            >
+              <span class="icon">🤖</span> Bot Move
+            </button>
+          }
         } @else {
-          <button class="btn-action restart" (click)="restartGame()">
+          <button
+            class="btn-action restart"
+            (click)="restartGame()"
+            [disabled]="isProcessing()"
+          >
             Restart Game
           </button>
         }
@@ -62,6 +90,28 @@
       <h2>Game Settings</h2>
 
       <div class="settings-grid">
+        <p class="settings-label">Starting Player (next Restart)</p>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input
+              type="radio"
+              name="startingPlayer"
+              [checked]="startingPlayer() === 1"
+              (change)="startingPlayer.set(1)"
+            />
+            <span>Player 1 (You)</span>
+          </label>
+          <label class="radio-option">
+            <input
+              type="radio"
+              name="startingPlayer"
+              [checked]="startingPlayer() === 2"
+              (change)="startingPlayer.set(2)"
+            />
+            <span>Player 2 (Bot)</span>
+          </label>
+        </div>
+
         <label for="speedRange">Bot Speed [{{ botSpeed() }}ms]</label>
         <input
           id="speedRange"
@@ -84,7 +134,7 @@
           class="btn-secondary"
           (click)="showSettings.set(false)"
         >
-          Close
+          Apply
         </button>
       </div>
     </div>

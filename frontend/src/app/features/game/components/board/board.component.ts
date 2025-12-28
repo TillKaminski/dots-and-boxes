@@ -13,6 +13,8 @@ import { GameState, MoveRequest } from '../../../../core/models/game-data';
   styleUrl: './board.component.css',
 })
 export class BoardComponent {
+  /** Required input: Signal that handles UI interaction */
+  disabled = input.required<boolean | null>();
   /** Required input: The current state of the game from the backend */
   state = input.required<GameState | null>();
   localPlayerId = input.required<number>();
@@ -54,6 +56,7 @@ export class BoardComponent {
     y: number,
     orientation: 'horizontal' | 'vertical',
   ): void {
+    if (this.disabled()) return;
     const currentState = this.state();
     const localPlayerId = this.localPlayerId();
     if (
