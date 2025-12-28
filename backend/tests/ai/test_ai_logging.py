@@ -87,7 +87,8 @@ class TestDataGeneratorLogging:
 
         expected_log_message = f"Simulated {n_games} games."
         assert expected_log_message in caplog.text
-        assert caplog.record_tuples[0] == (
+        # Check last Entry
+        assert caplog.record_tuples[-1] == (
             generator_logger.name,
             logging.INFO,
             expected_log_message,

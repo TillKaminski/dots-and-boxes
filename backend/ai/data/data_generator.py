@@ -2,13 +2,29 @@
 
 import argparse
 import logging
+import random
+
+from matplotlib.pylab import Enum
 from ai.bots.basic_bot import BasicBot
 from ai.bots.ffn_bot import FFNBot
+from ai.bots.rule_based_bot import RuleBasedBot
 from ai.data.data_storage import DataStorage
 from game.game_service import GameService
 from ai.bots.random_bot import RandomBot, Move
 
 logger = logging.getLogger(__name__)
+
+BOT_CLASSES: dict[str, BasicBot] = {
+    "random": RandomBot,
+    "rule": RuleBasedBot,
+    "ffn": FFNBot,
+    # TODO: Add more Bots.
+}
+
+class SimulationMode(Enum):
+    FIXED = "fixed",
+    RANDOM = "random",
+    ALTERNATE = "alternate",
 
 
 class DataGenerator:
@@ -24,6 +40,7 @@ class DataGenerator:
         game_id: str,
         bot1: BasicBot,
         bot2: BasicBot,
+        starting_player: int = 1,
         save_moves: bool = True,
         log: bool = False,
     ):
@@ -33,16 +50,21 @@ class DataGenerator:
             state_list: List of dicts representing state before and after move. Move logging available.
         """
         if game_id in self.service.games:
-            self.service.restart_game(game_id)
+            self.service.restart_game(game_id, starting_player=starting_player)
         else:
-            self.service.create_game(game_id, size=self.board_size)
+            self.service.create_game(game_id, size=self.board_size, starting_player=starting_player)
 
         # Setup Bots
         bot1.reset()
         bot2.reset()
 
         state_list = []
-        current_bot = bot1
+        if starting_player == 1:
+            current_bot = bot1
+        else:
+            # starting_player == 2:
+            current_bot = bot2
+
         while not self.service.games[game_id].game_finished:
             if current_bot.game_state_required():
                 state = self.service.get_state_object(game_id)
@@ -101,6 +123,7 @@ class DataGenerator:
         n_games: int,
         bot1: BasicBot,
         bot2: BasicBot,
+        start_mode: SimulationMode = SimulationMode.FIXED,
         prefix: str = "game",
         log: bool = False,
     ):
@@ -108,19 +131,25 @@ class DataGenerator:
         all_games = {}
         for i in range(n_games):
             game_id = f"{prefix}_{i+1}"
-            states = self.simulate_game(game_id, bot1, bot2, log=log)
+            starting_player = self._set_starting_player(start_mode, i)
+            states = self.simulate_game(game_id, bot1, bot2, starting_player=starting_player, log=log)
             all_games[game_id] = states
 
         if log:
             logger.info(f"Simulated {n_games} games.")
         return all_games
+    
 
-
-BOT_CLASSES: dict[str, BasicBot] = {
-    "random": RandomBot,
-    "ffn": FFNBot,
-    # TODO: Add more Bots.
-}
+    def _set_starting_player(self, mode: SimulationMode, game_index: int) -> int:
+        """Sets the Starting Player for different Simulation Modes [`random`, `fixed`, `alternate`]."""
+        if not mode in enumerate(SimulationMode):
+            logger.warning(f"Unknown Simulation Mode, use 'fixed' as default.")
+        if mode == SimulationMode.ALTERNATE:
+            return 1 if game_index % 2 == 0 else 2
+        elif mode == SimulationMode.RANDOM:
+            return random.choice([1, 2])
+        # Default: SimulationMode.FIXED
+        return 1
 
 
 def create_bot(bot_name: str, size: int) -> BasicBot:
@@ -148,8 +177,10 @@ def main():
 
     parser.add_argument("--games", type=int, default=1000, help="Number of Games.")
     parser.add_argument("--size", type=int, default=4, help="Board-Size.")
-    parser.add_argument("--bot1", type=str, default="random", help="Bot-Type Player 1.")
-    parser.add_argument("--bot2", type=str, default="random", help="Bot-Type Player 2.")
+    parser.add_argument("--bot1", type=str, default="random", help="Bot-Type Player 1. [random, rule, fnn]")
+    parser.add_argument("--bot2", type=str, default="random", help="Bot-Type Player 2. [random, rule, fnn]")
+
+    parser.add_argument("--mode", type=str, default="fixed", help="Set Simulation Mode: [fixed (default), random, alternate]")
 
     parser.add_argument(
         "--json", type=int, default=2, help="Save the first 'n' Games in JSON-Format."
@@ -170,6 +201,11 @@ def main():
     view = args.view
     json = args.json
     pt = args.pt
+
+    try:
+        mode_enum = SimulationMode(args.mode)#
+    except ValueError:
+        mode_enum = SimulationMode.FIXED
 
     if log:
         logging.basicConfig(level=logging.INFO)
@@ -194,7 +230,7 @@ def main():
     data_generator: DataGenerator = DataGenerator(game_service, size)
 
     data = data_generator.simulate_multiple_games(
-        n_games=number_games, bot1=bot1, bot2=bot2, log=log
+        n_games=number_games, bot1=bot1, bot2=bot2, start_mode=mode_enum, log=log
     )
 
     if json > 0:

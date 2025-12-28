@@ -3,6 +3,8 @@
 import pytest
 
 from ai.bots.random_bot import RandomBot
+from ai.bots.rule_based_bot import RuleBasedBot
+from ai.data.data_generator import SimulationMode
 from game.game_service import GameService
 from ai.bots.evaluation import BotEvaluator
 
@@ -26,8 +28,10 @@ def test_evaluate_alternate_mode(create_test_evaluator):
     """Test if Alternate Mode leads to an equal Win-rate (Second Player always wins)."""
     n_games = N_GAMES
 
+    start_mode = SimulationMode.ALTERNATE
+
     results = create_test_evaluator.evaluate(
-        bot1, bot2, n_games=n_games, start_mode="alternate"
+        bot1, bot2, n_games=n_games, start_mode=start_mode
     )
 
     assert results["games"] == 4
