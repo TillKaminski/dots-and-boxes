@@ -50,6 +50,10 @@ export interface NewGameRequest {
   botModel: string;
 }
 
+export interface RestartGameRequest {
+  startingPlayer: number;
+}
+
 export interface GameResponse {
   meta: MetaModel;
   state: GameState;

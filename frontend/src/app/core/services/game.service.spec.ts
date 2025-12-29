@@ -12,6 +12,7 @@ import {
   GameState,
   MoveRequest,
   NewGameRequest,
+  RestartGameRequest,
   StatusInfo,
 } from '../models/game-data';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -115,8 +116,8 @@ describe('GameService', () => {
         botModel: 'random',
       };
 
-      // Signal should be 'null'
-      expect(service.state()).toBeNull();
+      // Signal should be 'fallbackState'
+      expect(service.state()).not.toBeNull();
       expect(service.dataStatus()).toEqual({ status: 'INITIAL', error: null });
 
       service.createNewGame(gameId, newGameRequest).subscribe();
@@ -139,16 +140,20 @@ describe('GameService', () => {
     it('should fetch GameState on restart (GET /restart)', fakeAsync(() => {
       const gameId = 'test_game';
 
+      const requestBody: RestartGameRequest = {
+        startingPlayer: 1,
+      };
+
       let receivedData: GameState | undefined;
 
-      service.restartGame(gameId).subscribe((data) => {
+      service.restartGame(gameId, requestBody).subscribe((data) => {
         receivedData = data;
       });
 
       const req = httpTestingController.expectOne(
         API_URL + '/games/test_game/restart',
       );
-      expect(req.request.method).toEqual('GET');
+      expect(req.request.method).toEqual('POST');
       req.flush(mockGameResponse);
 
       // end Observable Subscription
@@ -247,7 +252,7 @@ describe('GameService', () => {
 
       // Test reset()
       service.resetData();
-      expect(service.state()).toBeNull();
+      expect(service.state()).not.toBeNull();
       expect(service.botMove()).toBeNull();
     }));
   });

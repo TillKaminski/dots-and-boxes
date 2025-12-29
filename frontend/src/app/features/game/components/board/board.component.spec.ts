@@ -42,6 +42,7 @@ describe('BoardComponent', () => {
     componentRef = fixture.componentRef;
     componentRef.setInput('state', mockState);
     componentRef.setInput('localPlayerId', 1);
+    componentRef.setInput('disabled', false);
 
     fixture.detectChanges();
   });
@@ -128,6 +129,13 @@ describe('BoardComponent', () => {
       componentRef.setInput('state', finishedState);
       componentRef.setInput('localPlayerId', 1);
 
+      component.onEdgeClick(0, 0, 'horizontal');
+
+      expect(emitSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not emit move when disabled is true', () => {
+      componentRef.setInput('disabled', true);
       component.onEdgeClick(0, 0, 'horizontal');
 
       expect(emitSpy).not.toHaveBeenCalled();

@@ -6,7 +6,7 @@ import {
   signal,
   untracked,
 } from '@angular/core';
-import { GameState, MoveRequest } from '../../../../core/models/game-data';
+import { MoveRequest } from '../../../../core/models/game-data';
 import { BoardComponent } from '../../components/board/board.component';
 import { GameService } from '../../../../core/services/game.service';
 import { catchError } from 'rxjs';
@@ -29,7 +29,20 @@ export class GamePageComponent {
   private gameId = 'initial-game';
   private gameService = inject(GameService);
 
+  isProcessing = signal(false);
+  isOffline = this.gameService.isOffline;
+
+  isInteractionDisabled = computed(
+    () =>
+      this.isOffline() ||
+      this.isProcessing() ||
+      this.isBotThinking() ||
+      this.isFinished(),
+  );
+
   gameState = this.gameService.state;
+
+  startingPlayer = signal<number>(1);
 
   botSpeed = signal<number>(1000);
 
@@ -38,7 +51,12 @@ export class GamePageComponent {
   localPlayerId = this.gameService.localPlayerId;
   isFinished = this.gameService.isFinished;
 
+  botTurn = computed(() => {
+    return this.gameState()?.currentPlayer != this.localPlayerId();
+  });
+
   errorMessage = signal<string | null>(null);
+  gameMessage = signal<string | null>(null);
 
   winner = computed(() => {
     const scores = this.gameState()?.scores;
@@ -53,20 +71,33 @@ export class GamePageComponent {
   showHelp = signal(false);
 
   restartGame() {
-    this.gameService.restartGame(this.gameId).subscribe({
-      next: (state) => {
-        console.log('Game restarted:', state);
-        this.errorMessage.set(null);
-      },
-      error: (err) => {
-        console.error('Could not restart game:', err);
-        this.showError(err);
-      },
-    });
+    if (this.isProcessing()) return;
+    this.isProcessing.set(true);
+
+    this.gameService
+      .restartGame(this.gameId, { startingPlayer: this.startingPlayer() })
+      .subscribe({
+        next: (state) => {
+          console.log('Game restarted:', state);
+          this.errorMessage.set(null);
+          this.showMessage(
+            'Game restarted. Player ' + this.startingPlayer() + ' begins.',
+            false,
+          );
+          this.isProcessing.set(false);
+        },
+        error: (err) => {
+          console.error('Could not restart game:', err);
+          this.showMessage('Could not restart game.');
+          this.isProcessing.set(false);
+        },
+      });
     this.showSettings.set(false);
   }
 
   makeRandomMove() {
+    if (this.isProcessing()) return;
+
     const state = this.gameState();
     if (!state || state.finished) return;
 
@@ -105,9 +136,14 @@ export class GamePageComponent {
     }
   }
 
-  private showError(msg: string) {
-    this.errorMessage.set(msg);
-    setTimeout(() => this.errorMessage.set(null), 5000);
+  private showMessage(msg: string, isError = true) {
+    if (isError) {
+      this.errorMessage.set(msg);
+      setTimeout(() => this.errorMessage.set(null), 5000);
+    } else {
+      this.gameMessage.set(msg);
+      setTimeout(() => this.gameMessage.set(null), 3000);
+    }
   }
 
   isLocalPlayerTurn = computed(() => {
@@ -116,20 +152,38 @@ export class GamePageComponent {
   });
 
   constructor() {
+    this.isProcessing.set(true);
     this.gameService
       .createNewGame(this.gameId, {
-        startingPlayer: 1,
+        startingPlayer: this.startingPlayer(),
         botModel: this.gameService.botModel(),
       })
       .pipe(
         catchError((error) => {
           console.warn('Error occurred, attempting restart...' + error);
-          return this.gameService.restartGame(this.gameId);
+          this.showMessage('Try to restart current Game.', false);
+          return this.gameService.restartGame(this.gameId, {
+            startingPlayer: this.startingPlayer(),
+          });
         }),
       )
       .subscribe({
-        next: (state) => console.log('Game initialized:', state),
-        error: (err) => console.error('Could not initialize game:', err),
+        next: (state) => {
+          console.log('Game initialized:', state);
+          this.isProcessing.set(false);
+          this.showMessage(
+            'Game started. Player ' +
+              this.startingPlayer() +
+              ' begins. Have fun!',
+            false,
+          );
+        },
+        error: (err) => {
+          console.error('Could not initialize game:', err);
+          this.isProcessing.set(false);
+          this.showMessage('Connection Error. Show offline Preview-Mode.');
+          this.gameService.isOffline.set(true);
+        },
       });
 
     /**
@@ -146,15 +200,23 @@ export class GamePageComponent {
     });
   }
 
-  private triggerBotMove() {
-    if (this.isBotThinking()) return;
+  triggerBotMove() {
+    if (this.isBotThinking() || this.isProcessing()) return;
+
     this.isBotThinking.set(true);
+    this.isProcessing.set(true);
 
     // Delay Bot Move
     setTimeout(() => {
       this.gameService.getBotMove(this.gameId).subscribe({
-        next: () => this.isBotThinking.set(false),
-        error: () => this.isBotThinking.set(false),
+        next: () => {
+          this.isBotThinking.set(false);
+          this.isProcessing.set(false);
+        },
+        error: () => {
+          this.isBotThinking.set(false);
+          this.isProcessing.set(false);
+        },
       });
     }, this.botSpeed());
   }
@@ -164,42 +226,19 @@ export class GamePageComponent {
    * The board will update automatically (service uses a signal).
    */
   handleMove(move: MoveRequest) {
+    if (this.isProcessing() || this.errorMessage()) return;
+
+    this.isProcessing.set(true);
     this.gameService.makeMove(this.gameId, move).subscribe({
       next: (newState) => {
         console.log('Move successful:', newState);
+        this.isProcessing.set(false);
       },
       error: (err) => {
         console.error('Move failed:', err);
+        this.showMessage('Error Sending Move to Server.');
+        this.isProcessing.set(false);
       },
     });
   }
-
-  /** Mock state used for testing and CSS styling */
-  _gameState = signal<GameState>({
-    size: 4,
-    edges: {
-      horizontal: [
-        [1, 2, 0, 0, 1],
-        [0, 0, 0, 0, 1],
-        [0, 0, 0, 0, 1],
-        [0, 0, 0, 0, 1],
-      ],
-      vertical: [
-        [1, 0, 0, 2],
-        [1, 2, 0, 2],
-        [0, 0, 0, 0],
-        [0, 0, 0, 0],
-        [0, 0, 0, 0],
-      ],
-    },
-    boxes: [
-      [1, 0, 0, 0],
-      [0, 2, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-    ],
-    scores: { '1': 2, '2': 1 },
-    currentPlayer: 1,
-    finished: false,
-  });
 }
