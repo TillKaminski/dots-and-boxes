@@ -97,13 +97,13 @@ class DataPreprocessor:
         orientation = move["orientation"]
         one_hot_label = torch.zeros(self.output_size, dtype=torch.float32)
 
-        if orientation == "HORIZONTAL":
+        if orientation.upper() == "HORIZONTAL":
             h_cols = self.size
             idx = y * h_cols + x
 
             one_hot_label[idx] = 1.0
 
-        elif orientation == "VERTICAL":
+        elif orientation.upper() == "VERTICAL":
             v_offset = self.num_horizontal_edges
             v_cols = self.size + 1
 
@@ -153,27 +153,34 @@ def main():
     )
     parser.set_defaults(pvn=False)
 
+    parser.add_argument("--src", type=str, default="training_data_raw.pt", help="Path of the Source File.")
+    parser.add_argument("--dest", type=str, default="training_data.pt", help="Path for the created File.")
+
     args = parser.parse_args()
 
     data_preprocessor = DataPreprocessor(size=4)  # TODO: Fix Magic Number
     data_storage = DataStorage()
 
     # Load Data
-    data_raw = data_storage.load_from_pt()
+    data_raw = data_storage.load_from_pt(args.src)
 
     if args.ffn:
         data: list[Tuple[torch.Tensor, torch.Tensor]] = []
-        for game in data_raw.values():
+        n_games = len(data_raw)
+        for i, game in enumerate(data_raw.values()):
             for step in game:
                 # Map State
                 state = data_preprocessor.get_data_pair(step_data=step)
                 data.append(state)
+            if (i+1) % 100 == 0: print(f"Processed {i+1}/{n_games}...")
 
-        file_path = data_storage.save_to_pt(data, filename="training_data_ffn.pt")
+        print(f"Total steps processed: {len(data)}")
+
+        file_path = data_storage.save_to_pt(data, args.dest)
         print(f"Training Data for FFN saved.\n➡️ Filepath: {file_path}\n")
     elif args.pvn:
         print("TODO: Implement Preprocessing for PVN.")
 
 
-if __name__ == "__main__":  # pragma: no cover
+if __name__ == "__main__":  # pragma: no cover  
     main()

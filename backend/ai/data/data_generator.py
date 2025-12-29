@@ -2,6 +2,7 @@
 
 import argparse
 import logging
+import os
 import random
 
 from matplotlib.pylab import Enum
@@ -22,9 +23,9 @@ BOT_CLASSES: dict[str, BasicBot] = {
 }
 
 class SimulationMode(Enum):
-    FIXED = "fixed",
-    RANDOM = "random",
-    ALTERNATE = "alternate",
+    FIXED = "fixed"
+    RANDOM = "random"
+    ALTERNATE = "alternate"
 
 
 class DataGenerator:
@@ -134,6 +135,7 @@ class DataGenerator:
             starting_player = self._set_starting_player(start_mode, i)
             states = self.simulate_game(game_id, bot1, bot2, starting_player=starting_player, log=log)
             all_games[game_id] = states
+            if (i+1) % 100 == 0: print(f"Simulated {i+1}/{n_games}...")
 
         if log:
             logger.info(f"Simulated {n_games} games.")
@@ -142,7 +144,7 @@ class DataGenerator:
 
     def _set_starting_player(self, mode: SimulationMode, game_index: int) -> int:
         """Sets the Starting Player for different Simulation Modes [`random`, `fixed`, `alternate`]."""
-        if not mode in enumerate(SimulationMode):
+        if not mode in SimulationMode:
             logger.warning(f"Unknown Simulation Mode, use 'fixed' as default.")
         if mode == SimulationMode.ALTERNATE:
             return 1 if game_index % 2 == 0 else 2
@@ -170,6 +172,8 @@ def main():
         help="Print Data Summary for the first 'n' Games. Other Parameters are ignored.",
     )
 
+    parser.add_argument("--states", type=int, default=10, help="Number of States that are printed to console.")
+
     parser.add_argument(
         "--log", dest="log", action="store_true", help="Enable Terminal Logging."
     )
@@ -191,6 +195,10 @@ def main():
     )
     parser.set_defaults(pt=True)
 
+    parser.add_argument("--name", type=str, default="training_data_raw.pt", help="Filename for the .pt file.")
+    parser.add_argument("--merge", action="store_true", help="Merge with existing file instead of overwriting.")
+    parser.add_argument("--label", type=str, default="game", help="Prefix for the game IDs (e.g. 'rule', 'rand').")
+
     args = parser.parse_args()
 
     size = args.size
@@ -199,11 +207,15 @@ def main():
     number_games = args.games
     log = args.log
     view = args.view
+    states = args.states
     json = args.json
     pt = args.pt
+    name = args.name
+    merge = args.merge
+    label = args.label
 
     try:
-        mode_enum = SimulationMode(args.mode)#
+        mode_enum = SimulationMode(args.mode)
     except ValueError:
         mode_enum = SimulationMode.FIXED
 
@@ -214,9 +226,15 @@ def main():
 
     data_storage = DataStorage(log=log)
 
+    file_path = data_storage.get_path(name)
+
+    if merge and not os.path.exists(file_path):
+        logger.error(f"Canceled: --merge set, but no file exists with name {name}!")
+        return
+
     if view > 0:
-        data = data_storage.load_from_pt()
-        data_storage.print_training_data_summary(data, limit_games=view)
+        data = data_storage.load_from_pt(name)
+        data_storage.print_training_data_summary(data, limit_games=view, limit_states=states)
         return
 
     try:
@@ -230,7 +248,7 @@ def main():
     data_generator: DataGenerator = DataGenerator(game_service, size)
 
     data = data_generator.simulate_multiple_games(
-        n_games=number_games, bot1=bot1, bot2=bot2, start_mode=mode_enum, log=log
+        n_games=number_games, bot1=bot1, bot2=bot2, start_mode=mode_enum, log=log, prefix=label
     )
 
     if json > 0:
@@ -238,7 +256,10 @@ def main():
         data_storage.save_to_json(data_json)
 
     if pt:
-        data_storage.save_to_pt(data)
+        if merge:
+            data_storage.merge_and_save(data, name, label)
+        else:
+            data_storage.save_to_pt(data, name)
 
 
 if __name__ == "__main__":  # pragma: no cover

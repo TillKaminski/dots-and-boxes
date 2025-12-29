@@ -14,11 +14,16 @@ def main():
         default=0,
         help="Number of epochs for training. Default: Uses the number defined in the configuration files.",
     )
+    parser.add_argument("--src", type=str, default="", help="Source file of Training Data.")
+
     args = parser.parse_args()
 
     iterations = args.it if args.it > 0 else None
 
-    model = ModelTrainer()
+    if len(args.src) > 0:
+        model = ModelTrainer(args.src)
+    else:
+        model = ModelTrainer()
     print(
         f"\n### Start Training ({iterations if iterations is not None else 'default'} Iterations) ###\n"
     )

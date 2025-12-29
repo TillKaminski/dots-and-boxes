@@ -20,12 +20,12 @@ base_dir = os.path.dirname(__file__)
 class ModelTrainer:
     """Manages the training data setup, model configuration, and metrics calculation for the Feed-Forward Network (FFN)."""
 
-    def __init__(self):
+    def __init__(self, training_file: str = "training_data_ffn.pt"):
         """Initializes the ModelTrainer, loading training data, preparing DataLoaders, and setting up the model, loss function, and optimizer."""
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         file_path = os.path.join(
-            os.path.dirname(__file__), "../outputs", "training_data_ffn.pt"
+            os.path.dirname(__file__), "../outputs/data", training_file
         )
         data = torch.load(file_path, map_location=self.device)
 
@@ -52,7 +52,7 @@ class ModelTrainer:
             input_size=ModelConfig.INPUT_SIZE,
             hidden_layers=ModelConfig.HIDDEN_LAYERS,
             output_size=ModelConfig.OUTPUT_SIZE,
-        )
+        ).to(self.device)
 
         self.criterion = nn.CrossEntropyLoss()
         self.optimizer = torch.optim.Adam(
