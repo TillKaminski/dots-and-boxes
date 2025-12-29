@@ -15,6 +15,7 @@ import {
   GameState,
   MoveRequest,
   NewGameRequest,
+  RestartGameRequest,
   StatusInfo,
 } from '../models/game-data';
 import { environment } from '../../../environments/environment';
@@ -30,9 +31,40 @@ const API_VERSION = `${environment.apiVersion}`;
  * Manages game state, bot moves, and HTTP request status using Signals.
  */
 export class GameService {
+  public isOffline = signal<boolean>(false);
+
   private http = inject(HttpClient);
 
-  private _gameState = signal<GameState | null>(null);
+  /** Skeleton for Rendering and Default Game State if Backend is not available */
+  private fallbackGameState: GameState = {
+    size: 4,
+    edges: {
+      horizontal: [
+        [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0],
+      ],
+      vertical: [
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+      ],
+    },
+    boxes: [
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+    ],
+    scores: { '1': 0, '2': 0 },
+    currentPlayer: 1,
+    finished: false,
+  };
+
+  private _gameState = signal<GameState>(this.fallbackGameState);
   private _lastBotMove = signal<BotMoveOutput | null>(null);
   private _dataState = signal<DataRequestState>({
     status: 'INITIAL',
@@ -65,10 +97,17 @@ export class GameService {
   }
 
   /**
+   * Sets an offline State as Fallback.
+   */
+  setOfflineState(fallback: GameState) {
+    this._gameState.set(fallback);
+  }
+
+  /**
    * Clears the current game state and bot move signals.
    */
   resetData() {
-    this._gameState.set(null);
+    this._gameState.set(this.fallbackGameState);
     this._lastBotMove.set(null);
     this._dataState.set({ status: 'INITIAL', error: null });
     this._finished.set(false);
@@ -118,11 +157,16 @@ export class GameService {
   /**
    * Resets the game with the given ID to its starting state.
    * @param gameId Unique identifier for the game.
+   * @param restartGameData Contains the starting player.
    */
-  restartGame(gameId: string): Observable<GameState> {
+  restartGame(
+    gameId: string,
+    restartGameData: RestartGameRequest,
+  ): Observable<GameState> {
     return this.http
-      .get<GameResponse>(
+      .post<GameResponse>(
         `${API_BASE_URL}/${API_VERSION}/games/${gameId}/restart`,
+        restartGameData,
       )
       .pipe(
         this.trackState(this._dataState),

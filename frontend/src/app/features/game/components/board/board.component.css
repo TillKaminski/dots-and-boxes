@@ -9,6 +9,35 @@
   aspect-ratio: 1 / 1;
 }
 
+@keyframes box-pop {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes edge-pop {
+  0% {
+    transform: scale(0.8);
+    filter: brightness(1.5);
+  }
+  50% {
+    transform: scale(1.05);
+    filter: brightness(1.2);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
 .dot,
 .edge-h,
 .edge-v,
@@ -19,6 +48,12 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
+}
+
+.edge-h,
+.edge-v,
+.box {
+  will-change: transform;
 }
 
 .dot {
@@ -66,6 +101,15 @@
   }
 }
 
+.edge-h.player-1,
+.edge-h.player-2,
+.edge-v.player-1,
+.edge-v.player-2 {
+  animation: edge-pop 0.3s ease-out;
+  z-index: 1;
+  pointer-events: none;
+}
+
 .box {
   width: 66%;
   height: 66%;
@@ -75,6 +119,11 @@
   border-radius: 10%;
 }
 
+.box.player-1,
+.box.player-2 {
+  animation: box-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
 .player-1 {
   background-color: #28e360;
   border: 1.5px solid #1daa47;
@@ -82,6 +131,10 @@
     4px 4px 2px rgba(0, 0, 0, 0.25),
     inset 4px 4px 2px rgba(255, 255, 255, 0.25),
     inset -2px -2px 1px rgba(0, 0, 0, 0.25);
+
+  /* Glow
+  box-shadow: 0 0 8px rgba(40, 227, 96, 0.5), inset 4px 4px 2px rgba(255, 255, 255, 0.25);
+  */
 
   &:hover {
     cursor: default;
@@ -107,6 +160,10 @@
     4px 4px 2px rgba(0, 0, 0, 0.25),
     inset 4px 4px 2px rgba(255, 255, 255, 0.25),
     inset -2px -2px 1px rgba(0, 0, 0, 0.25);
+
+  /* Glow
+  box-shadow: 0 0 8px rgba(166, 50, 243, 0.5), inset 4px 4px 2px rgba(255, 255, 255, 0.25);
+  */
 
   &:hover {
     cursor: default;
