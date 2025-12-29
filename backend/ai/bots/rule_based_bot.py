@@ -95,7 +95,7 @@ class RuleBasedBot(BasicBot):
 
         return boxes
 
-    def _select_move(self, log_move: bool = False, return_dictionary: bool = False):
+    def _select_move(self):
         """Evaluate best Move."""
         possible_moves = [move for move in self.positions if move.available]
 
@@ -103,42 +103,24 @@ class RuleBasedBot(BasicBot):
             logger.warning("No possible Moves available.")
             raise RuntimeError("No possible Moves available.")
 
+        # Shuffle to generate different Moves
+        random.shuffle(possible_moves)
+
         boxes = self.boxes
 
-        best_move: Move | None = None
-
         # get win (box has 1 open Edge)
-        if -1 in self.boxes:
-            for move in possible_moves:
-                for x, y in self._get_adjacent_boxes(move):
-                    if boxes[x][y] == -1:
-                        best_move = move
-                        break
-                if best_move:
-                    break
+        for move in possible_moves:
+            if any(boxes[x, y] == -1 for x, y in self._get_adjacent_boxes(move)):
+                return move
 
         # produce win (create boxes with 2 open Edges)
-        if best_move is None and -3 in self.boxes:
-            for move in possible_moves:
-                for x, y in self._get_adjacent_boxes(move):
-                    if boxes[x][y] == -3:
-                        best_move = move
-                        break
-                if best_move:
-                    break
+        safe_moves = []
+        for move in possible_moves:
+            adj_boxes = self._get_adjacent_boxes(move)
+            if all(boxes[x, y] < -2 for x, y in adj_boxes):
+                safe_moves.append(move)
+        
+        if safe_moves:
+            return random.choice(safe_moves)
 
-        # neutral
-        if best_move is None and -4 in self.boxes:
-            for move in possible_moves:
-                for x, y in self._get_adjacent_boxes(move):
-                    if boxes[x][y] == -4:
-                        best_move = move
-                        break
-                if best_move:
-                    break
-
-        # fallback
-        if best_move is None:
-            best_move = random.choice(possible_moves)
-
-        return best_move
+        return random.choice(possible_moves)

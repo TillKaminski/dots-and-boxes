@@ -61,9 +61,7 @@ class FFNBot(BasicBot):
         self._init_positions()
         self._current_state = None
 
-    def _select_move(
-        self, log_move: bool = False, return_dictionary: bool = False
-    ) -> Dict[str, Any] | Move:
+    def _select_move(self) -> Dict[str, Any] | Move:
         """Predicts the best Move based on the current Game State.
 
         Returns dict: {"x": int, "y": int, "orientation": "horizontal|vertical"}
