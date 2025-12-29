@@ -119,7 +119,7 @@ class RuleBasedBot(BasicBot):
             adj_boxes = self._get_adjacent_boxes(move)
             if all(boxes[x, y] < -2 for x, y in adj_boxes):
                 safe_moves.append(move)
-        
+
         if safe_moves:
             return random.choice(safe_moves)
 

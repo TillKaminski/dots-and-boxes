@@ -51,7 +51,9 @@ def test_new_game_creation():
     data_generator.simulate_game(game_id, bot1, bot2)
 
     # Check if new Game is created (instead of reset)
-    service.create_game.assert_called_once_with(game_id, size=data_generator.board_size, starting_player=1)
+    service.create_game.assert_called_once_with(
+        game_id, size=data_generator.board_size, starting_player=1
+    )
     service.restart_game.assert_not_called()
 
     # Game-Service contains new game

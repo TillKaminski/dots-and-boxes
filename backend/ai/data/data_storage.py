@@ -66,14 +66,16 @@ class DataStorage:
         if self.log:
             logger.info(f"Loaded PT data from {file_path}")
         return data
-    
+
     def merge_and_save(self, new_data: dict, filename: str, prefix: str = "game"):
         """Loads old Data and appends new Data."""
         path = self.get_path(filename)
-        
+
         if os.path.exists(path):
             existing_data = torch.load(path)
-            logger.info(f"Merging {len(new_data)} new games into {len(existing_data)} existing games.")
+            logger.info(
+                f"Merging {len(new_data)} new games into {len(existing_data)} existing games."
+            )
         else:
             existing_data = {}
             logger.info(f"No existing file found. Creating {filename}.")
@@ -85,7 +87,9 @@ class DataStorage:
 
         torch.save(existing_data, path)
         print(f"Successfully saved. Total games in {filename}: {len(existing_data)}")
-        logger.info(f"Successfully saved. Total games in {filename}: {len(existing_data)}")
+        logger.info(
+            f"Successfully saved. Total games in {filename}: {len(existing_data)}"
+        )
 
     def print_training_data_summary(
         self, data: dict, limit_games: int = 3, limit_states: int = 10

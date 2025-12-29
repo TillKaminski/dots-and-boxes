@@ -153,8 +153,18 @@ def main():
     )
     parser.set_defaults(pvn=False)
 
-    parser.add_argument("--src", type=str, default="training_data_raw.pt", help="Path of the Source File.")
-    parser.add_argument("--dest", type=str, default="training_data.pt", help="Path for the created File.")
+    parser.add_argument(
+        "--src",
+        type=str,
+        default="training_data_raw.pt",
+        help="Path of the Source File.",
+    )
+    parser.add_argument(
+        "--dest",
+        type=str,
+        default="training_data.pt",
+        help="Path for the created File.",
+    )
 
     args = parser.parse_args()
 
@@ -172,7 +182,8 @@ def main():
                 # Map State
                 state = data_preprocessor.get_data_pair(step_data=step)
                 data.append(state)
-            if (i+1) % 100 == 0: print(f"Processed {i+1}/{n_games}...")
+            if (i + 1) % 100 == 0:
+                print(f"Processed {i+1}/{n_games}...")
 
         print(f"Total steps processed: {len(data)}")
 
@@ -182,5 +193,5 @@ def main():
         print("TODO: Implement Preprocessing for PVN.")
 
 
-if __name__ == "__main__":  # pragma: no cover  
+if __name__ == "__main__":  # pragma: no cover
     main()

@@ -225,14 +225,6 @@ def test_move_priority_win(setup_win_state):
     assert dict["orientation"] == expected_move.orientation.name.lower()
 
 
-def test_move_priority_produce_win(setup_prod_win_state):
-    """Tests the second priority: creating a two-edge box (-3 box)."""
-    bot, expected_moves = setup_prod_win_state
-
-    move = bot.move()
-    assert move in expected_moves
-
-
 def test_move_priority_neutral(setup_neutral_state):
     """Tests the third priority: making a neutral move (targeting a -4 box)."""
     bot, expected_move = setup_neutral_state

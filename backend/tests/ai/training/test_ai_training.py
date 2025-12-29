@@ -7,7 +7,7 @@ from ai.training import training
 
 def _mock_main_execution(iterations):
     """Helper Function that simulates Terminal Execution."""
-    mock_args = argparse.Namespace(it=iterations)
+    mock_args = argparse.Namespace(it=iterations, src="")
 
     with patch(
         "ai.training.training.argparse.ArgumentParser.parse_args",

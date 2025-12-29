@@ -1,6 +1,5 @@
 """Generates Metics to compare different Bot Models."""
 
-import random
 from ai.bots.basic_bot import BasicBot
 from ai.data.data_generator import DataGenerator, SimulationMode
 from game.game_service import GameService
@@ -48,7 +47,11 @@ class BotEvaluator:
             start_player = self.generator._set_starting_player(start_mode, i)
 
             states = self.generator.simulate_game(
-                game_id=game_id, bot1=bot1, bot2=bot2, starting_player=start_player, save_moves=save_moves
+                game_id=game_id,
+                bot1=bot1,
+                bot2=bot2,
+                starting_player=start_player,
+                save_moves=save_moves,
             )
 
             final_scores = states[-1]["state"]["scores"]

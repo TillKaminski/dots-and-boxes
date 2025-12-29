@@ -22,7 +22,10 @@ BOT_CLASSES: dict[str, BasicBot] = {
     # TODO: Add more Bots.
 }
 
+
 class SimulationMode(Enum):
+    """Represents the Player Order during the Simulation."""
+
     FIXED = "fixed"
     RANDOM = "random"
     ALTERNATE = "alternate"
@@ -53,7 +56,9 @@ class DataGenerator:
         if game_id in self.service.games:
             self.service.restart_game(game_id, starting_player=starting_player)
         else:
-            self.service.create_game(game_id, size=self.board_size, starting_player=starting_player)
+            self.service.create_game(
+                game_id, size=self.board_size, starting_player=starting_player
+            )
 
         # Setup Bots
         bot1.reset()
@@ -133,19 +138,21 @@ class DataGenerator:
         for i in range(n_games):
             game_id = f"{prefix}_{i+1}"
             starting_player = self._set_starting_player(start_mode, i)
-            states = self.simulate_game(game_id, bot1, bot2, starting_player=starting_player, log=log)
+            states = self.simulate_game(
+                game_id, bot1, bot2, starting_player=starting_player, log=log
+            )
             all_games[game_id] = states
-            if (i+1) % 100 == 0: print(f"Simulated {i+1}/{n_games}...")
+            if (i + 1) % 100 == 0:
+                print(f"Simulated {i+1}/{n_games}...")
 
         if log:
             logger.info(f"Simulated {n_games} games.")
         return all_games
-    
 
     def _set_starting_player(self, mode: SimulationMode, game_index: int) -> int:
         """Sets the Starting Player for different Simulation Modes [`random`, `fixed`, `alternate`]."""
-        if not mode in SimulationMode:
-            logger.warning(f"Unknown Simulation Mode, use 'fixed' as default.")
+        if mode not in SimulationMode:
+            logger.warning("Unknown Simulation Mode, use 'fixed' as default.")
         if mode == SimulationMode.ALTERNATE:
             return 1 if game_index % 2 == 0 else 2
         elif mode == SimulationMode.RANDOM:
@@ -172,7 +179,12 @@ def main():
         help="Print Data Summary for the first 'n' Games. Other Parameters are ignored.",
     )
 
-    parser.add_argument("--states", type=int, default=10, help="Number of States that are printed to console.")
+    parser.add_argument(
+        "--states",
+        type=int,
+        default=10,
+        help="Number of States that are printed to console.",
+    )
 
     parser.add_argument(
         "--log", dest="log", action="store_true", help="Enable Terminal Logging."
@@ -181,10 +193,25 @@ def main():
 
     parser.add_argument("--games", type=int, default=1000, help="Number of Games.")
     parser.add_argument("--size", type=int, default=4, help="Board-Size.")
-    parser.add_argument("--bot1", type=str, default="random", help="Bot-Type Player 1. [random, rule, fnn]")
-    parser.add_argument("--bot2", type=str, default="random", help="Bot-Type Player 2. [random, rule, fnn]")
+    parser.add_argument(
+        "--bot1",
+        type=str,
+        default="random",
+        help="Bot-Type Player 1. [random, rule, fnn]",
+    )
+    parser.add_argument(
+        "--bot2",
+        type=str,
+        default="random",
+        help="Bot-Type Player 2. [random, rule, fnn]",
+    )
 
-    parser.add_argument("--mode", type=str, default="fixed", help="Set Simulation Mode: [fixed (default), random, alternate]")
+    parser.add_argument(
+        "--mode",
+        type=str,
+        default="fixed",
+        help="Set Simulation Mode: [fixed (default), random, alternate]",
+    )
 
     parser.add_argument(
         "--json", type=int, default=2, help="Save the first 'n' Games in JSON-Format."
@@ -195,9 +222,23 @@ def main():
     )
     parser.set_defaults(pt=True)
 
-    parser.add_argument("--name", type=str, default="training_data_raw.pt", help="Filename for the .pt file.")
-    parser.add_argument("--merge", action="store_true", help="Merge with existing file instead of overwriting.")
-    parser.add_argument("--label", type=str, default="game", help="Prefix for the game IDs (e.g. 'rule', 'rand').")
+    parser.add_argument(
+        "--name",
+        type=str,
+        default="training_data_raw.pt",
+        help="Filename for the .pt file.",
+    )
+    parser.add_argument(
+        "--merge",
+        action="store_true",
+        help="Merge with existing file instead of overwriting.",
+    )
+    parser.add_argument(
+        "--label",
+        type=str,
+        default="game",
+        help="Prefix for the game IDs (e.g. 'rule', 'rand').",
+    )
 
     args = parser.parse_args()
 
@@ -234,7 +275,9 @@ def main():
 
     if view > 0:
         data = data_storage.load_from_pt(name)
-        data_storage.print_training_data_summary(data, limit_games=view, limit_states=states)
+        data_storage.print_training_data_summary(
+            data, limit_games=view, limit_states=states
+        )
         return
 
     try:
@@ -248,7 +291,12 @@ def main():
     data_generator: DataGenerator = DataGenerator(game_service, size)
 
     data = data_generator.simulate_multiple_games(
-        n_games=number_games, bot1=bot1, bot2=bot2, start_mode=mode_enum, log=log, prefix=label
+        n_games=number_games,
+        bot1=bot1,
+        bot2=bot2,
+        start_mode=mode_enum,
+        log=log,
+        prefix=label,
     )
 
     if json > 0:

@@ -4,7 +4,13 @@ from fastapi import APIRouter, HTTPException, Depends
 from game.errors import ERROR_INVALID_ORIENTATION, get_error_response
 from game.game_board import Orientation
 from game.game_service import GameService
-from .response import GameResponse, MoveRequest, RestartGameRequest, ServiceInfoResponse, NewGameRequest
+from .response import (
+    GameResponse,
+    MoveRequest,
+    RestartGameRequest,
+    ServiceInfoResponse,
+    NewGameRequest,
+)
 
 router = APIRouter(prefix="/v1/games", tags=["Games"])
 
@@ -171,7 +177,11 @@ def bot_move(game_id: str, service: GameService = Depends(get_game_service)):
 
 
 @router.post("/{game_id}/restart", response_model=GameResponse)
-def restart_game(game_id: str, request_data: RestartGameRequest | None, service: GameService = Depends(get_game_service)):
+def restart_game(
+    game_id: str,
+    request_data: RestartGameRequest | None,
+    service: GameService = Depends(get_game_service),
+):
     """Restart Game with given Game-ID.
 
     ### Args
