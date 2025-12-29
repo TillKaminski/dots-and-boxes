@@ -116,8 +116,8 @@ describe('GameService', () => {
         botModel: 'random',
       };
 
-      // Signal should be 'null'
-      expect(service.state()).toBeNull();
+      // Signal should be 'fallbackState'
+      expect(service.state()).not.toBeNull();
       expect(service.dataStatus()).toEqual({ status: 'INITIAL', error: null });
 
       service.createNewGame(gameId, newGameRequest).subscribe();
@@ -252,7 +252,7 @@ describe('GameService', () => {
 
       // Test reset()
       service.resetData();
-      expect(service.state()).toBeNull();
+      expect(service.state()).not.toBeNull();
       expect(service.botMove()).toBeNull();
     }));
   });

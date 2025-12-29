@@ -101,8 +101,10 @@
   }
 }
 
-.edge-h.player-1, .edge-h.player-2,
-.edge-v.player-1, .edge-v.player-2 {
+.edge-h.player-1,
+.edge-h.player-2,
+.edge-v.player-1,
+.edge-v.player-2 {
   animation: edge-pop 0.3s ease-out;
   z-index: 1;
   pointer-events: none;
@@ -117,7 +119,8 @@
   border-radius: 10%;
 }
 
-.box.player-1, .box.player-2 {
+.box.player-1,
+.box.player-2 {
   animation: box-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 

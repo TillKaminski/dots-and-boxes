@@ -34,6 +34,7 @@ describe('GamePageComponent', () => {
       localPlayerId: signal(1),
       isFinished: signal(false),
       botModel: signal('random'),
+      isOffline: signal(false),
       createNewGame: jest.fn().mockReturnValue(of({ success: true })),
       restartGame: jest.fn().mockReturnValue(of({ success: true })),
       getBotMove: jest.fn().mockReturnValue(of({ success: true })),
