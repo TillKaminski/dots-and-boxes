@@ -29,14 +29,15 @@ class DataPreprocessor:
         **Order**: [Horizontal Edges, Vertical Edges, Boxes State].
         """
         if isinstance(state, GameState):
-            horizontal_edges = np.array(state.edges["horizontal"]).flatten(order='C')
-            vertical_edges = np.array(state.edges["vertical"]).flatten(order='C')
-            boxes_raw = np.array(state.boxes).flatten(order='C')
+            # order="C": Column first
+            horizontal_edges = np.array(state.edges["horizontal"]).flatten(order="C")
+            vertical_edges = np.array(state.edges["vertical"]).flatten(order="C")
+            boxes_raw = np.array(state.boxes).flatten(order="C")
             current_player = state.current_player
         else:
-            horizontal_edges = np.array(state["edges"]["horizontal"]).flatten(order='C')
-            vertical_edges = np.array(state["edges"]["vertical"]).flatten(order='C')
-            boxes_raw = np.array(state["boxes"]).flatten(order='C')
+            horizontal_edges = np.array(state["edges"]["horizontal"]).flatten(order="C")
+            vertical_edges = np.array(state["edges"]["vertical"]).flatten(order="C")
+            boxes_raw = np.array(state["boxes"]).flatten(order="C")
             current_player = state["current_player"]
 
         horizontal_norm = self._normalize_edges(horizontal_edges)

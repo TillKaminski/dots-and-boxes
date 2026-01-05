@@ -62,3 +62,33 @@ This section documents the versions of the Dots and Boxes AI models.
 >
 > **Filename:** `TODO`
 >
+
+### Training-Data
+
+Noise ($\epsilon$) is added to the Feed-Forward Network to produce new (undeterministic) data.
+
+**Total:** 20,000 Games
+- **10%** Rule vs. Rule
+- **30%** Rule vs. FFN ($\epsilon=0.1$)
+- **40%** FFN vs. FFN ($\epsilon=0.15$ both)
+- **20%** FFN ($\epsilon=0.2$) vs. FFN ($\epsilon=0$)
+
+
+### Training Progress
+![Training Progess](../img_training/v1_rule_based_mix.png)
+*Figure 1: Loss and Accuracy over 100 epochs.*
+
+ ### Performance:
+   - TODO
+
+
+### Benchmark (vs. Rule-Bot):
+
+
+| RESULTS for Rule vs FFN | 1.000 Games |
+| :--- | :--- |
+| Wins (Rule) | XXX (XX.X3%) |
+| Wins (FFN) | **XXX (XX.X%**) |
+| Draws | XXX |
+| Avg Score (Rule) | X.XX |
+| Avg Score (FFN) | **X.XX** |

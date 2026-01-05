@@ -5,7 +5,7 @@ import pytest
 from ai.bots.random_bot import RandomBot
 from ai.data.data_generator import SimulationMode
 from game.game_service import GameService
-from ai.bots.evaluation import BotEvaluator
+from ai.bots.evaluator import BotEvaluator
 
 
 BOARD_SIZE = 1

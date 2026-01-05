@@ -5,22 +5,14 @@ import logging
 import os
 import random
 
-from matplotlib.pylab import Enum
+from enum import Enum
 from ai.bots.basic_bot import BasicBot
-from ai.bots.ffn_bot import FFNBot
-from ai.bots.rule_based_bot import RuleBasedBot
+from ai.bots.bot_service import BotService
 from ai.data.data_storage import DataStorage
 from game.game_service import GameService
-from ai.bots.random_bot import RandomBot, Move
+from ai.bots.move import Move
 
 logger = logging.getLogger(__name__)
-
-BOT_CLASSES: dict[str, BasicBot] = {
-    "random": RandomBot,
-    "rule": RuleBasedBot,
-    "ffn": FFNBot,
-    # TODO: Add more Bots.
-}
 
 
 class SimulationMode(Enum):
@@ -161,14 +153,6 @@ class DataGenerator:
         return 1
 
 
-def create_bot(bot_name: str, size: int) -> BasicBot:
-    """Helper function to create a bot based on its name."""
-    BotClass = BOT_CLASSES.get(bot_name.lower())
-    if BotClass is None:
-        raise ValueError(f"Unknown bot type: {bot_name}")
-    return BotClass(size)
-
-
 def main():
     """Method that handles Terminal Input."""
     parser = argparse.ArgumentParser(description="Generates Training-Data.")
@@ -199,11 +183,40 @@ def main():
         default="random",
         help="Bot-Type Player 1. [random, rule, fnn]",
     )
+
+    parser.add_argument(
+        "--model",
+        type=str,
+        default=None,
+        help="Path to the pretrained model file for ai bots. (set --model2 to use a different model in ai vs. ai matches).",
+    )
+
+    parser.add_argument(
+        "--epsilon",
+        type=float,
+        default=None,
+        help="Exploration rate (0.0-1.0). Higher values increase random moves for ai bots. (set --epsilon2 to choose a different epsilon-value for ai vs. ai matches).",
+    )
+
     parser.add_argument(
         "--bot2",
         type=str,
         default="random",
         help="Bot-Type Player 2. [random, rule, fnn]",
+    )
+
+    parser.add_argument(
+        "--model2",
+        type=str,
+        default=None,
+        help="Model-Path for second AI-Bot.",
+    )
+
+    parser.add_argument(
+        "--epsilon2",
+        type=float,
+        default=None,
+        help="Epsilon-Value to force Exploration (second AI-Bot).",
     )
 
     parser.add_argument(
@@ -245,6 +258,10 @@ def main():
     size = args.size
     bot1 = args.bot1
     bot2 = args.bot2
+    model = args.model
+    epsilon = args.epsilon
+    model2 = args.model2
+    epsilon2 = args.epsilon2
     number_games = args.games
     log = args.log
     view = args.view
@@ -280,9 +297,13 @@ def main():
         )
         return
 
+    bot_service = BotService()
+
     try:
-        bot1 = create_bot(bot1, size)
-        bot2 = create_bot(bot2, size)
+        bot1 = bot_service.create_bot(bot1, size, model, epsilon)
+        mod2 = model2 if model2 is not None else model
+        eps2 = epsilon2 if epsilon2 is not None else epsilon
+        bot2 = bot_service.create_bot(bot2, size, mod2, eps2)
     except ValueError as e:
         logger.error(f"Error creating bot: {e}")
         return
