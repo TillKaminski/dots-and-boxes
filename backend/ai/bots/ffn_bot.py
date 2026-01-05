@@ -2,6 +2,7 @@
 
 import logging
 import os
+import random
 from typing import Any, Dict
 
 import torch
@@ -22,10 +23,16 @@ class FFNBot(BasicBot):
     BOT_NAME = "FFN"
     GAME_STATE_REQUIRED = True
 
-    def __init__(self, size: int, model_path: str = DeploymentConfig.MODEL_PATH):
+    def __init__(
+        self,
+        size: int,
+        model_path: str = DeploymentConfig.MODEL_PATH,
+        epsilon: float = 0.0,
+    ):
         """Constructor for a Bot that uses a FFN for Move Predictions."""
         self.size = size
         self.model_path = model_path
+        self.epsilon = epsilon
         self.positions: list[Move] = []
         self.preprocessor = DataPreprocessor(size=size)
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -68,6 +75,9 @@ class FFNBot(BasicBot):
         """
         if self._current_state is None:
             raise RuntimeError("No Game State set.")
+
+        if self.epsilon > 0.0 and random.random() < self.epsilon:
+            return self._get_random_legal_move()
 
         with torch.no_grad():
             state_vector_X = self.preprocessor._serialize_state(self._current_state)
@@ -121,3 +131,8 @@ class FFNBot(BasicBot):
             return self.positions[index]
 
         raise ValueError(f"Invalid Move Index '{index}'")
+
+    def _get_random_legal_move(self) -> Move:
+        """Helper-Method for Exploration."""
+        legal_moves = [move for move in self.positions if move.available]
+        return random.choice(legal_moves)
