@@ -3,7 +3,6 @@
 This section documents the versions of the Dots and Boxes AI models.
 
 ---
----
 
 # Feed-Forward Neural Network (FFN)
 
@@ -26,13 +25,11 @@ This section documents the versions of the Dots and Boxes AI models.
 
 ## Versions
 
-> ---
 >
 > ### Version 1: "Basic Rules"
 >
->> **Filename:** `v1_rule_based_mix.pt`
+> **Filename:** `v1_rule_based_mix.pt`
 >
-> ---
 
 ### Training-Data
 **Total:** 10,000 Games
@@ -60,10 +57,8 @@ This section documents the versions of the Dots and Boxes AI models.
 | Avg Score (Rule) | 6.38 |
 | Avg Score (FFN) | **6.58** |
 
-> ---
 >
 > ### Version 2: "Self-Play"
 >
->> **Filename:** `TODO`
+> **Filename:** `TODO`
 >
-> ---
