@@ -43,7 +43,7 @@ class FFNBot(BasicBot):
             output_size=ModelConfig.OUTPUT_SIZE,
         ).to(self.device)
 
-        full_path = os.path.join(os.path.dirname(__file__), "../..", self.model_path)
+        full_path = os.path.join(os.path.dirname(__file__), "../", self.model_path)
 
         if not os.path.exists(full_path):
             logger.warning(
@@ -107,12 +107,12 @@ class FFNBot(BasicBot):
 
     def _init_positions(self):
         """Initialize all possible moves."""
-        for y in range(self.size + 1):
-            for x in range(self.size):
+        for x in range(self.size):
+            for y in range(self.size + 1):
                 self.positions.append(Move(x, y, Orientation.HORIZONTAL))
 
-        for y in range(self.size):
-            for x in range(self.size + 1):
+        for x in range(self.size + 1):
+            for y in range(self.size):
                 self.positions.append(Move(x, y, Orientation.VERTICAL))
 
     def _map_index_to_move(self, index: int) -> Move:

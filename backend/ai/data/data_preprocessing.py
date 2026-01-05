@@ -29,14 +29,14 @@ class DataPreprocessor:
         **Order**: [Horizontal Edges, Vertical Edges, Boxes State].
         """
         if isinstance(state, GameState):
-            horizontal_edges = np.array(state.edges["horizontal"]).flatten()
-            vertical_edges = np.array(state.edges["vertical"]).flatten()
-            boxes_raw = np.array(state.boxes).flatten()
+            horizontal_edges = np.array(state.edges["horizontal"]).flatten(order='C')
+            vertical_edges = np.array(state.edges["vertical"]).flatten(order='C')
+            boxes_raw = np.array(state.boxes).flatten(order='C')
             current_player = state.current_player
         else:
-            horizontal_edges = np.array(state["edges"]["horizontal"]).flatten()
-            vertical_edges = np.array(state["edges"]["vertical"]).flatten()
-            boxes_raw = np.array(state["boxes"]).flatten()
+            horizontal_edges = np.array(state["edges"]["horizontal"]).flatten(order='C')
+            vertical_edges = np.array(state["edges"]["vertical"]).flatten(order='C')
+            boxes_raw = np.array(state["boxes"]).flatten(order='C')
             current_player = state["current_player"]
 
         horizontal_norm = self._normalize_edges(horizontal_edges)
@@ -98,16 +98,16 @@ class DataPreprocessor:
         one_hot_label = torch.zeros(self.output_size, dtype=torch.float32)
 
         if orientation.upper() == "HORIZONTAL":
-            h_cols = self.size
-            idx = y * h_cols + x
+            h_rows = self.size + 1
+            idx = x * h_rows + y
 
             one_hot_label[idx] = 1.0
 
         elif orientation.upper() == "VERTICAL":
             v_offset = self.num_horizontal_edges
-            v_cols = self.size + 1
+            v_rows = self.size
 
-            idx = v_offset + y * v_cols + x
+            idx = v_offset + x * v_rows + y
 
             one_hot_label[idx] = 1.0
 
