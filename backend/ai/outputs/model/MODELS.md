@@ -20,6 +20,7 @@ This section documents the versions of the Dots and Boxes AI models.
 | **Activation Function** | `ReLU` (Hidden) / `Softmax` (Output) |
 | **Optimizer** | `Adam` |
 | **Loss Function** | `CrossEntropyLoss` |
+| **Early-Stop Patience** | `10` Epochs |
 
 ---
 
