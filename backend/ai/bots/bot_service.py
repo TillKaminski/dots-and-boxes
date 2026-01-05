@@ -36,7 +36,7 @@ class BotService:
 
         potential_params = {
             "size": size,
-            "model_path": "outputs/model/" + model,
+            "model_path": self._set_path(model),
             "epsilon": epsilon,
         }
 
@@ -48,6 +48,12 @@ class BotService:
         }
 
         return BotClass(**valid_params)
+
+    def _set_path(self, model):
+        """Helper Methods to create the Model-Path."""
+        if model is not None:
+            return "outputs/model/" + model
+        return None
 
     def get_bot_models(self) -> set[str]:
         """Returns available Bot Models."""

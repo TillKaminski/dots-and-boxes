@@ -70,10 +70,15 @@ class ModelTrainer:
         losses, avg_losses, train_accuracies = [], [], []
         val_losses, val_accuracies = [], []
 
-        if epochs:
-            num_epochs = epochs
-        else:
-            num_epochs = TrainingConfig.NUM_EPOCHS
+        num_epochs = epochs if epochs else TrainingConfig.NUM_EPOCHS
+
+        is_early_stopping_active = TrainingConfig.EARLY_STOPPING_ACTIVE
+
+        best_val_loss = float('inf')
+        patience = TrainingConfig.EARLY_STOPPING_PATIENCE
+        counter = 0
+        best_model_state = None
+        final_epoch = num_epochs
 
         for epoch in range(num_epochs):
             self.model.train()
@@ -104,6 +109,26 @@ class ModelTrainer:
 
             if self.scheduler:
                 self.scheduler.step(val_loss)
+            if is_early_stopping_active:
+                if val_loss < best_val_loss:
+                    best_val_loss = val_loss
+                    best_model_state = self.model.state_dict()
+                    counter = 0
+                else:
+                    counter += 1
+                    if counter >= patience:
+                        final_epoch = epoch + 1
+                        print(f"\n\tINFO: No improvement for {patience} epochs. Stopping at Epoch {final_epoch}.")
+                        break
+            else:
+                if val_loss < best_val_loss:
+                    best_val_loss = val_loss
+                    best_model_state = self.model.state_dict()
+
+        if best_model_state:
+            self.model.load_state_dict(best_model_state)
+
+        print(f"\nTraining finished after {final_epoch} epochs. Best Val Loss: {best_val_loss:.4f}")
 
         self.plot_metrics(
             losses, avg_losses, train_accuracies, val_losses, val_accuracies
@@ -141,18 +166,38 @@ class ModelTrainer:
         """Generates and saves a figure illustrating the training history, including batch loss, epoch loss, and train/validation accuracy."""
         fig, axs = plt.subplots(1, 2, figsize=(12, 4))
 
-        axs[0].plot(losses)
+        axs[0].plot(losses, alpha=0.3, color='blue')
         axs[0].set_title("Batch Loss")
-        axs[0].set_xlabel("Batch")
+        axs[0].set_xlabel("Batch Update")
         axs[0].set_ylabel("Loss")
 
-        axs[1].plot(avg_losses, label="Train Loss")
-        axs[1].plot(val_losses, label="Val Loss")
-        axs[1].plot(train_accuracies, label="Train Acc")
-        axs[1].plot(val_accuracies, label="Val Acc")
-        axs[1].legend()
-        axs[1].set_title("Epoch Stats")
-        axs[1].set_xlabel("Epoch")
+        if len(losses) > 100:
+            window = 100
+            smooth_loss = [sum(losses[i:i+window])/window for i in range(len(losses)-window)]
+            axs[0].plot(smooth_loss, color='darkblue', label='Trend (Moving Avg)')
+            axs[0].legend()
+
+        ax_loss = axs[1]
+        ax_acc = axs[1].twinx()
+
+        lns1 = ax_loss.plot(avg_losses, color='red', label="Train Loss", linewidth=2)
+        lns2 = ax_loss.plot(val_losses, color='orange', label="Val Loss", linestyle='--')
+        ax_loss.set_ylabel("Loss (CrossEntropy)")
+        ax_loss.set_xlabel("Epoch")
+
+        lns3 = ax_acc.plot(train_accuracies, color='green', label="Train Acc", linewidth=2)
+        lns4 = ax_acc.plot(val_accuracies, color='lightgreen', label="Val Acc", linestyle='--')
+        ax_acc.set_ylabel("Accuracy (%)")
+        ax_acc.set_ylim(0, 100)
+
+        best_epoch = val_losses.index(min(val_losses))
+        v_line = ax_loss.axvline(x=best_epoch, color='gray', linestyle=':', label='Best Model')
+
+        lns = lns1 + lns2 + lns3 + lns4 + [v_line]
+        labs = [l.get_label() for l in lns]
+        ax_loss.legend(lns, labs, loc='center right')
+
+        ax_loss.set_title("Epoch Stats: Loss vs Accuracy")
 
         plt.tight_layout()
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")

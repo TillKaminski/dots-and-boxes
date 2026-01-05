@@ -17,6 +17,8 @@ class TrainingConfig:
     NUM_EPOCHS = 20
     DATA_FILE = "training_data_ffn.pt"
     LR_SCHEDULING = True
+    EARLY_STOPPING_ACTIVE = True
+    EARLY_STOPPING_PATIENCE = 10
 
 
 class DeploymentConfig:

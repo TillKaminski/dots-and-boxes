@@ -65,7 +65,7 @@ This section documents the versions of the Dots and Boxes AI models.
 
 ### Training-Data
 
-Noise ($\epsilon$) is added to the Feed-Forward Network to produce new (undeterministic) data.
+Noise ($\epsilon$) is added to the Feed-Forward Network to produce new (non-deterministic) data.
 
 **Total:** 20,000 Games
 - **10%** Rule vs. Rule
