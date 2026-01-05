@@ -1,5 +1,6 @@
 """Service Class that handles Bot Management."""
 
+import inspect
 from ai.bots.basic_bot import BasicBot
 from ai.bots.ffn_bot import FFNBot
 from ai.bots.move import Move
@@ -20,6 +21,33 @@ ACTIVE_BOTS: dict[str, BasicBot] = {}
 
 class BotService:
     """Manages different Bot Models."""
+
+    def create_bot(
+        self,
+        bot_name: str,
+        size: int,
+        model: str | None = None,
+        epsilon: float | None = None,
+    ) -> BasicBot:
+        """Function to create a bot based on its name."""
+        BotClass = BOT_MODEL.get(bot_name.lower())
+        if BotClass is None:
+            raise ValueError(f"Unknown bot type: {bot_name}")
+
+        potential_params = {
+            "size": size,
+            "model_path": "outputs/model/" + model,
+            "epsilon": epsilon,
+        }
+
+        sig = inspect.signature(BotClass.__init__)
+        valid_params = {
+            k: v
+            for k, v in potential_params.items()
+            if k in sig.parameters and v is not None
+        }
+
+        return BotClass(**valid_params)
 
     def get_bot_models(self) -> set[str]:
         """Returns available Bot Models."""
