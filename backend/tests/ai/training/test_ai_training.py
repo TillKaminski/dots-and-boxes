@@ -23,7 +23,9 @@ def test_main_with_iteration_parameter(capsys):
     """Test, if train() Method is called with parameters."""
     expected_iterations = 50
     expected_source = "test_source"
-    mock_train = _mock_main_execution(iterations=expected_iterations, src=expected_source)
+    mock_train = _mock_main_execution(
+        iterations=expected_iterations, src=expected_source
+    )
 
     captured = capsys.readouterr()
 

@@ -6,7 +6,13 @@ import torch.nn as nn
 class FeedForwardNet(nn.Module):
     """Definition of the Feed Forward Neural Network."""
 
-    def __init__(self, input_size: int, hidden_layers: list[int], output_size: int, dropout_rate: float = 0.0):
+    def __init__(
+        self,
+        input_size: int,
+        hidden_layers: list[int],
+        output_size: int,
+        dropout_rate: float = 0.0,
+    ):
         """Model Constructor.
 
         ### Args:
