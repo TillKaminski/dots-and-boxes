@@ -118,7 +118,7 @@ def test_restart_game_resets_state():
     )
     state_before = client.get(URL_PREFIX + f"/{game_id}/state").json()["state"]
 
-    response = client.get(URL_PREFIX + f"/{game_id}/restart")
+    response = client.post(URL_PREFIX + f"/{game_id}/restart", json={})
     assert response.status_code == 200
     new_state = response.json()["state"]
 
@@ -147,7 +147,7 @@ def test_restart_invalid_id():
     """Test if Restarting a non-existing Game throws an Error."""
     invalid_game_id = "999"
     assert invalid_game_id not in service.games
-    response = client.get(URL_PREFIX + f"/{invalid_game_id}/restart")
+    response = client.post(URL_PREFIX + f"/{invalid_game_id}/restart", json={})
     assert response.status_code == 404
     assert ERROR_GAME_NOT_FOUND["error"] in response.text
 

@@ -13,6 +13,7 @@ from ai.training.trainer import ModelTrainer
 MOCK_INPUT_SIZE = 10
 MOCK_OUTPUT_SIZE = 4
 MOCK_BATCH_SIZE = 2
+MOCK_DROPOUT_RATE = 0.0
 
 NUM_SAMPLES = 20
 
@@ -41,6 +42,7 @@ def trainer_mock():
                 MockModelConfig.INPUT_SIZE = MOCK_INPUT_SIZE
                 MockModelConfig.OUTPUT_SIZE = MOCK_OUTPUT_SIZE
                 MockModelConfig.HIDDEN_LAYERS = [5]
+                MockModelConfig.DROPOUT_RATE = MOCK_DROPOUT_RATE
 
                 trainer = ModelTrainer()
                 return trainer

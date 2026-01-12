@@ -36,7 +36,7 @@ class RandomBot(BasicBot):
         self.positions.clear()
         self._init_positions()
 
-    def _select_move(self, log_move: bool = False, return_dictionary: bool = False):
+    def _select_move(self):
         """Select and return a random available move.
 
         ### Params:
@@ -46,15 +46,8 @@ class RandomBot(BasicBot):
         possible_moves = [move for move in self.positions if move.available]
 
         if not possible_moves:
-            if log_move:
-                logger.warning("No possible Moves available.")
             raise RuntimeError("No possible Moves available.")
         move = random.choice(possible_moves)
-
-        if log_move:
-            logger.info(
-                f"RandomBot move: x={move.x}, y={move.y}, orientation={move.orientation}"
-            )
 
         return move
 

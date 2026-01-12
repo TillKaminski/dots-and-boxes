@@ -1,10 +1,8 @@
 """Test Logging for all 'ai'-packages."""
 
 import logging
-import pytest
 from unittest.mock import MagicMock, Mock, mock_open, patch
 
-from ai.bots.random_bot import RandomBot
 from ai.data.data_generator import DataGenerator
 from ai.data.data_storage import DataStorage
 
@@ -87,49 +85,11 @@ class TestDataGeneratorLogging:
 
         expected_log_message = f"Simulated {n_games} games."
         assert expected_log_message in caplog.text
-        assert caplog.record_tuples[0] == (
+        # Check last Entry
+        assert caplog.record_tuples[-1] == (
             generator_logger.name,
             logging.INFO,
             expected_log_message,
-        )
-
-
-class TestRandomBotLogging:
-    """Test Logging for Random Bot Class."""
-
-    def test_random_bot_no_moves_logs_warning(self, caplog):
-        """Test if Log is created for 'No possible Moves available'."""
-        random_bot: RandomBot = RandomBot(2)
-
-        for position in random_bot.positions:
-            position.available = False
-
-        with pytest.raises(RuntimeError):
-            with caplog.at_level(logging.WARNING, logger=bot_logger.name):
-                random_bot._select_move(log_move=True)
-
-        expected_log_message = "No possible Moves available."
-        assert expected_log_message in caplog.text
-        assert caplog.record_tuples[0] == (
-            bot_logger.name,
-            logging.WARNING,
-            expected_log_message,
-        )
-
-    def test_random_bot_move_logs_info(self, caplog):
-        """Test Move Logging."""
-        bot = RandomBot(2)
-
-        with caplog.at_level(logging.INFO, logger=bot_logger.name):
-            move = bot._select_move(log_move=True)
-
-        expected = (
-            f"RandomBot move: x={move.x}, y={move.y}, orientation={move.orientation}"
-        )
-        assert caplog.record_tuples[0] == (
-            bot_logger.name,
-            logging.INFO,
-            expected,
         )
 
 

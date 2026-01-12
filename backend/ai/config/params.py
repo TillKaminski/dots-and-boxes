@@ -7,6 +7,7 @@ class ModelConfig:
     INPUT_SIZE = 56
     OUTPUT_SIZE = 40
     HIDDEN_LAYERS = [128, 128, 64]
+    DROPOUT_RATE = 0.2
 
 
 class TrainingConfig:
@@ -17,6 +18,8 @@ class TrainingConfig:
     NUM_EPOCHS = 20
     DATA_FILE = "training_data_ffn.pt"
     LR_SCHEDULING = True
+    EARLY_STOPPING_ACTIVE = True
+    EARLY_STOPPING_PATIENCE = 7
 
 
 class DeploymentConfig:

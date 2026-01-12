@@ -29,14 +29,15 @@ class DataPreprocessor:
         **Order**: [Horizontal Edges, Vertical Edges, Boxes State].
         """
         if isinstance(state, GameState):
-            horizontal_edges = np.array(state.edges["horizontal"]).flatten()
-            vertical_edges = np.array(state.edges["vertical"]).flatten()
-            boxes_raw = np.array(state.boxes).flatten()
+            # order="C": Column first
+            horizontal_edges = np.array(state.edges["horizontal"]).flatten(order="C")
+            vertical_edges = np.array(state.edges["vertical"]).flatten(order="C")
+            boxes_raw = np.array(state.boxes).flatten(order="C")
             current_player = state.current_player
         else:
-            horizontal_edges = np.array(state["edges"]["horizontal"]).flatten()
-            vertical_edges = np.array(state["edges"]["vertical"]).flatten()
-            boxes_raw = np.array(state["boxes"]).flatten()
+            horizontal_edges = np.array(state["edges"]["horizontal"]).flatten(order="C")
+            vertical_edges = np.array(state["edges"]["vertical"]).flatten(order="C")
+            boxes_raw = np.array(state["boxes"]).flatten(order="C")
             current_player = state["current_player"]
 
         horizontal_norm = self._normalize_edges(horizontal_edges)
@@ -97,17 +98,17 @@ class DataPreprocessor:
         orientation = move["orientation"]
         one_hot_label = torch.zeros(self.output_size, dtype=torch.float32)
 
-        if orientation == "HORIZONTAL":
-            h_cols = self.size
-            idx = y * h_cols + x
+        if orientation.upper() == "HORIZONTAL":
+            h_rows = self.size + 1
+            idx = x * h_rows + y
 
             one_hot_label[idx] = 1.0
 
-        elif orientation == "VERTICAL":
+        elif orientation.upper() == "VERTICAL":
             v_offset = self.num_horizontal_edges
-            v_cols = self.size + 1
+            v_rows = self.size
 
-            idx = v_offset + y * v_cols + x
+            idx = v_offset + x * v_rows + y
 
             one_hot_label[idx] = 1.0
 
@@ -153,23 +154,41 @@ def main():
     )
     parser.set_defaults(pvn=False)
 
+    parser.add_argument(
+        "--src",
+        type=str,
+        default="training_data_raw.pt",
+        help="Path of the Source File.",
+    )
+    parser.add_argument(
+        "--dest",
+        type=str,
+        default="training_data.pt",
+        help="Path for the created File.",
+    )
+
     args = parser.parse_args()
 
     data_preprocessor = DataPreprocessor(size=4)  # TODO: Fix Magic Number
     data_storage = DataStorage()
 
     # Load Data
-    data_raw = data_storage.load_from_pt()
+    data_raw = data_storage.load_from_pt(args.src)
 
     if args.ffn:
         data: list[Tuple[torch.Tensor, torch.Tensor]] = []
-        for game in data_raw.values():
+        n_games = len(data_raw)
+        for i, game in enumerate(data_raw.values()):
             for step in game:
                 # Map State
                 state = data_preprocessor.get_data_pair(step_data=step)
                 data.append(state)
+            if (i + 1) % 100 == 0:
+                print(f"Processed {i+1}/{n_games}...")
 
-        file_path = data_storage.save_to_pt(data, filename="training_data_ffn.pt")
+        print(f"Total steps processed: {len(data)}")
+
+        file_path = data_storage.save_to_pt(data, args.dest)
         print(f"Training Data for FFN saved.\n➡️ Filepath: {file_path}\n")
     elif args.pvn:
         print("TODO: Implement Preprocessing for PVN.")

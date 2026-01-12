@@ -18,7 +18,7 @@ class TestBot(BasicBot):
         self, log_move: bool = False, return_dictionary: bool = False
     ) -> Dict[str, Any]:
         """Call Superclass move-Method."""
-        return super()._select_move(log_move, return_dictionary)
+        return super()._select_move()
 
     def update(self, x: int, y: int, orientation: Orientation) -> None:
         """Call Superclass update-Method."""

@@ -50,9 +50,7 @@ class BasicBot(ABC):
         return selected_move
 
     @abstractmethod
-    def _select_move(
-        self, log_move: bool = False, return_dictionary: bool = False
-    ) -> Dict[str, Any] | Move:
+    def _select_move(self) -> Dict[str, Any] | Move:
         """Select a move."""
         raise NotImplementedError("Subclass: _select_move()-Method not implemented.")
 

@@ -2,13 +2,25 @@
 
 import argparse
 import logging
+import os
+import random
+
+from enum import Enum
 from ai.bots.basic_bot import BasicBot
-from ai.bots.ffn_bot import FFNBot
+from ai.bots.bot_service import BotService
 from ai.data.data_storage import DataStorage
 from game.game_service import GameService
-from ai.bots.random_bot import RandomBot, Move
+from ai.bots.move import Move
 
 logger = logging.getLogger(__name__)
+
+
+class SimulationMode(Enum):
+    """Represents the Player Order during the Simulation."""
+
+    FIXED = "fixed"
+    RANDOM = "random"
+    ALTERNATE = "alternate"
 
 
 class DataGenerator:
@@ -24,6 +36,7 @@ class DataGenerator:
         game_id: str,
         bot1: BasicBot,
         bot2: BasicBot,
+        starting_player: int = 1,
         save_moves: bool = True,
         log: bool = False,
     ):
@@ -33,16 +46,23 @@ class DataGenerator:
             state_list: List of dicts representing state before and after move. Move logging available.
         """
         if game_id in self.service.games:
-            self.service.restart_game(game_id)
+            self.service.restart_game(game_id, starting_player=starting_player)
         else:
-            self.service.create_game(game_id, size=self.board_size)
+            self.service.create_game(
+                game_id, size=self.board_size, starting_player=starting_player
+            )
 
         # Setup Bots
         bot1.reset()
         bot2.reset()
 
         state_list = []
-        current_bot = bot1
+        if starting_player == 1:
+            current_bot = bot1
+        else:
+            # starting_player == 2:
+            current_bot = bot2
+
         while not self.service.games[game_id].game_finished:
             if current_bot.game_state_required():
                 state = self.service.get_state_object(game_id)
@@ -101,6 +121,7 @@ class DataGenerator:
         n_games: int,
         bot1: BasicBot,
         bot2: BasicBot,
+        start_mode: SimulationMode = SimulationMode.FIXED,
         prefix: str = "game",
         log: bool = False,
     ):
@@ -108,27 +129,28 @@ class DataGenerator:
         all_games = {}
         for i in range(n_games):
             game_id = f"{prefix}_{i+1}"
-            states = self.simulate_game(game_id, bot1, bot2, log=log)
+            starting_player = self._set_starting_player(start_mode, i)
+            states = self.simulate_game(
+                game_id, bot1, bot2, starting_player=starting_player, log=log
+            )
             all_games[game_id] = states
+            if (i + 1) % 100 == 0:
+                print(f"Simulated {i+1}/{n_games}...")
 
         if log:
             logger.info(f"Simulated {n_games} games.")
         return all_games
 
-
-BOT_CLASSES: dict[str, BasicBot] = {
-    "random": RandomBot,
-    "ffn": FFNBot,
-    # TODO: Add more Bots.
-}
-
-
-def create_bot(bot_name: str, size: int) -> BasicBot:
-    """Helper function to create a bot based on its name."""
-    BotClass = BOT_CLASSES.get(bot_name.lower())
-    if BotClass is None:
-        raise ValueError(f"Unknown bot type: {bot_name}")
-    return BotClass(size)
+    def _set_starting_player(self, mode: SimulationMode, game_index: int) -> int:
+        """Sets the Starting Player for different Simulation Modes [`random`, `fixed`, `alternate`]."""
+        if mode not in SimulationMode:
+            logger.warning("Unknown Simulation Mode, use 'fixed' as default.")
+        if mode == SimulationMode.ALTERNATE:
+            return 1 if game_index % 2 == 0 else 2
+        elif mode == SimulationMode.RANDOM:
+            return random.choice([1, 2])
+        # Default: SimulationMode.FIXED
+        return 1
 
 
 def main():
@@ -142,14 +164,67 @@ def main():
     )
 
     parser.add_argument(
+        "--states",
+        type=int,
+        default=10,
+        help="Number of States that are printed to console.",
+    )
+
+    parser.add_argument(
         "--log", dest="log", action="store_true", help="Enable Terminal Logging."
     )
     parser.set_defaults(log=False)
 
     parser.add_argument("--games", type=int, default=1000, help="Number of Games.")
     parser.add_argument("--size", type=int, default=4, help="Board-Size.")
-    parser.add_argument("--bot1", type=str, default="random", help="Bot-Type Player 1.")
-    parser.add_argument("--bot2", type=str, default="random", help="Bot-Type Player 2.")
+    parser.add_argument(
+        "--bot1",
+        type=str,
+        default="random",
+        help="Bot-Type Player 1. [random, rule, fnn]",
+    )
+
+    parser.add_argument(
+        "--model",
+        type=str,
+        default=None,
+        help="Path to the pretrained model file for ai bots. (set --model2 to use a different model in ai vs. ai matches).",
+    )
+
+    parser.add_argument(
+        "--epsilon",
+        type=float,
+        default=None,
+        help="Exploration rate (0.0-1.0). Higher values increase random moves for ai bots. (set --epsilon2 to choose a different epsilon-value for ai vs. ai matches).",
+    )
+
+    parser.add_argument(
+        "--bot2",
+        type=str,
+        default="random",
+        help="Bot-Type Player 2. [random, rule, fnn]",
+    )
+
+    parser.add_argument(
+        "--model2",
+        type=str,
+        default=None,
+        help="Model-Path for second AI-Bot.",
+    )
+
+    parser.add_argument(
+        "--epsilon2",
+        type=float,
+        default=None,
+        help="Epsilon-Value to force Exploration (second AI-Bot).",
+    )
+
+    parser.add_argument(
+        "--mode",
+        type=str,
+        default="fixed",
+        help="Set Simulation Mode: [fixed (default), random, alternate]",
+    )
 
     parser.add_argument(
         "--json", type=int, default=2, help="Save the first 'n' Games in JSON-Format."
@@ -160,16 +235,47 @@ def main():
     )
     parser.set_defaults(pt=True)
 
+    parser.add_argument(
+        "--name",
+        type=str,
+        default="training_data_raw.pt",
+        help="Filename for the .pt file.",
+    )
+    parser.add_argument(
+        "--merge",
+        action="store_true",
+        help="Merge with existing file instead of overwriting.",
+    )
+    parser.add_argument(
+        "--label",
+        type=str,
+        default="game",
+        help="Prefix for the game IDs (e.g. 'rule', 'rand').",
+    )
+
     args = parser.parse_args()
 
     size = args.size
     bot1 = args.bot1
     bot2 = args.bot2
+    model = args.model
+    epsilon = args.epsilon
+    model2 = args.model2
+    epsilon2 = args.epsilon2
     number_games = args.games
     log = args.log
     view = args.view
+    states = args.states
     json = args.json
     pt = args.pt
+    name = args.name
+    merge = args.merge
+    label = args.label
+
+    try:
+        mode_enum = SimulationMode(args.mode)
+    except ValueError:
+        mode_enum = SimulationMode.FIXED
 
     if log:
         logging.basicConfig(level=logging.INFO)
@@ -178,14 +284,26 @@ def main():
 
     data_storage = DataStorage(log=log)
 
-    if view > 0:
-        data = data_storage.load_from_pt()
-        data_storage.print_training_data_summary(data, limit_games=view)
+    file_path = data_storage.get_path(name)
+
+    if merge and not os.path.exists(file_path):
+        logger.error(f"Canceled: --merge set, but no file exists with name {name}!")
         return
 
+    if view > 0:
+        data = data_storage.load_from_pt(name)
+        data_storage.print_training_data_summary(
+            data, limit_games=view, limit_states=states
+        )
+        return
+
+    bot_service = BotService()
+
     try:
-        bot1 = create_bot(bot1, size)
-        bot2 = create_bot(bot2, size)
+        bot1 = bot_service.create_bot(bot1, size, model, epsilon)
+        mod2 = model2 if model2 is not None else model
+        eps2 = epsilon2 if epsilon2 is not None else epsilon
+        bot2 = bot_service.create_bot(bot2, size, mod2, eps2)
     except ValueError as e:
         logger.error(f"Error creating bot: {e}")
         return
@@ -194,7 +312,12 @@ def main():
     data_generator: DataGenerator = DataGenerator(game_service, size)
 
     data = data_generator.simulate_multiple_games(
-        n_games=number_games, bot1=bot1, bot2=bot2, log=log
+        n_games=number_games,
+        bot1=bot1,
+        bot2=bot2,
+        start_mode=mode_enum,
+        log=log,
+        prefix=label,
     )
 
     if json > 0:
@@ -202,7 +325,10 @@ def main():
         data_storage.save_to_json(data_json)
 
     if pt:
-        data_storage.save_to_pt(data)
+        if merge:
+            data_storage.merge_and_save(data, name, label)
+        else:
+            data_storage.save_to_pt(data, name)
 
 
 if __name__ == "__main__":  # pragma: no cover

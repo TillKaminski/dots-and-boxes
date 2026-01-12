@@ -2,6 +2,7 @@
 
 import logging
 import os
+import random
 from typing import Any, Dict
 
 import torch
@@ -22,10 +23,16 @@ class FFNBot(BasicBot):
     BOT_NAME = "FFN"
     GAME_STATE_REQUIRED = True
 
-    def __init__(self, size: int, model_path: str = DeploymentConfig.MODEL_PATH):
+    def __init__(
+        self,
+        size: int,
+        model_path: str = DeploymentConfig.MODEL_PATH,
+        epsilon: float = 0.0,
+    ):
         """Constructor for a Bot that uses a FFN for Move Predictions."""
         self.size = size
         self.model_path = model_path
+        self.epsilon = epsilon
         self.positions: list[Move] = []
         self.preprocessor = DataPreprocessor(size=size)
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -37,21 +44,31 @@ class FFNBot(BasicBot):
 
     def _load_model(self) -> FeedForwardNet:
         """Load pretrained FFN-Model."""
-        model = FeedForwardNet(
-            input_size=ModelConfig.INPUT_SIZE,
-            hidden_layers=ModelConfig.HIDDEN_LAYERS,
-            output_size=ModelConfig.OUTPUT_SIZE,
-        ).to(self.device)
-
-        full_path = os.path.join(os.path.dirname(__file__), "../..", self.model_path)
+        full_path = os.path.join(os.path.dirname(__file__), "../", self.model_path)
 
         if not os.path.exists(full_path):
             logger.warning(
                 f"Model file not found at {full_path}. Using uninitialized model."
             )
-            return model
 
-        model.load_state_dict(torch.load(full_path, map_location=self.device))
+        try:
+            model = FeedForwardNet(
+                input_size=ModelConfig.INPUT_SIZE,
+                hidden_layers=ModelConfig.HIDDEN_LAYERS,
+                output_size=ModelConfig.OUTPUT_SIZE,
+                dropout_rate=ModelConfig.DROPOUT_RATE,
+            ).to(self.device)
+            model.load_state_dict(torch.load(full_path, map_location=self.device))
+        except RuntimeError:
+            logger.info("No Dropout set for Model. Use Default Dropout: 0.0.")
+            model = FeedForwardNet(
+                input_size=ModelConfig.INPUT_SIZE,
+                hidden_layers=ModelConfig.HIDDEN_LAYERS,
+                output_size=ModelConfig.OUTPUT_SIZE,
+                dropout_rate=0.0,
+            ).to(self.device)
+            model.load_state_dict(torch.load(full_path, map_location=self.device))
+
         model.eval()
         return model
 
@@ -61,15 +78,16 @@ class FFNBot(BasicBot):
         self._init_positions()
         self._current_state = None
 
-    def _select_move(
-        self, log_move: bool = False, return_dictionary: bool = False
-    ) -> Dict[str, Any] | Move:
+    def _select_move(self) -> Dict[str, Any] | Move:
         """Predicts the best Move based on the current Game State.
 
         Returns dict: {"x": int, "y": int, "orientation": "horizontal|vertical"}
         """
         if self._current_state is None:
             raise RuntimeError("No Game State set.")
+
+        if self.epsilon > 0.0 and random.random() < self.epsilon:
+            return self._get_random_legal_move()
 
         with torch.no_grad():
             state_vector_X = self.preprocessor._serialize_state(self._current_state)
@@ -109,12 +127,12 @@ class FFNBot(BasicBot):
 
     def _init_positions(self):
         """Initialize all possible moves."""
-        for y in range(self.size + 1):
-            for x in range(self.size):
+        for x in range(self.size):
+            for y in range(self.size + 1):
                 self.positions.append(Move(x, y, Orientation.HORIZONTAL))
 
-        for y in range(self.size):
-            for x in range(self.size + 1):
+        for x in range(self.size + 1):
+            for y in range(self.size):
                 self.positions.append(Move(x, y, Orientation.VERTICAL))
 
     def _map_index_to_move(self, index: int) -> Move:
@@ -123,3 +141,8 @@ class FFNBot(BasicBot):
             return self.positions[index]
 
         raise ValueError(f"Invalid Move Index '{index}'")
+
+    def _get_random_legal_move(self) -> Move:
+        """Helper-Method for Exploration."""
+        legal_moves = [move for move in self.positions if move.available]
+        return random.choice(legal_moves)

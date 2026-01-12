@@ -3,8 +3,9 @@
 import pytest
 
 from ai.bots.random_bot import RandomBot
+from ai.data.data_generator import SimulationMode
 from game.game_service import GameService
-from ai.bots.evaluation import BotEvaluator
+from ai.bots.evaluator import BotEvaluator
 
 
 BOARD_SIZE = 1
@@ -26,8 +27,10 @@ def test_evaluate_alternate_mode(create_test_evaluator):
     """Test if Alternate Mode leads to an equal Win-rate (Second Player always wins)."""
     n_games = N_GAMES
 
+    start_mode = SimulationMode.ALTERNATE
+
     results = create_test_evaluator.evaluate(
-        bot1, bot2, n_games=n_games, start_mode="alternate"
+        bot1, bot2, n_games=n_games, start_mode=start_mode
     )
 
     assert results["games"] == 4
@@ -45,7 +48,7 @@ def test_evaluate_fixed_mode(create_test_evaluator):
     n_games = N_GAMES
 
     results = create_test_evaluator.evaluate(
-        bot1, bot2, n_games=n_games, start_mode="fixed"
+        bot1, bot2, n_games=n_games, start_mode=SimulationMode.FIXED
     )
 
     assert results["games"] == 4
@@ -65,7 +68,7 @@ def test_evaluate_random_mode_controlled(create_test_evaluator):
     n_games = 100
 
     results = create_test_evaluator.evaluate(
-        bot1, bot2, n_games=n_games, start_mode="random"
+        bot1, bot2, n_games=n_games, start_mode=SimulationMode.RANDOM
     )
 
     # Check if Metrics are in a plausible range
@@ -83,7 +86,7 @@ def test_evaluate_save_moves_false(create_test_evaluator):
     n_games = 1
 
     results = create_test_evaluator.evaluate(
-        bot1, bot2, n_games=n_games, start_mode="fixed", save_moves=False
+        bot1, bot2, n_games=n_games, start_mode=SimulationMode.FIXED, save_moves=False
     )
 
     assert results["games"] == 1
