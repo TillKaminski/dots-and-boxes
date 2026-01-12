@@ -44,21 +44,31 @@ class FFNBot(BasicBot):
 
     def _load_model(self) -> FeedForwardNet:
         """Load pretrained FFN-Model."""
-        model = FeedForwardNet(
-            input_size=ModelConfig.INPUT_SIZE,
-            hidden_layers=ModelConfig.HIDDEN_LAYERS,
-            output_size=ModelConfig.OUTPUT_SIZE,
-        ).to(self.device)
-
         full_path = os.path.join(os.path.dirname(__file__), "../", self.model_path)
 
         if not os.path.exists(full_path):
             logger.warning(
                 f"Model file not found at {full_path}. Using uninitialized model."
             )
-            return model
 
-        model.load_state_dict(torch.load(full_path, map_location=self.device))
+        try:
+            model = FeedForwardNet(
+                input_size=ModelConfig.INPUT_SIZE,
+                hidden_layers=ModelConfig.HIDDEN_LAYERS,
+                output_size=ModelConfig.OUTPUT_SIZE,
+                dropout_rate=ModelConfig.DROPOUT_RATE,
+            ).to(self.device)
+            model.load_state_dict(torch.load(full_path, map_location=self.device))
+        except RuntimeError:
+            logger.info("No Dropout set for Model. Use Default Dropout: 0.0.")
+            model = FeedForwardNet(
+                input_size=ModelConfig.INPUT_SIZE,
+                hidden_layers=ModelConfig.HIDDEN_LAYERS,
+                output_size=ModelConfig.OUTPUT_SIZE,
+                dropout_rate=0.0,
+            ).to(self.device)
+            model.load_state_dict(torch.load(full_path, map_location=self.device))
+
         model.eval()
         return model
 

@@ -6,7 +6,7 @@ import torch.nn as nn
 class FeedForwardNet(nn.Module):
     """Definition of the Feed Forward Neural Network."""
 
-    def __init__(self, input_size: int, hidden_layers: list[int], output_size: int):
+    def __init__(self, input_size: int, hidden_layers: list[int], output_size: int, dropout_rate: float = 0.0):
         """Model Constructor.
 
         ### Args:
@@ -20,6 +20,8 @@ class FeedForwardNet(nn.Module):
         for hidden_size in hidden_layers:
             layers.append(nn.Linear(prev_size, hidden_size))
             layers.append(nn.ReLU())
+            if dropout_rate > 0.0:
+                layers.append(nn.Dropout(dropout_rate))
             prev_size = hidden_size
         layers.append(nn.Linear(prev_size, output_size))
         self.net = nn.Sequential(*layers)

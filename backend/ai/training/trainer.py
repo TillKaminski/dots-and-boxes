@@ -52,6 +52,7 @@ class ModelTrainer:
             input_size=ModelConfig.INPUT_SIZE,
             hidden_layers=ModelConfig.HIDDEN_LAYERS,
             output_size=ModelConfig.OUTPUT_SIZE,
+            dropout_rate=ModelConfig.DROPOUT_RATE,
         ).to(self.device)
 
         self.criterion = nn.CrossEntropyLoss()
@@ -78,6 +79,7 @@ class ModelTrainer:
         patience = TrainingConfig.EARLY_STOPPING_PATIENCE
         counter = 0
         best_model_state = None
+        best_epoch = 0
         final_epoch = num_epochs
 
         for epoch in range(num_epochs):
@@ -110,9 +112,10 @@ class ModelTrainer:
             if self.scheduler:
                 self.scheduler.step(val_loss)
             if is_early_stopping_active:
-                if val_loss < best_val_loss:
+                if (val_loss - best_val_loss) < 1e-5:
                     best_val_loss = val_loss
                     best_model_state = self.model.state_dict()
+                    best_epoch = epoch + 1
                     counter = 0
                 else:
                     counter += 1
@@ -124,11 +127,12 @@ class ModelTrainer:
                 if val_loss < best_val_loss:
                     best_val_loss = val_loss
                     best_model_state = self.model.state_dict()
+                    best_epoch = epoch + 1
 
         if best_model_state:
             self.model.load_state_dict(best_model_state)
 
-        print(f"\nTraining finished after {final_epoch} epochs. Best Val Loss: {best_val_loss:.4f}")
+        print(f"\nTraining finished after {final_epoch} epochs. Best Val Loss: {best_val_loss:.4f}, Epoch: {best_epoch}")
 
         self.plot_metrics(
             losses, avg_losses, train_accuracies, val_losses, val_accuracies
