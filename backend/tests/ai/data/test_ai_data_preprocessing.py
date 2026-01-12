@@ -138,9 +138,9 @@ class TestDataPreprocessor(unittest.TestCase):
 
         expected_X = np.concatenate([horizontal, vertical, boxes], dtype=np.float32)
 
-        # Move: (x=0, y=1, HORIZONTAL) -> Index 2
+        # Move: (x=0, y=1, HORIZONTAL) -> Index 1 (column first)
         expected_Y = torch.zeros(12, dtype=torch.float32)
-        expected_Y[2] = 1.0
+        expected_Y[1] = 1.0
 
         X, Y = self.preprocessor.get_data_pair(mock_step_data)
 

@@ -5,9 +5,9 @@ from unittest.mock import patch, MagicMock
 from ai.training import training
 
 
-def _mock_main_execution(iterations):
+def _mock_main_execution(iterations, src=""):
     """Helper Function that simulates Terminal Execution."""
-    mock_args = argparse.Namespace(it=iterations, src="")
+    mock_args = argparse.Namespace(it=iterations, src=src)
 
     with patch(
         "ai.training.training.argparse.ArgumentParser.parse_args",
@@ -22,7 +22,8 @@ def _mock_main_execution(iterations):
 def test_main_with_iteration_parameter(capsys):
     """Test, if train() Method is called with parameters."""
     expected_iterations = 50
-    mock_train = _mock_main_execution(iterations=expected_iterations)
+    expected_source = "test_source"
+    mock_train = _mock_main_execution(iterations=expected_iterations, src=expected_source)
 
     captured = capsys.readouterr()
 

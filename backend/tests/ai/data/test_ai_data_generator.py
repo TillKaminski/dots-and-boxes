@@ -140,7 +140,7 @@ def test_main_view_parameter(storage_mock):
     storage_instance.print_training_data_summary.assert_called_once()
 
 
-@patch("ai.data.data_generator.BOT_CLASSES")
+@patch("ai.bots.bot_service.BOT_MODEL")
 @patch("ai.data.data_generator.DataGenerator")
 def test_main_runs_simulation(generator_mock: Mock, bot_classes_mock: Mock):
     """Test if Terminal Parameter is processed correctly."""
