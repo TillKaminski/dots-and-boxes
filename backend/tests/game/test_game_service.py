@@ -16,6 +16,7 @@ from game.errors import (
     ERROR_GAME_EXISTS,
     ERROR_GAME_NOT_FOUND,
 )
+from game.game_state import GameState
 
 game_id = "1"
 
@@ -101,6 +102,17 @@ def test_restart_game_resets_everything(services):
     assert all(val == 0 for row in new_state["edges"]["vertical"] for val in row)
     assert state_before != new_state
 
+def test_restart_game_invalid_id_returns_error(services):
+    """Test if an error-message is returned for an unknown game."""
+    service, _ = services
+    invalid_game_id = "invalid_game_id"
+
+    assert invalid_game_id not in service.games
+    error_message = service.restart_game(invalid_game_id)
+
+    assert "error" in error_message
+    assert error_message["error"] == ERROR_GAME_NOT_FOUND["error"]
+
 
 def test_game_over_detection(services):
     """Test if an Action triggers Game-Over Flag."""
@@ -152,6 +164,38 @@ def test_invalid_move(services):
     with pytest.raises(TypeError, match=ERROR_INVALID_ORIENTATION_TYPE["error"]):
         service.make_move(game_id, 2, 0, 0, None)
 
+def test_move_returns_error_message(services):
+    """Test if error message is returned for different cases."""
+    service, _ = services
+
+    # game not found
+    invalid_id = "invalid_game_id"
+    assert invalid_id not in service.games
+
+    msg_game_not_found = service.make_move(invalid_id, 1, 1, 1, Orientation.HORIZONTAL)
+    assert "error" in msg_game_not_found
+    assert msg_game_not_found["error"] == ERROR_GAME_NOT_FOUND["error"]
+
+    # not your turn
+    wrong_turn_id = "new_game_wrong_turn"
+    service.create_game(
+        game_id=wrong_turn_id,
+        starting_player=2
+    )
+    msg_not_your_turn = service.make_move(wrong_turn_id, 1, 1, 1, Orientation.HORIZONTAL)
+    assert "error" in msg_not_your_turn
+    assert msg_not_your_turn["error"] == ERROR_NOT_YOUR_TURN["error"]
+
+    # game over
+    game_over_id = "new_game_finished"
+    service.create_game(game_over_id)
+    service.games[game_over_id].game_finished = True
+
+    msg_game_over = service.make_move(game_over_id, 1, 1, 1, Orientation.HORIZONTAL)
+    assert "error" in msg_game_over
+    assert msg_game_over["error"] == ERROR_GAME_OVER["error"]
+
+
 
 def test_new_game_is_available(services):
     """Test if Game Creation works for multiple Games."""
@@ -167,6 +211,16 @@ def test_new_game_is_available(services):
     assert data_game_1["size"] == 4
     assert data_game_2["size"] == 6
     assert data_game_3["size"] == 5
+
+
+def test_new_game_registers_bot(services):
+    """Test if create_game() uses BotService to register the given bot model."""
+    service, bot_service = services
+    new_game_id = "new_game_id"
+    bot_model = "random"
+
+    service.create_game(new_game_id, bot_model=bot_model)
+    bot_service.register_bot.assert_called_once()
 
 
 def test_make_bot_move(services):
@@ -214,3 +268,39 @@ def test_make_bot_move(services):
     )
     result_error = service.make_bot_move(game_no_bot)
     assert result_error == ERROR_BOT_NOT_SET
+
+    # bot move for invalid game id
+    invalid_id = "invalid_game_id"
+    assert invalid_id not in service.games
+    result_error_no_game = service.make_bot_move(invalid_id)
+    assert "error" in result_error_no_game
+    assert result_error_no_game["error"] == ERROR_GAME_NOT_FOUND["error"]
+
+
+def test_make_move_updates_bot(services):
+    """Test if moves are passed to the BotService."""
+    service, bot_service = services
+
+    bot_game_id = "new_game_bot"
+    service.create_game(bot_game_id, bot_model="random")
+
+    service.make_move(bot_game_id, 1, 1, 1, Orientation.HORIZONTAL)
+
+    bot_service.update_possible_moves.assert_called_once()
+
+
+
+def test_get_state_object(services):
+    """Test if GameState is returned for given game-id."""
+    service, _ = services
+    # should work for game set in fixture
+    game_state = service.get_state_object(game_id)
+    assert isinstance(game_state, GameState)
+
+    # should return error-message for unknown game
+    invalid_id = "invalid_game_id"
+    error_message = service.get_state_object(invalid_id)
+    assert isinstance(error_message, dict)
+    assert "error" in error_message
+    assert error_message["error"] == ERROR_GAME_NOT_FOUND["error"]
+

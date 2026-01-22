@@ -108,7 +108,6 @@ class GameService:
             if bot:
                 bot_service.register_bot(game_id, size, bot)
             return self.get_state(game_id)
-        return board
 
     def delete_game(self, game_id: str):
         """Delete Game-Session by ID."""
