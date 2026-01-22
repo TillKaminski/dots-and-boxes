@@ -303,4 +303,3 @@ def test_get_state_object(services):
     assert isinstance(error_message, dict)
     assert "error" in error_message
     assert error_message["error"] == ERROR_GAME_NOT_FOUND["error"]
-

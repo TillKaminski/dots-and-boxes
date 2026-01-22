@@ -30,23 +30,6 @@ def setup_win_state(rule_based_bot):
 
 
 @pytest.fixture
-def setup_prod_win_state(rule_based_bot):
-    """Sets up a state where 'generating a win' is the next best move (-3 box).
-
-    returns: Set up Bot, list of prioritized Moves
-    """
-    rule_based_bot.update(x=1, y=1, orientation=Orientation.VERTICAL)
-    generate_win_moves = [
-        Move(1, 2, Orientation.HORIZONTAL),
-        Move(1, 1, Orientation.HORIZONTAL),
-        Move(0, 2, Orientation.HORIZONTAL),
-        Move(0, 1, Orientation.HORIZONTAL),
-    ]
-
-    return rule_based_bot, generate_win_moves
-
-
-@pytest.fixture
 def setup_neutral_state(rule_based_bot):
     """Sets up a state where a 'neutral' move is available (targeting a -4 box)."""
     rule_based_bot.boxes[:] = -2
