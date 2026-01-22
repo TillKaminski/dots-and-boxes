@@ -78,7 +78,7 @@ export class GameService {
   readonly botMove = computed(() => this._lastBotMove());
   readonly dataStatus = computed(() => this._dataState());
   readonly localPlayerId = computed(() => this._localPlayerId());
-  readonly isFinished = computed(() => this._gameState()?.finished ?? false);
+  readonly isFinished = computed(() => this._gameState().finished);
 
   readonly botModel = computed(() => this._botModel());
 

@@ -5,12 +5,12 @@
   ></app-header>
 
   <div class="message-bar">
-    @if (isOffline()) {
+    @if (errorMessage()) {
+      <div class="alert error">⚠️ {{ errorMessage() }}</div>
+    } @else if (isOffline()) {
       <div class="alert error">
         🛜 Connection lost. Please check if the server is running.
       </div>
-    } @else if (errorMessage()) {
-      <div class="alert error">⚠️ {{ errorMessage() }}</div>
     } @else if (isFinished()) {
       <div class="alert success">{{ winner() }}</div>
     } @else if (isBotThinking()) {
