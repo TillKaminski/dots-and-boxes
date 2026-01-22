@@ -150,3 +150,36 @@ def test_ffn_bot_name(ffn_bot_mock):
     """Test, if Name-Method returns the correct Bpt-Name."""
     bot = ffn_bot_mock
     assert bot.name() == FFNBot.BOT_NAME
+
+@patch("ai.bots.ffn_bot.random.random")
+def test_ffn_bot_move_epsilon_set(mock_random, ffn_bot_mock, state_mock):
+    """Tests if exploration is triggered when random < epsilon."""
+    bot = ffn_bot_mock
+    bot.update_state(state_mock)
+    
+    bot.epsilon = 0.5
+    mock_random.return_value = 0.1
+    
+    with patch.object(bot, "_get_random_legal_move") as mock_random_move:
+        mock_random_move.return_value = bot.positions[0]
+        
+        move_result = bot.move()
+        
+        mock_random_move.assert_called_once()
+        assert move_result == bot.positions[0]
+
+def test_ffn_bot_get_random_legal_move(ffn_bot_mock):
+    """Tests if only available moves are selected (for epsilon > 0)."""
+    bot = ffn_bot_mock
+    
+    for pos in bot.positions:
+        pos.available = False
+        
+    bot.positions[2].available = True
+    bot.positions[5].available = True
+    allowed_indices = [2, 5]
+    
+    random_move = bot._get_random_legal_move()
+    chosen_index = bot.positions.index(random_move)
+    assert chosen_index in allowed_indices
+    assert random_move.available is True
