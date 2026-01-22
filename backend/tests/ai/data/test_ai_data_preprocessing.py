@@ -176,15 +176,15 @@ class TestDataPreprocessor(unittest.TestCase):
             current_player=1,
             edges={
                 "horizontal": [[0, 0, 0], [0, 0, 0]],
-                "vertical": [[0, 0], [0, 0], [0, 0]]
+                "vertical": [[0, 0], [0, 0], [0, 0]],
             },
             boxes=[[-4, -4], [-4, -4]],
             scores={1: 0, 2: 0},
-            finished=False
+            finished=False,
         )
-        
+
         vector = self.preprocessor._serialize_state(state_obj)
-        
+
         self.assertIsInstance(vector, torch.Tensor)
         self.assertEqual(len(vector), self.preprocessor.input_size)
 
@@ -198,16 +198,15 @@ class TestDataPreprocessor(unittest.TestCase):
                 "vertical": [[0]],
             },
             "boxes": [[0]],
-            "current_player": 1
+            "current_player": 1,
         }
-        
+
         with self.assertRaises(ValueError):
             self.preprocessor._serialize_state(invalid_state)
-        
+
     def test_move_to_label_invalid_mapping_raises_error(self):
         """Test if ValueError is raised when a move cannot be mapped."""
         invalid_move = {"x": 0, "y": 0, "orientation": "INVALID"}
-        
+
         with self.assertRaises(ValueError):
             self.preprocessor._move_to_label(invalid_move)
-        

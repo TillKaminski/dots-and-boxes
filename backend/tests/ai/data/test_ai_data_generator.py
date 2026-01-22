@@ -210,6 +210,7 @@ def test_main_invalid_bot(generator_mock):
     # Process ended after Bot-Creation
     generator_object.simulate_multiple_games.assert_not_called()
 
+
 @patch("ai.data.data_generator.os.path.exists", return_value=False)
 @patch("ai.data.data_generator.DataGenerator")
 def test_main_merge_no_file_exists(generator_mock, mock_makedirs):

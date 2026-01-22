@@ -98,12 +98,12 @@ def test_evaluate_save_moves_false(create_test_evaluator):
 def test_evaluate_draw_scenario(create_test_evaluator):
     """Tests if draws are correctly counted."""
     n_games = 2
-    
-    mock_draw_state = [
-        {"state": {"scores": {1: 2, 2: 2}}}
-    ]
 
-    with patch.object(create_test_evaluator.generator, 'simulate_game', return_value=mock_draw_state):
+    mock_draw_state = [{"state": {"scores": {1: 2, 2: 2}}}]
+
+    with patch.object(
+        create_test_evaluator.generator, "simulate_game", return_value=mock_draw_state
+    ):
         results = create_test_evaluator.evaluate(
             bot1, bot2, n_games=n_games, start_mode=SimulationMode.FIXED
         )

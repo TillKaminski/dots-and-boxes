@@ -1,7 +1,6 @@
 """Test-Class for API-Calls."""
 
-from unittest.mock import MagicMock, patch
-from fastapi import HTTPException
+from unittest.mock import MagicMock
 from fastapi.testclient import TestClient
 import pytest
 from game.api.response import NewGameRequest
@@ -136,6 +135,7 @@ def test_restart_game_resets_state():
     }
     assert state_before != new_state
 
+
 def test_restart_defaults_starting_player():
     """Test if Starting-Player is set for missing Request-Body."""
     new_game = "new_game_p2_starts"
@@ -143,7 +143,7 @@ def test_restart_defaults_starting_player():
 
     old_state = service.get_state(new_game)
     # current_player instead of currentPlayer (no mapping for the API)
-    assert old_state["current_player"]  == 2
+    assert old_state["current_player"] == 2
 
     response = client.post(URL_PREFIX + f"/{new_game}/restart", json={})
     assert response.status_code == 200
@@ -272,25 +272,23 @@ def test_game_finished_detected():
 def test_bot_move_success():
     """Test if GET /bot_move returns a move and updated state."""
     game_id = "test_game_bot"
-    new_game_request: NewGameRequest = {
-        "starting_player": 2,
-        "bot_model": "random"
-    }
+    new_game_request: NewGameRequest = {"starting_player": 2, "bot_model": "random"}
 
     client.post(URL_PREFIX + f"/new_game/{game_id}", json=new_game_request)
-    
+
     response = client.get(URL_PREFIX + f"/{game_id}/bot_move")
     assert response.status_code == 200
-    
+
     data = response.json()
     assert "move" in data
     assert "state" in data
     assert "meta" in data
-    
+
     move = data["move"]
     assert "x" in move
     assert "y" in move
     assert "orientation" in move
+
 
 def test_bot_move_returns_error():
     """Test if bot_move returns 404 for non-existent game."""
@@ -302,6 +300,7 @@ def test_bot_move_returns_error():
     assert response.status_code == 404
     assert response.json()["detail"] == ERROR_GAME_NOT_FOUND["error"]
 
+
 def test_bot_move_handles_unexpected_exception():
     """Test if bot_move handles unexpected Exceptions as Bad Request (400)."""
     mock_service = MagicMock()
@@ -311,8 +310,8 @@ def test_bot_move_handles_unexpected_exception():
 
     try:
         response = client.get(URL_PREFIX + f"/{game_id}/bot_move")
-        
-        assert response.status_code == 400 
+
+        assert response.status_code == 400
         assert response.json()["detail"] == "Test Exception"
     finally:
         app.dependency_overrides.clear()

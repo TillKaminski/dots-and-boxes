@@ -102,6 +102,7 @@ def test_restart_game_resets_everything(services):
     assert all(val == 0 for row in new_state["edges"]["vertical"] for val in row)
     assert state_before != new_state
 
+
 def test_restart_game_invalid_id_returns_error(services):
     """Test if an error-message is returned for an unknown game."""
     service, _ = services
@@ -164,6 +165,7 @@ def test_invalid_move(services):
     with pytest.raises(TypeError, match=ERROR_INVALID_ORIENTATION_TYPE["error"]):
         service.make_move(game_id, 2, 0, 0, None)
 
+
 def test_move_returns_error_message(services):
     """Test if error message is returned for different cases."""
     service, _ = services
@@ -178,11 +180,10 @@ def test_move_returns_error_message(services):
 
     # not your turn
     wrong_turn_id = "new_game_wrong_turn"
-    service.create_game(
-        game_id=wrong_turn_id,
-        starting_player=2
+    service.create_game(game_id=wrong_turn_id, starting_player=2)
+    msg_not_your_turn = service.make_move(
+        wrong_turn_id, 1, 1, 1, Orientation.HORIZONTAL
     )
-    msg_not_your_turn = service.make_move(wrong_turn_id, 1, 1, 1, Orientation.HORIZONTAL)
     assert "error" in msg_not_your_turn
     assert msg_not_your_turn["error"] == ERROR_NOT_YOUR_TURN["error"]
 
@@ -194,7 +195,6 @@ def test_move_returns_error_message(services):
     msg_game_over = service.make_move(game_over_id, 1, 1, 1, Orientation.HORIZONTAL)
     assert "error" in msg_game_over
     assert msg_game_over["error"] == ERROR_GAME_OVER["error"]
-
 
 
 def test_new_game_is_available(services):
@@ -287,7 +287,6 @@ def test_make_move_updates_bot(services):
     service.make_move(bot_game_id, 1, 1, 1, Orientation.HORIZONTAL)
 
     bot_service.update_possible_moves.assert_called_once()
-
 
 
 def test_get_state_object(services):
