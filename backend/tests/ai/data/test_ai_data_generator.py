@@ -174,7 +174,7 @@ def test_main_json_save(generator_mock, storage_mock):
     }
     storage_object = storage_mock.return_value
 
-    test_args = ["prog", "--json", "1"]
+    test_args = ["prog", "--json", "1", "--log"]
     with patch.object(sys, "argv", test_args):
         main()
 
@@ -208,4 +208,16 @@ def test_main_invalid_bot(generator_mock):
         main()
 
     # Process ended after Bot-Creation
+    generator_object.simulate_multiple_games.assert_not_called()
+
+@patch("ai.data.data_generator.os.path.exists", return_value=False)
+@patch("ai.data.data_generator.DataGenerator")
+def test_main_merge_no_file_exists(generator_mock, mock_makedirs):
+    """Test if process is aborted when no file to merge exists."""
+    generator_object = generator_mock.return_value
+
+    test_args = ["prog", "--bot1", "random", "--merge"]
+    with patch.object(sys, "argv", test_args):
+        main()
+
     generator_object.simulate_multiple_games.assert_not_called()
