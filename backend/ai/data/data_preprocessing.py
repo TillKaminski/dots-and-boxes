@@ -189,7 +189,7 @@ def main():
         print(f"Total steps processed: {len(data)}")
 
         file_path = data_storage.save_to_pt(data, args.dest)
-        print(f"Training Data for FFN saved.\n➡️ Filepath: {file_path}\n")
+        print(f"Training Data for FFN saved.\n\t➡️ Filepath: {file_path}\n")
     elif args.pvn:
         print("TODO: Implement Preprocessing for PVN.")
 
