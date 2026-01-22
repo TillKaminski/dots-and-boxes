@@ -149,7 +149,7 @@ def bot_move(game_id: str, service: GameService = Depends(get_game_service)):
     - **GameResponse** The resulting game state with meta information.
 
     ### Raises
-    - **HTTPException** If the game is finished (403), Invalid Input (400), Edge already taken (409).
+    - **HTTPException** If the game is finished (403), Invalid Input (400), Edge already taken (409), Game Id not found (404).
     """
     try:
         # Returns chosen Move
@@ -159,7 +159,9 @@ def bot_move(game_id: str, service: GameService = Depends(get_game_service)):
         _check_error_message(result_move)
 
         result_state = service.get_state(game_id)
-    except ValueError as e:
+    except HTTPException as http_error:
+        raise http_error
+    except Exception as e:
         # Exception thrown
         error_obj, status_code = get_error_response(str(e))
         raise HTTPException(status_code=status_code, detail=error_obj["error"])
@@ -193,10 +195,8 @@ def restart_game(
     ### Raises
     - **HTTPException (404)**: If the game does not exist.
     """
-    if request_data:
-        starting_player = request_data.starting_player
-    else:
-        starting_player = 1
+    # default set in Request Body
+    starting_player = request_data.starting_player
     result = service.restart_game(game_id=game_id, starting_player=starting_player)
     _check_error_message(result)
 
