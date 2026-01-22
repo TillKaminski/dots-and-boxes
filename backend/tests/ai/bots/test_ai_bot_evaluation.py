@@ -1,5 +1,6 @@
 """Tests for Bot-Evaluator Class."""
 
+from unittest.mock import patch
 import pytest
 
 from ai.bots.random_bot import RandomBot
@@ -92,3 +93,24 @@ def test_evaluate_save_moves_false(create_test_evaluator):
     assert results["games"] == 1
     assert results["wins_bot1"] == 0
     assert results["wins_bot2"] == 1
+
+
+def test_evaluate_draw_scenario(create_test_evaluator):
+    """Tests if draws are correctly counted."""
+    n_games = 2
+    
+    mock_draw_state = [
+        {"state": {"scores": {1: 2, 2: 2}}}
+    ]
+
+    with patch.object(create_test_evaluator.generator, 'simulate_game', return_value=mock_draw_state):
+        results = create_test_evaluator.evaluate(
+            bot1, bot2, n_games=n_games, start_mode=SimulationMode.FIXED
+        )
+
+    assert results["games"] == 2
+    assert results["draws"] == 2
+    assert results["wins_bot1"] == 0
+    assert results["wins_bot2"] == 0
+    assert results["avg_score_bot1"] == 2.0
+    assert results["avg_score_bot2"] == 2.0
