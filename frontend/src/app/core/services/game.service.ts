@@ -72,13 +72,13 @@ export class GameService {
   });
   private _localPlayerId = signal<number>(1); // Local Player always Id: 1
   private _finished = signal<boolean>(false);
-  private _botModel = signal<string>('rule');
+  private _botModel = signal<string>('ffn');
 
   readonly state = computed(() => this._gameState());
   readonly botMove = computed(() => this._lastBotMove());
   readonly dataStatus = computed(() => this._dataState());
   readonly localPlayerId = computed(() => this._localPlayerId());
-  readonly isFinished = computed(() => this._gameState()?.finished ?? false);
+  readonly isFinished = computed(() => this._gameState().finished);
 
   readonly botModel = computed(() => this._botModel());
 
@@ -107,7 +107,7 @@ export class GameService {
    * Clears the current game state and bot move signals.
    */
   resetData() {
-    this._gameState.set(this.fallbackGameState);
+    this.setOfflineState(this.fallbackGameState);
     this._lastBotMove.set(null);
     this._dataState.set({ status: 'INITIAL', error: null });
     this._finished.set(false);

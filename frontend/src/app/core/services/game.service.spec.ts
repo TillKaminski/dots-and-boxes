@@ -107,6 +107,22 @@ describe('GameService', () => {
       expect(req.request.body).toEqual(newGameRequest);
       expect(receivedData).toEqual(mockGameState);
       expect(receivedData?.size).toBe(4);
+
+      expect(service.isFinished()).toBe(false);
+      expect(service.botModel()).toBeDefined();
+
+      const testGameState: GameState = {
+        size: 4,
+        edges: { horizontal: [], vertical: [] },
+        boxes: [],
+        scores: { '1': 0, '2': 0 },
+        currentPlayer: 1,
+        finished: true,
+      };
+      service.setOfflineState(testGameState);
+
+      expect(service.isFinished()).toBe(true);
+      expect(service.state()).toBe(testGameState);
     }));
 
     it('should update the signal state and dataStatus when a new game is created', fakeAsync(() => {
@@ -251,9 +267,20 @@ describe('GameService', () => {
       expect(service.botMove()).toEqual(mockMove);
 
       // Test reset()
+      const setOfflineStateSpy = jest.spyOn(service, 'setOfflineState');
+
       service.resetData();
       expect(service.state()).not.toBeNull();
       expect(service.botMove()).toBeNull();
+
+      expect(setOfflineStateSpy).toHaveBeenCalled();
+
+      const localId = service.localPlayerId();
+
+      const newId = localId + 1;
+      service.setLocalPlayer(newId);
+
+      expect(service.localPlayerId()).not.toBe(localId);
     }));
   });
   describe('Error Handling APIs', () => {
