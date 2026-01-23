@@ -8,7 +8,6 @@ from ai.bots.rule_based_bot import RuleBasedBot
 from ai.bots.move import Move
 from game.game_board import Orientation
 
-
 GAME_SIZE = 3
 
 
@@ -27,23 +26,6 @@ def setup_win_state(rule_based_bot):
     rule_based_bot.update(x=1, y=0, orientation=Orientation.VERTICAL)
     win_move = Move(0, 0, Orientation.HORIZONTAL)
     return rule_based_bot, win_move
-
-
-@pytest.fixture
-def setup_prod_win_state(rule_based_bot):
-    """Sets up a state where 'generating a win' is the next best move (-3 box).
-
-    returns: Set up Bot, list of prioritized Moves
-    """
-    rule_based_bot.update(x=1, y=1, orientation=Orientation.VERTICAL)
-    generate_win_moves = [
-        Move(1, 2, Orientation.HORIZONTAL),
-        Move(1, 1, Orientation.HORIZONTAL),
-        Move(0, 2, Orientation.HORIZONTAL),
-        Move(0, 1, Orientation.HORIZONTAL),
-    ]
-
-    return rule_based_bot, generate_win_moves
 
 
 @pytest.fixture

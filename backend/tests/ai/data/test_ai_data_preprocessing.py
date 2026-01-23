@@ -10,6 +10,8 @@ from ai.data.data_preprocessing import DataPreprocessor, main
 from unittest.mock import patch
 import sys
 
+from game.game_state import GameState
+
 
 class TestDataPreprocessor(unittest.TestCase):
     """Tests for the DataPreprocessor class."""
@@ -166,3 +168,45 @@ class TestDataPreprocessor(unittest.TestCase):
 
         storage_object.load_from_pt.assert_called_once()
         preprocessor_object.get_data_pair.assert_called()
+
+    def test_serialize_state_with_game_state_object(self):
+        """Test serialization when passing a real GameState object instead of a dict."""
+        state_obj = GameState(
+            size=2,
+            current_player=1,
+            edges={
+                "horizontal": [[0, 0, 0], [0, 0, 0]],
+                "vertical": [[0, 0], [0, 0], [0, 0]],
+            },
+            boxes=[[-4, -4], [-4, -4]],
+            scores={1: 0, 2: 0},
+            finished=False,
+        )
+
+        vector = self.preprocessor._serialize_state(state_obj)
+
+        self.assertIsInstance(vector, torch.Tensor)
+        self.assertEqual(len(vector), self.preprocessor.input_size)
+
+        self.assertTrue(torch.all(vector == 0))
+
+    def test_serialize_state_wrong_size_raises_error(self):
+        """Test if ValueError is raised for invalid input."""
+        invalid_state = {
+            "edges": {
+                "horizontal": [[0]],
+                "vertical": [[0]],
+            },
+            "boxes": [[0]],
+            "current_player": 1,
+        }
+
+        with self.assertRaises(ValueError):
+            self.preprocessor._serialize_state(invalid_state)
+
+    def test_move_to_label_invalid_mapping_raises_error(self):
+        """Test if ValueError is raised when a move cannot be mapped."""
+        invalid_move = {"x": 0, "y": 0, "orientation": "INVALID"}
+
+        with self.assertRaises(ValueError):
+            self.preprocessor._move_to_label(invalid_move)

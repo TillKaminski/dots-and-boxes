@@ -91,3 +91,26 @@ def test_print_training_data_summary(capsys):
     data_storage.print_training_data_summary(test_data, limit_games=1)
     captured = capsys.readouterr()
     assert len(captured.out) != length_data
+
+
+def test_merge_and_save(setup_filepath):
+    """Test if merging new data with existing data works correctly."""
+    data_storage = DataStorage(log=False)
+    filename = "merged_data.pt"
+
+    initial_data = {"old_game_1": [1, 2, 3]}
+    data_storage.merge_and_save(initial_data, filename, prefix="test")
+
+    loaded_initial = data_storage.load_from_pt(filename)
+    assert "test_1" in loaded_initial
+    assert loaded_initial["test_1"] == [1, 2, 3]
+
+    new_data = {"new_game_xyz": [4, 5, 6]}
+    data_storage.merge_and_save(new_data, filename, prefix="test")
+
+    loaded_merged = data_storage.load_from_pt(filename)
+
+    assert len(loaded_merged) == 2
+    assert "test_2" in loaded_merged
+    assert loaded_merged["test_1"] == [1, 2, 3]
+    assert loaded_merged["test_2"] == [4, 5, 6]
