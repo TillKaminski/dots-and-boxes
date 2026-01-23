@@ -8,7 +8,6 @@ from ai.data.data_generator import SimulationMode
 from game.game_service import GameService
 from ai.bots.evaluator import BotEvaluator
 
-
 BOARD_SIZE = 1
 N_GAMES = 4
 

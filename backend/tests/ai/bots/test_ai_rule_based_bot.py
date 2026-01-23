@@ -8,7 +8,6 @@ from ai.bots.rule_based_bot import RuleBasedBot
 from ai.bots.move import Move
 from game.game_board import Orientation
 
-
 GAME_SIZE = 3
 
 

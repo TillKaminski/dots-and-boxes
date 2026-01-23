@@ -8,7 +8,6 @@ from ai.bots.ffn_bot import FFNBot
 
 from game.game_state import GameState
 
-
 BOT_SIZE = 4
 MOCK_INPUT_SIZE = 10
 MOCK_OUTPUT_SIZE = BOT_SIZE * (BOT_SIZE + 1) * 2  # 2*(3)*2 = 12 für size=2
