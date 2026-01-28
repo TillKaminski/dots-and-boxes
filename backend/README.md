@@ -69,23 +69,22 @@ A full history of all trained models and experiments is documented here:
 
 [`MODELS.md`](./ai/outputs/model/MODELS.md)
 
-
 ### AI Data and Training Pipeline:
 CLI tools are provided to manage the full AI lifecycle. All scripts must be executed from the **project root**. Use the `--help` flag for detailed parameter descriptions.
 1. **Data Generation** (Generates raw games in `.pt` format):
-```
+```powershell
 python -m backend.ai.data.data_generator --games 500
 ```
 2. **Preprocessing** (Prepares raw data for the training loop):
-```
+```powershell
 python -m backend.ai.data.data_preprocessing --src "data_raw.pt"
 ```
 3. **Model Training** (Starts the neural network training):
-```
+```powershell
 python -m backend.ai.training.training --it 100
 ```
 4. **Evaluation** (Win-rates between different AI versions):
-```
+```powershell
 python -m backend.ai.bots.evaluation --n 100 --bot1 "random" --bot2 "rule"
 ```
 
@@ -93,7 +92,7 @@ python -m backend.ai.bots.evaluation --n 100 --bot1 "random" --bot2 "rule"
 
 To run the backend without Docker:
 
-```
+```powershell
 cd backend
 pip install -r requirements.txt
 uvicorn main:app --port 8000

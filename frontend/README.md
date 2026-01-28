@@ -29,7 +29,7 @@ The UI was first designed in **Figma** to plan the layout and user flow before i
 
 The project is organized into modules to keep the logic separated and maintainable:
 
-```
+```text
 src/app/
 ├── core/
 │   ├── services/  # Communication with the API and state management
@@ -38,13 +38,11 @@ src/app/
     └── game/
         ├── pages/      # Main container for the game screen
         └── components/ # Individual parts (board rendering, menu, and score display)
-
 ```
-
 
 ## Local Setup
 To run the frontend without Docker:
-```
+```powershell
 npm install
 ng serve
 ```
