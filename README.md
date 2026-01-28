@@ -6,7 +6,7 @@
 ![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
-Full-stack implementation of the game "Dots and Boxes". This project features a self-trained AI opponent based on a Neural Network and demonstrates a complete CI/CD lifecycle.
+Full-stack implementation of the game **Dots and Boxes**. This project features a self-trained AI opponent based on a Neural Network and demonstrates a complete CI/CD lifecycle.
 
 ## 🚀 Status and Metrics
 
@@ -27,16 +27,31 @@ The project uses a monorepo structure to keep the frontend and backend in one pl
 - **🤖 AI**: PyTorch Feedforward Neural Network trained on generated game data. [See Progress](./backend/ai/outputs/model/MODELS.md)
 
 ## 🔄️ Dataflow
-```
-[ User Interface ] <---- REST API ----> [ FastAPI Backend ]
-      (Angular)                            (Python)
-                                              |
-                                              | (Input: Game State)
-                                              v
-[ Model Inference ] <-------------------- [ AI Service ]
-   (PyTorch)         (Output: Move)
-```
+This diagram illustrates the core communication flow between the components. Note that it represents a simplified example of the move-processing logic.
 
+```mermaid
+graph TD
+    subgraph "Frontend (SPA)"
+        UI[User Interface <br/> <i>Angular</i>]
+    end
+
+    subgraph "Backend (Python)"
+        BE[Backend APIs <br/> <i>FastAPI</i>]
+        BS[Bot Service <br/> <i>Logic</i>]
+        PT[Neural Network <br/> <i>PyTorch</i>]
+    end
+
+    UI --> |Player Move / Bot Req| BE
+    BE <--> |Process Move| BS
+    BS -.-> |State Inference| PT
+    PT -.-> |Move Prediction| BS
+    BE --> |Updated Game State| UI
+
+    style UI fill:#32a852
+    style BE fill:#3a32a8
+    style BS fill:#a8a432
+    style PT fill:#a84832
+```
 
 
 ## 🛠️ Quick Start (Docker Compose)
