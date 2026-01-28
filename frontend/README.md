@@ -42,7 +42,7 @@ src/app/
 
 ## Local Setup
 To run the frontend without Docker:
-```powershell
+```bash
 npm install
 ng serve
 ```
