@@ -102,3 +102,7 @@ This project is actively developed. The current focus is on enhancing the AI's p
 This project was built to demonstrate a full-stack architecture, the integration of AI models into web applications, and a CI/CD workflow.
 
 You can track the progress in the [GitHub Issues Board](https://github.com/TillKaminski/dots-and-boxes/issues).
+
+##  License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
