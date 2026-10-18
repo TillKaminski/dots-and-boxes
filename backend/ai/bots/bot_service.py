@@ -16,6 +16,13 @@ BOT_MODEL: dict[str, BasicBot] = {
     "pvn": FFNBot,  # Placeholder, TODO: Implement PVN Bot
 }
 
+BOT_BOARD_SIZES: dict[str, list[int]] = {
+    "random": [],
+    "rule": [],
+    "ffn": [4],
+    "pvn": [4],
+}
+
 ACTIVE_BOTS: dict[str, BasicBot] = {}
 
 
@@ -48,6 +55,16 @@ class BotService:
         }
 
         return BotClass(**valid_params)
+
+    def is_bot_size_available(self, model, size):
+        """Checks if a model is available for given size."""
+        model_lower = model.lower()
+        if model_lower not in BOT_BOARD_SIZES.keys():
+            return False
+
+        sizes_available = BOT_BOARD_SIZES.get(model_lower)
+
+        return len(sizes_available) == 0 or size in sizes_available
 
     def _set_path(self, model):
         """Helper Methods to create the Model-Path."""

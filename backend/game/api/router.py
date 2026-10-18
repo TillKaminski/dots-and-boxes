@@ -54,7 +54,7 @@ def new_game(
     board_size = request_data.board_size
     bot_name = request_data.bot_model
     result = service.create_game(
-        game_id=game_id, size=board_size, starting_player=starting_player, bot_model=bot_name
+        game_id=game_id, starting_player=starting_player, size=board_size, bot_model=bot_name
     )
     _check_error_message(result)
 

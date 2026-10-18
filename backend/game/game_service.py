@@ -30,10 +30,9 @@ class GameService:
         """Creates a new Game Session."""
         if game_id in self.games:
             return ERROR_GAME_EXISTS
-        # TODO: Check if model exists for given board size, default: rule
-        if size != 4:
-            bot_model = "rule"
         if bot_model:
+            if not bot_service.is_bot_size_available(bot_model, size):
+                bot_model = "rule"
             bot_service.register_bot(game_id, size, bot_model)
         self.games[game_id] = GameBoard(
             size=size, starting_player=starting_player, bot_model=bot_model
@@ -94,7 +93,7 @@ class GameService:
             return game
         return game.get_state_object()
 
-    def restart_game(self, game_id: str, board_size: int, starting_player: int = 1):
+    def restart_game(self, game_id: str, board_size: int = 0, starting_player: int = 1, bot_model: str | None = None):
         """Restart current Game-Session."""
         board = self._get_game(game_id)
         # Check for error
@@ -102,15 +101,17 @@ class GameService:
             return board
         if isinstance(board, GameBoard):
             size = board.size if (board_size == 0) else board_size
-            # TODO: Check if model exists for given board size, default: rule
-            bot = board.bot_model if (size == 4) else "rule"
-            if bot:
+            if board.bot_model:
                 bot_service.delete_bot(game_id)
+            target_bot = bot_model if bot_model is not None else board.bot_model
+            if target_bot:
+                if not bot_service.is_bot_size_available(target_bot, size):
+                    target_bot = "rule"
             self.games[game_id] = GameBoard(
-                size=size, bot_model=bot, starting_player=starting_player
+                size=size, bot_model=target_bot, starting_player=starting_player
             )
-            if bot:
-                bot_service.register_bot(game_id, size, bot)
+            if target_bot:
+                bot_service.register_bot(game_id, size, target_bot)
             return self.get_state(game_id)
 
     def delete_game(self, game_id: str):
