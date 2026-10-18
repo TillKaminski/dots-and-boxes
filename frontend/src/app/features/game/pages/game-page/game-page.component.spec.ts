@@ -35,6 +35,7 @@ describe('GamePageComponent', () => {
         scores: { '1': 0, '2': 0 },
       }),
       localPlayerId: signal(1),
+      boardSize: signal(0),
       isFinished: signal(false),
       botModel: signal('random'),
       isOffline: signal(false),

@@ -1,7 +1,7 @@
 """Data-Class for Moves."""
 
 from dataclasses import dataclass
-from game.game_board import Orientation
+from backend.game.game_board import Orientation
 
 
 @dataclass

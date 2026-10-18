@@ -3,7 +3,7 @@
 import numpy as np
 from enum import Enum
 
-from game.game_state import GameState
+from backend.game.game_state import GameState
 from .errors import (
     ERROR_EDGE_TAKEN,
     ERROR_OUT_OF_BOUNDS,

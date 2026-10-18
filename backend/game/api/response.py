@@ -3,7 +3,7 @@
 from pydantic import BaseModel, Field
 from typing import Dict, List, Optional
 
-from game.game_board import Orientation
+from backend.game.game_board import Orientation
 
 
 def to_camel_case(snake_str: str) -> str:
@@ -68,10 +68,14 @@ class StateModel(CamelCaseBaseModel):
 
 
 class NewGameRequest(CamelCaseBaseModel):
-    """Input format for creating a new game, including optional bot data."""
+    """Input format for creating a new game, including board size and optional bot data."""
 
     starting_player: Optional[int] = Field(
         default=1, description="Choose the starting player.", examples=[1, 2]
+    )
+
+    board_size: Optional[int] = Field(
+        default=4, description="Choose board size.", examples=[3, 4, 5]
     )
 
     bot_model: Optional[str] = Field(
@@ -82,10 +86,16 @@ class NewGameRequest(CamelCaseBaseModel):
 
 
 class RestartGameRequest(CamelCaseBaseModel):
-    """Input format for restarting a game, including starting player."""
+    """Input format for restarting a game, including starting player and board size."""
 
     starting_player: Optional[int] = Field(
         default=1, description="Choose the starting player.", examples=[1, 2]
+    )
+
+    board_size: Optional[int] = Field(
+        default=0,
+        description="Choose board size. Uses old board size if empty.",
+        examples=[3, 4, 5],
     )
 
 

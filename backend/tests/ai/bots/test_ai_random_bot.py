@@ -1,9 +1,9 @@
 """Test Class for Random Bot."""
 
 import pytest
-from ai.bots.random_bot import RandomBot
-from ai.bots.move import Move
-from game.game_board import Orientation
+from backend.ai.bots.random_bot import RandomBot
+from backend.ai.bots.move import Move
+from backend.game.game_board import Orientation
 
 bot_size = 4
 

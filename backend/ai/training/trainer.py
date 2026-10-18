@@ -6,8 +6,8 @@ import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt
 
-from ai.config.params import TrainingConfig, ModelConfig
-from ai.model.ffn_model import FeedForwardNet
+from backend.ai.config.params import TrainingConfig, ModelConfig
+from backend.ai.model.ffn_model import FeedForwardNet
 
 from torch.utils.data import DataLoader, TensorDataset
 from torch.optim.lr_scheduler import ReduceLROnPlateau

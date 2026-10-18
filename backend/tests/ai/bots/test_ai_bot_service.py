@@ -3,16 +3,16 @@
 from unittest.mock import MagicMock, patch
 import pytest
 
-from ai.bots.basic_bot import BasicBot
-from ai.bots.bot_service import ACTIVE_BOTS, BotService
+from backend.ai.bots.basic_bot import BasicBot
+from backend.ai.bots.bot_service import ACTIVE_BOTS, BotService
 
-from ai.bots.bot_service import BOT_MODEL
-from ai.bots.ffn_bot import FFNBot
-from ai.bots.move import Move
-from ai.bots.random_bot import RandomBot
-from ai.bots.rule_based_bot import RuleBasedBot
-from game.game_board import Orientation
-from game.game_state import GameState
+from backend.ai.bots.bot_service import BOT_MODEL
+from backend.ai.bots.ffn_bot import FFNBot
+from backend.ai.bots.move import Move
+from backend.ai.bots.random_bot import RandomBot
+from backend.ai.bots.rule_based_bot import RuleBasedBot
+from backend.game.game_board import Orientation
+from backend.game.game_state import GameState
 
 
 @pytest.fixture
@@ -131,8 +131,8 @@ def test_delete_bot_not_found(create_bot_service):
         service.delete_bot("invalid_id")
 
 
-@patch("ai.bots.bot_service.BotService.get_bot")
-@patch("ai.bots.bot_service.BotService.game_state_required", return_value=False)
+@patch("backend.ai.bots.bot_service.BotService.get_bot")
+@patch("backend.ai.bots.bot_service.BotService.game_state_required", return_value=False)
 def test_get_move_non_nn_bot(MockIsNN, MockGetBot, create_bot_service):
     """Test get_move for a non-NN bot (no GameState required)."""
     service = create_bot_service
@@ -149,8 +149,8 @@ def test_get_move_non_nn_bot(MockIsNN, MockGetBot, create_bot_service):
     mock_bot.move.assert_called_once()
 
 
-@patch("ai.bots.bot_service.BotService.get_bot")
-@patch("ai.bots.bot_service.BotService.game_state_required", return_value=True)
+@patch("backend.ai.bots.bot_service.BotService.get_bot")
+@patch("backend.ai.bots.bot_service.BotService.game_state_required", return_value=True)
 def test_get_move_nn_bot_with_state(MockIsNN, MockGetBot, create_bot_service):
     """Test get_move for an NN bot with GameState (should call update_state)."""
     service = create_bot_service
@@ -171,8 +171,8 @@ def test_get_move_nn_bot_with_state(MockIsNN, MockGetBot, create_bot_service):
     mock_bot.move.assert_called_once()
 
 
-@patch("ai.bots.bot_service.BotService.get_bot")
-@patch("ai.bots.bot_service.BotService.game_state_required", return_value=True)
+@patch("backend.ai.bots.bot_service.BotService.get_bot")
+@patch("backend.ai.bots.bot_service.BotService.game_state_required", return_value=True)
 def test_get_move_nn_bot_raises_without_state(MockIsNN, MockGetBot, create_bot_service):
     """Test get_move for an NN bot without GameState (should raise error)."""
     service = create_bot_service

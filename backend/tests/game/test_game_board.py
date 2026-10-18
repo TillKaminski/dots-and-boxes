@@ -1,10 +1,10 @@
 """Test Class for Game Setup and Logic."""
 
 import numpy as np
-from game.game_board import GameBoard, Orientation, parse_orientation
+from backend.game.game_board import GameBoard, Orientation, parse_orientation
 import pytest
 
-from game.errors import ERROR_EDGE_TAKEN, ERROR_OUT_OF_BOUNDS
+from backend.game.errors import ERROR_EDGE_TAKEN, ERROR_OUT_OF_BOUNDS
 
 
 @pytest.fixture

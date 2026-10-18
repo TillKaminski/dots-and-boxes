@@ -6,13 +6,13 @@ import random
 from typing import Any, Dict
 
 import torch
-from ai.bots.basic_bot import BasicBot
-from ai.bots.move import Move
-from ai.config.params import DeploymentConfig, ModelConfig
-from ai.data.data_preprocessing import DataPreprocessor
-from ai.model.ffn_model import FeedForwardNet
-from game.game_board import Orientation
-from game.game_state import GameState
+from backend.ai.bots.basic_bot import BasicBot
+from backend.ai.bots.move import Move
+from backend.ai.config.params import DeploymentConfig, ModelConfig
+from backend.ai.data.data_preprocessing import DataPreprocessor
+from backend.ai.model.ffn_model import FeedForwardNet
+from backend.game.game_board import Orientation
+from backend.game.game_state import GameState
 
 logger = logging.getLogger(__name__)
 

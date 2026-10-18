@@ -2,7 +2,7 @@
 
 import argparse
 
-from ai.training.trainer import ModelTrainer
+from backend.ai.training.trainer import ModelTrainer
 
 
 def main():

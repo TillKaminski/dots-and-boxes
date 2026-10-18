@@ -1,9 +1,9 @@
 """Implementation of a Random Bot."""
 
 import random
-from ai.bots.move import Move
-from ai.bots.basic_bot import BasicBot
-from game.game_board import Orientation
+from backend.ai.bots.move import Move
+from backend.ai.bots.basic_bot import BasicBot
+from backend.game.game_board import Orientation
 
 import logging
 

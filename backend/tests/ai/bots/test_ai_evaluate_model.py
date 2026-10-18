@@ -2,7 +2,7 @@
 
 import argparse
 from unittest.mock import patch, MagicMock
-from ai.bots import evaluate_model
+from backend.ai.bots import evaluate_model
 
 MOCK_RESULTS = {
     "bot1_name": "Bot1",
@@ -17,8 +17,8 @@ MOCK_RESULTS = {
 }
 
 
-@patch("ai.bots.bot_service.BotService.create_bot")
-@patch("ai.bots.evaluator.BotEvaluator.evaluate", return_value=MOCK_RESULTS)
+@patch("backend.ai.bots.bot_service.BotService.create_bot")
+@patch("backend.ai.bots.evaluator.BotEvaluator.evaluate", return_value=MOCK_RESULTS)
 @patch("argparse.ArgumentParser.parse_args")
 def test_main_evaluation_flow(mock_args, mock_eval, mock_create, capsys):
     """Test if the evaluator is called with the correct parameters."""
@@ -48,8 +48,8 @@ def test_main_evaluation_flow(mock_args, mock_eval, mock_create, capsys):
     assert "RESULTS for Bot1 vs Bot2" in captured.out
 
 
-@patch("ai.bots.bot_service.BotService.create_bot")
-@patch("ai.bots.evaluator.BotEvaluator.evaluate", return_value=MOCK_RESULTS)
+@patch("backend.ai.bots.bot_service.BotService.create_bot")
+@patch("backend.ai.bots.evaluator.BotEvaluator.evaluate", return_value=MOCK_RESULTS)
 @patch("argparse.ArgumentParser.parse_args")
 def test_main_with_epsilon_parameters(mock_args, mock_eval, mock_create, capsys):
     """Test if epsilon values are correctly printed in the output."""

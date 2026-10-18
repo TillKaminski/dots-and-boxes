@@ -4,9 +4,9 @@ import pytest
 from unittest.mock import patch, MagicMock
 import torch
 
-from ai.bots.ffn_bot import FFNBot
+from backend.ai.bots.ffn_bot import FFNBot
 
-from game.game_state import GameState
+from backend.game.game_state import GameState
 
 BOT_SIZE = 4
 MOCK_INPUT_SIZE = 10
@@ -27,12 +27,12 @@ def state_mock():
 
 
 @pytest.fixture  # (autouse=True)
-@patch("ai.bots.ffn_bot.os.path.join", return_value=MOCK_MODEL_PATH)
-@patch("ai.bots.ffn_bot.os.path.exists", return_value=True)
-@patch("ai.bots.ffn_bot.torch.load")
-@patch("ai.bots.ffn_bot.FeedForwardNet")
-@patch("ai.bots.ffn_bot.ModelConfig")
-@patch("ai.bots.ffn_bot.DeploymentConfig")
+@patch("backend.ai.bots.ffn_bot.os.path.join", return_value=MOCK_MODEL_PATH)
+@patch("backend.ai.bots.ffn_bot.os.path.exists", return_value=True)
+@patch("backend.ai.bots.ffn_bot.torch.load")
+@patch("backend.ai.bots.ffn_bot.FeedForwardNet")
+@patch("backend.ai.bots.ffn_bot.ModelConfig")
+@patch("backend.ai.bots.ffn_bot.DeploymentConfig")
 def ffn_bot_mock(
     MockDeploymentConfig, MockModelConfig, MockFFN, MockLoad, MockExists, MockJoin
 ):
@@ -61,8 +61,8 @@ def test_ffn_bot_initialization(ffn_bot_mock):
 
 def test_ffn_bot_load_model_not_found(ffn_bot_mock):
     """Test, if Logging works for 'Model not found'."""
-    with patch("ai.bots.ffn_bot.os.path.exists", return_value=False):
-        with patch("ai.bots.ffn_bot.logger.warning") as mock_logger:
+    with patch("backend.ai.bots.ffn_bot.os.path.exists", return_value=False):
+        with patch("backend.ai.bots.ffn_bot.logger.warning") as mock_logger:
             bot = ffn_bot_mock
             bot._load_model()
             mock_logger.assert_called_once()
@@ -151,7 +151,7 @@ def test_ffn_bot_name(ffn_bot_mock):
     assert bot.name() == FFNBot.BOT_NAME
 
 
-@patch("ai.bots.ffn_bot.random.random")
+@patch("backend.ai.bots.ffn_bot.random.random")
 def test_ffn_bot_move_epsilon_set(mock_random, ffn_bot_mock, state_mock):
     """Tests if exploration is triggered when random < epsilon."""
     bot = ffn_bot_mock

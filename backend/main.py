@@ -3,8 +3,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from game.game_service import GameService
-from game.api.router import router as game_router
+from backend.game.game_service import GameService
+from backend.game.api.router import router as game_router
 
 app = FastAPI()
 service = GameService()

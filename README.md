@@ -74,9 +74,9 @@ If you want to run the components locally for development (requires backend on p
 Requires Python 3.11
 
 ```bash
-cd backend
-pip install -r requirements.txt
-uvicorn main:app --port 8000
+# project root
+pip install -r backend/requirements.txt
+uvicorn backend.main:app --port 8000
 ```
 
 ### Frontend

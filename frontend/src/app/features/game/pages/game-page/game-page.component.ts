@@ -43,6 +43,7 @@ export class GamePageComponent {
   gameState = this.gameService.state;
 
   startingPlayer = signal<number>(1);
+  newBoardSize = signal<number>(4);
 
   botSpeed = signal<number>(1000);
 
@@ -50,6 +51,9 @@ export class GamePageComponent {
   isBotThinking = signal(false);
   localPlayerId = this.gameService.localPlayerId;
   isFinished = this.gameService.isFinished;
+  boardSize = this.gameService.boardSize;
+
+  boardSizes = signal<number[]>([3, 4, 5]);
 
   botTurn = computed(() => {
     return this.gameState()?.currentPlayer != this.localPlayerId();
@@ -75,7 +79,10 @@ export class GamePageComponent {
     this.isProcessing.set(true);
 
     this.gameService
-      .restartGame(this.gameId, { startingPlayer: this.startingPlayer() })
+      .restartGame(this.gameId, {
+        startingPlayer: this.startingPlayer(),
+        boardSize: this.newBoardSize(),
+      })
       .subscribe({
         next: (state) => {
           console.log('Game restarted:', state);
@@ -156,6 +163,7 @@ export class GamePageComponent {
     this.gameService
       .createNewGame(this.gameId, {
         startingPlayer: this.startingPlayer(),
+        boardSize: this.newBoardSize(),
         botModel: this.gameService.botModel(),
       })
       .pipe(
@@ -164,6 +172,7 @@ export class GamePageComponent {
           this.showMessage('Try to restart current Game.', false);
           return this.gameService.restartGame(this.gameId, {
             startingPlayer: this.startingPlayer(),
+            boardSize: this.newBoardSize(),
           });
         }),
       )

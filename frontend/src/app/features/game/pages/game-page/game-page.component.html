@@ -28,6 +28,7 @@
         [state]="gameState()"
         [disabled]="isInteractionDisabled()"
         [localPlayerId]="localPlayerId()"
+        [style.--board-size]="boardSize()"
         (makeMove)="handleMove($event)"
       ></app-board>
     </main>
@@ -110,6 +111,21 @@
             />
             <span>Player 2 (Bot)</span>
           </label>
+        </div>
+
+        <p class="settings-label">Board Size (next Restart)</p>
+        <div class="radio-group">
+          @for (size of boardSizes(); track size) {
+            <label class="radio-option">
+              <input
+                type="radio"
+                name="boardSize"
+                [checked]="newBoardSize() === size"
+                (change)="newBoardSize.set(size)"
+              />
+              <span>{{ size }}x{{ size }}</span>
+            </label>
+          }
         </div>
 
         <label for="speedRange">Bot Speed [{{ botSpeed() }}ms]</label>

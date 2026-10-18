@@ -8,7 +8,7 @@ import torch
 import torch.nn as nn
 
 from torch.utils.data import DataLoader, TensorDataset
-from ai.training.trainer import ModelTrainer
+from backend.ai.training.trainer import ModelTrainer
 
 MOCK_INPUT_SIZE = 10
 MOCK_OUTPUT_SIZE = 4
@@ -30,8 +30,8 @@ MOCK_DATA = [(dummy_x[i], dummy_y[i]) for i in range(NUM_SAMPLES)]
 @pytest.fixture
 def trainer_mock():
     """Simulates a Trainer Instance for each Test."""
-    with patch("ai.training.trainer.TrainingConfig") as MockTrainingConfig:
-        with patch("ai.training.trainer.ModelConfig") as MockModelConfig:
+    with patch("backend.ai.training.trainer.TrainingConfig") as MockTrainingConfig:
+        with patch("backend.ai.training.trainer.ModelConfig") as MockModelConfig:
             with patch("torch.load", return_value=MOCK_DATA):
 
                 MockTrainingConfig.BATCH_SIZE = MOCK_BATCH_SIZE
@@ -144,9 +144,9 @@ def test_evaluate_validation(trainer_mock):
 
 
 @patch("os.makedirs")
-@patch("ai.training.trainer.plt.savefig")
-@patch("ai.training.trainer.plt.subplots")
-@patch("ai.training.trainer.plt.tight_layout")
+@patch("backend.ai.training.trainer.plt.savefig")
+@patch("backend.ai.training.trainer.plt.subplots")
+@patch("backend.ai.training.trainer.plt.tight_layout")
 def test_plot_metrics(
     mock_tight_layout, mock_subplots, mock_savefig, mock_makedirs, trainer_mock
 ):
@@ -252,7 +252,7 @@ def test_trainer_train(trainer_mock):
     assert trainer.scheduler.step.call_count == NUM_EPOCHS_TEST
 
     # Test epochs=None
-    with patch("ai.training.trainer.TrainingConfig") as MockConfig:
+    with patch("backend.ai.training.trainer.TrainingConfig") as MockConfig:
         MockConfig.NUM_EPOCHS = 5
         trainer_default = trainer_mock
 
@@ -274,7 +274,7 @@ def test_trainer_early_stopping(trainer_mock):
     """Tests if training stops when validation loss does not improve."""
     trainer = trainer_mock
 
-    with patch("ai.training.trainer.TrainingConfig") as MockConfig:
+    with patch("backend.ai.training.trainer.TrainingConfig") as MockConfig:
         MockConfig.EARLY_STOPPING_ACTIVE = True
         MockConfig.EARLY_STOPPING_PATIENCE = 2
         MockConfig.NUM_EPOCHS = 10
@@ -296,8 +296,8 @@ def test_trainer_early_stopping(trainer_mock):
 
 
 @patch("os.makedirs")
-@patch("ai.training.trainer.plt.savefig")
-@patch("ai.training.trainer.plt.subplots")
+@patch("backend.ai.training.trainer.plt.savefig")
+@patch("backend.ai.training.trainer.plt.subplots")
 def test_plot_metrics_with_smoothing(
     mock_subplots, mock_savefig, mock_makedirs, trainer_mock
 ):
@@ -329,7 +329,7 @@ def test_trainer_no_early_stopping_updates_best_model(trainer_mock):
     """Tests if best model state is saved when early stopping is disabled."""
     trainer = trainer_mock
 
-    with patch("ai.training.trainer.TrainingConfig") as MockConfig:
+    with patch("backend.ai.training.trainer.TrainingConfig") as MockConfig:
         MockConfig.EARLY_STOPPING_ACTIVE = False
 
         trainer.model.forward = MagicMock(return_value=torch.zeros(2, MOCK_OUTPUT_SIZE))

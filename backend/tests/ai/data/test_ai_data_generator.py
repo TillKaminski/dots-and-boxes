@@ -3,9 +3,9 @@
 import sys
 
 from unittest.mock import MagicMock, Mock, patch
-from ai.bots.move import Move
-from game.game_board import Orientation
-from ai.data.data_generator import DataGenerator, main
+from backend.ai.bots.move import Move
+from backend.game.game_board import Orientation
+from backend.ai.data.data_generator import DataGenerator, main
 
 
 def test_simulate_game_standard():
@@ -125,7 +125,7 @@ def test_simulate_multiple_games():
     data_generator.simulate_game.assert_called()
 
 
-@patch("ai.data.data_generator.DataStorage")
+@patch("backend.ai.data.data_generator.DataStorage")
 def test_main_view_parameter(storage_mock):
     """Terminal Parameter 'view' loads and prints data."""
     storage_instance = storage_mock.return_value
@@ -140,8 +140,8 @@ def test_main_view_parameter(storage_mock):
     storage_instance.print_training_data_summary.assert_called_once()
 
 
-@patch("ai.bots.bot_service.BOT_MODEL")
-@patch("ai.data.data_generator.DataGenerator")
+@patch("backend.ai.bots.bot_service.BOT_MODEL")
+@patch("backend.ai.data.data_generator.DataGenerator")
 def test_main_runs_simulation(generator_mock: Mock, bot_classes_mock: Mock):
     """Test if Terminal Parameter is processed correctly."""
     generator_object = generator_mock.return_value
@@ -163,8 +163,8 @@ def test_main_runs_simulation(generator_mock: Mock, bot_classes_mock: Mock):
     generator_object.simulate_multiple_games.assert_called_once()
 
 
-@patch("ai.data.data_generator.DataStorage")
-@patch("ai.data.data_generator.DataGenerator")
+@patch("backend.ai.data.data_generator.DataStorage")
+@patch("backend.ai.data.data_generator.DataGenerator")
 def test_main_json_save(generator_mock, storage_mock):
     """Test if Json Data storage works."""
     generator_object = generator_mock.return_value
@@ -183,8 +183,8 @@ def test_main_json_save(generator_mock, storage_mock):
     storage_object.save_to_pt.assert_called_once()
 
 
-@patch("ai.data.data_generator.DataStorage")
-@patch("ai.data.data_generator.DataGenerator")
+@patch("backend.ai.data.data_generator.DataStorage")
+@patch("backend.ai.data.data_generator.DataGenerator")
 def test_main_prohibit_pt_save(generator_mock, storage_mock):
     """Test if .pt-File is not created (no-pt Parameter used)."""
     generator_object = generator_mock.return_value
@@ -197,7 +197,7 @@ def test_main_prohibit_pt_save(generator_mock, storage_mock):
     storage_mock.return_value.save_to_pt.assert_not_called()
 
 
-@patch("ai.data.data_generator.DataGenerator")
+@patch("backend.ai.data.data_generator.DataGenerator")
 def test_main_invalid_bot(generator_mock):
     """Test if .pt-File is not created (no-pt Parameter used)."""
     generator_object = generator_mock.return_value
@@ -211,8 +211,8 @@ def test_main_invalid_bot(generator_mock):
     generator_object.simulate_multiple_games.assert_not_called()
 
 
-@patch("ai.data.data_generator.os.path.exists", return_value=False)
-@patch("ai.data.data_generator.DataGenerator")
+@patch("backend.ai.data.data_generator.os.path.exists", return_value=False)
+@patch("backend.ai.data.data_generator.DataGenerator")
 def test_main_merge_no_file_exists(generator_mock, mock_makedirs):
     """Test if process is aborted when no file to merge exists."""
     generator_object = generator_mock.return_value

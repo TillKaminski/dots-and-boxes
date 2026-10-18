@@ -5,8 +5,8 @@ import torch
 import numpy as np
 from typing import Any, Tuple, Dict
 
-from ai.data.data_storage import DataStorage
-from game.game_state import GameState
+from backend.ai.data.data_storage import DataStorage
+from backend.game.game_state import GameState
 
 
 class DataPreprocessor:

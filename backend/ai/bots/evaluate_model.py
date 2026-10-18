@@ -1,9 +1,9 @@
 """Provides Bot-Evaluation via Terminal."""
 
 import argparse
-from ai.bots.bot_service import BotService
-from ai.bots.evaluator import BotEvaluator
-from game.game_service import GameService
+from backend.ai.bots.bot_service import BotService
+from backend.ai.bots.evaluator import BotEvaluator
+from backend.game.game_service import GameService
 
 
 def main():

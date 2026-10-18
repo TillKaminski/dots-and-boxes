@@ -3,7 +3,7 @@
 import pytest
 import torch
 
-from ai.model.pvn_model import PolicyValueNet
+from backend.ai.model.pvn_model import PolicyValueNet
 
 # Set Game Parameters
 NUM_CHANNELS = 7
