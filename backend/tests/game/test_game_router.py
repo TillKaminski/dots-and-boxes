@@ -3,10 +3,10 @@
 from unittest.mock import MagicMock
 from fastapi.testclient import TestClient
 import pytest
-from game.api.response import NewGameRequest
-from game.api.router import get_game_service
+from backend.game.api.response import NewGameRequest
+from backend.game.api.router import get_game_service
 from main import app, service
-from game.errors import (
+from backend.game.errors import (
     ERROR_EDGE_TAKEN,
     ERROR_GAME_EXISTS,
     ERROR_GAME_NOT_FOUND,

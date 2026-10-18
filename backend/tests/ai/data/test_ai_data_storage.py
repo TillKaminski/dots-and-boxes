@@ -4,7 +4,7 @@ import pytest
 
 import os
 import torch
-from ai.data.data_storage import DataStorage
+from backend.ai.data.data_storage import DataStorage
 
 
 @pytest.fixture
@@ -15,7 +15,7 @@ def setup_filepath(tmp_path, monkeypatch):
     fake_file = fake_module_path / "dummy.py"
     fake_file.write_text("")
 
-    monkeypatch.setattr("ai.data.data_storage.__file__", str(fake_file))
+    monkeypatch.setattr("backend.ai.data.data_storage.__file__", str(fake_file))
 
 
 def test_save_and_load_json(setup_filepath):  # tmp_path, monkeypatch):

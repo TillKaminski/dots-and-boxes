@@ -5,12 +5,12 @@ import torch
 import numpy as np
 from typing import Dict, Any
 
-from ai.data.data_preprocessing import DataPreprocessor, main
+from backend.ai.data.data_preprocessing import DataPreprocessor, main
 
 from unittest.mock import patch
 import sys
 
-from game.game_state import GameState
+from backend.game.game_state import GameState
 
 
 class TestDataPreprocessor(unittest.TestCase):
@@ -149,8 +149,8 @@ class TestDataPreprocessor(unittest.TestCase):
         np.testing.assert_array_almost_equal(X.numpy(), expected_X, decimal=4)
         self.assertTrue(torch.equal(Y, expected_Y))
 
-    @patch("ai.data.data_preprocessing.DataStorage")
-    @patch("ai.data.data_preprocessing.DataPreprocessor")
+    @patch("backend.ai.data.data_preprocessing.DataStorage")
+    @patch("backend.ai.data.data_preprocessing.DataPreprocessor")
     def test_main_creates_ffn_set(self, preprocessor_mock, storage_mock):
         """Test if Preprocessing is available via Terminal Call."""
         preprocessor_object = preprocessor_mock.return_value

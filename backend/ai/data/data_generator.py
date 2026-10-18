@@ -6,11 +6,11 @@ import os
 import random
 
 from enum import Enum
-from ai.bots.basic_bot import BasicBot
-from ai.bots.bot_service import BotService
-from ai.data.data_storage import DataStorage
-from game.game_service import GameService
-from ai.bots.move import Move
+from backend.ai.bots.basic_bot import BasicBot
+from backend.ai.bots.bot_service import BotService
+from backend.ai.data.data_storage import DataStorage
+from backend.game.game_service import GameService
+from backend.ai.bots.move import Move
 
 logger = logging.getLogger(__name__)
 

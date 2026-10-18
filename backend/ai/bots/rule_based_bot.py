@@ -3,9 +3,9 @@
 import random
 
 import numpy as np
-from ai.bots.move import Move
-from ai.bots.basic_bot import BasicBot
-from game.game_board import Orientation
+from backend.ai.bots.move import Move
+from backend.ai.bots.basic_bot import BasicBot
+from backend.game.game_board import Orientation
 
 import logging
 

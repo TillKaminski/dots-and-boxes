@@ -2,11 +2,11 @@
 
 from unittest.mock import patch
 import pytest
-from ai.bots.move import Move
-from game.game_board import Orientation
-from game.game_service import GameService
+from backend.ai.bots.move import Move
+from backend.game.game_board import Orientation
+from backend.game.game_service import GameService
 
-from game.errors import (
+from backend.game.errors import (
     ERROR_BOT_NOT_SET,
     ERROR_EDGE_TAKEN,
     ERROR_GAME_OVER,
@@ -16,7 +16,7 @@ from game.errors import (
     ERROR_GAME_EXISTS,
     ERROR_GAME_NOT_FOUND,
 )
-from game.game_state import GameState
+from backend.game.game_state import GameState
 
 game_id = "1"
 
@@ -24,7 +24,7 @@ game_id = "1"
 @pytest.fixture
 def services():
     """Creates a new Game-Service Object with 2x2 Board."""
-    with patch("game.game_service.bot_service", autospec=True) as mock_bot_service:
+    with patch("backend.game.game_service.bot_service", autospec=True) as mock_bot_service:
         game_service = GameService()
         game_service.create_game(game_id, size=2)
         yield game_service, mock_bot_service

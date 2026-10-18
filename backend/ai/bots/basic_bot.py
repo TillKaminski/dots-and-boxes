@@ -2,8 +2,8 @@
 
 from abc import ABC, abstractmethod
 from typing import Any, Dict
-from ai.bots.move import Move
-from game.game_board import Orientation
+from backend.ai.bots.move import Move
+from backend.game.game_board import Orientation
 
 
 class BasicBot(ABC):

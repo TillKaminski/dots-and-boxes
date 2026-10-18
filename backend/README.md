@@ -93,9 +93,9 @@ python -m backend.ai.bots.evaluation --n 100 --bot1 "random" --bot2 "rule"
 To run the backend without Docker:
 
 ```bash
-cd backend
-pip install -r requirements.txt
-uvicorn main:app --port 8000
+# project-root
+pip install -r backend/requirements.txt
+uvicorn backend.main:app --port 8000
 ```
 
 ## Future Improvements

@@ -3,12 +3,12 @@
 import logging
 from unittest.mock import MagicMock, Mock, mock_open, patch
 
-from ai.data.data_generator import DataGenerator
-from ai.data.data_storage import DataStorage
+from backend.ai.data.data_generator import DataGenerator
+from backend.ai.data.data_storage import DataStorage
 
-generator_logger = logging.getLogger("ai.data.data_generator")
-bot_logger = logging.getLogger("ai.bots.random_bot")
-storage_logger = logging.getLogger("ai.data.data_storage")
+generator_logger = logging.getLogger("backend.ai.data.data_generator")
+bot_logger = logging.getLogger("backend.ai.bots.random_bot")
+storage_logger = logging.getLogger("backend.ai.data.data_storage")
 
 
 class MockMove:
@@ -156,7 +156,7 @@ class TestDataStorageLogging:
         # patch torch.save
         with patch("os.makedirs"), patch(
             "os.path.join", side_effect=lambda *args: mock_file_path
-        ), patch("ai.data.data_storage.torch.save") as mock_save:
+        ), patch("backend.ai.data.data_storage.torch.save") as mock_save:
 
             with caplog.at_level(logging.INFO, logger=storage_logger.name):
                 storage.save_to_pt(data="data_tensor", filename="training_data.pt")

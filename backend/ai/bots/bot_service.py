@@ -1,13 +1,13 @@
 """Service Class that handles Bot Management."""
 
 import inspect
-from ai.bots.basic_bot import BasicBot
-from ai.bots.ffn_bot import FFNBot
-from ai.bots.move import Move
-from ai.bots.random_bot import RandomBot
-from ai.bots.rule_based_bot import RuleBasedBot
-from game.game_board import Orientation
-from game.game_state import GameState
+from backend.ai.bots.basic_bot import BasicBot
+from backend.ai.bots.ffn_bot import FFNBot
+from backend.ai.bots.move import Move
+from backend.ai.bots.random_bot import RandomBot
+from backend.ai.bots.rule_based_bot import RuleBasedBot
+from backend.game.game_board import Orientation
+from backend.game.game_state import GameState
 
 BOT_MODEL: dict[str, BasicBot] = {
     "random": RandomBot,

@@ -2,7 +2,7 @@
 
 import argparse
 from unittest.mock import patch, MagicMock
-from ai.training import training
+from backend.ai.training import training
 
 
 def _mock_main_execution(iterations, src=""):
@@ -13,7 +13,7 @@ def _mock_main_execution(iterations, src=""):
         "ai.training.training.argparse.ArgumentParser.parse_args",
         return_value=mock_args,
     ):
-        with patch("ai.training.training.ModelTrainer") as MockTrainer:
+        with patch("backend.ai.training.training.ModelTrainer") as MockTrainer:
             MockTrainer.return_value.train = MagicMock()
             training.main()
             return MockTrainer.return_value.train

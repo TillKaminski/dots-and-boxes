@@ -3,7 +3,7 @@
 import torch
 import torch.nn as nn
 
-from ai.model.ffn_model import FeedForwardNet
+from backend.ai.model.ffn_model import FeedForwardNet
 
 
 def test_model_construction():

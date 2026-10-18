@@ -1,8 +1,8 @@
 """Generates Metics to compare different Bot Models."""
 
-from ai.bots.basic_bot import BasicBot
-from ai.data.data_generator import DataGenerator, SimulationMode
-from game.game_service import GameService
+from backend.ai.bots.basic_bot import BasicBot
+from backend.ai.data.data_generator import DataGenerator, SimulationMode
+from backend.game.game_service import GameService
 
 
 class BotEvaluator:

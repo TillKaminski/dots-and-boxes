@@ -3,10 +3,10 @@
 from unittest.mock import patch
 import pytest
 
-from ai.bots.random_bot import RandomBot
-from ai.data.data_generator import SimulationMode
-from game.game_service import GameService
-from ai.bots.evaluator import BotEvaluator
+from backend.ai.bots.random_bot import RandomBot
+from backend.ai.data.data_generator import SimulationMode
+from backend.game.game_service import GameService
+from backend.ai.bots.evaluator import BotEvaluator
 
 BOARD_SIZE = 1
 N_GAMES = 4
