@@ -1,6 +1,7 @@
 :host {
   display: block;
-  width: 420px;
+  --board-size: 5;
+  width: calc(420px + (var(--board-size) - 4) * 100px);
   margin: 0 auto;
 }
 

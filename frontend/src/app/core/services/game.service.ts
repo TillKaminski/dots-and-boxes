@@ -79,6 +79,7 @@ export class GameService {
   readonly dataStatus = computed(() => this._dataState());
   readonly localPlayerId = computed(() => this._localPlayerId());
   readonly isFinished = computed(() => this._gameState().finished);
+  readonly boardSize = computed(() => this._gameState().size);
 
   readonly botModel = computed(() => this._botModel());
 

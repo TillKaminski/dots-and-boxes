@@ -47,11 +47,13 @@ export interface BotGameState {
 
 export interface NewGameRequest {
   startingPlayer: number;
+  boardSize: number;
   botModel: string;
 }
 
 export interface RestartGameRequest {
   startingPlayer: number;
+  boardSize: number;
 }
 
 export interface GameResponse {
