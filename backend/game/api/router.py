@@ -54,7 +54,10 @@ def new_game(
     board_size = request_data.board_size
     bot_name = request_data.bot_model
     result = service.create_game(
-        game_id=game_id, starting_player=starting_player, size=board_size, bot_model=bot_name
+        game_id=game_id,
+        starting_player=starting_player,
+        size=board_size,
+        bot_model=bot_name,
     )
     _check_error_message(result)
 
@@ -199,7 +202,9 @@ def restart_game(
     # default set in Request Body
     starting_player = request_data.starting_player
     board_size = request_data.board_size
-    result = service.restart_game(game_id=game_id, starting_player=starting_player, board_size=board_size)
+    result = service.restart_game(
+        game_id=game_id, starting_player=starting_player, board_size=board_size
+    )
     _check_error_message(result)
 
     result["scores"] = {str(k): v for k, v in result["scores"].items()}

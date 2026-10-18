@@ -24,7 +24,9 @@ game_id = "1"
 @pytest.fixture
 def services():
     """Creates a new Game-Service Object with 2x2 Board."""
-    with patch("backend.game.game_service.bot_service", autospec=True) as mock_bot_service:
+    with patch(
+        "backend.game.game_service.bot_service", autospec=True
+    ) as mock_bot_service:
         game_service = GameService()
         game_service.create_game(game_id, size=2)
         yield game_service, mock_bot_service

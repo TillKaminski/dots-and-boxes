@@ -93,7 +93,9 @@ class RestartGameRequest(CamelCaseBaseModel):
     )
 
     board_size: Optional[int] = Field(
-        default=0, description="Choose board size. Uses old board size if empty.", examples=[3, 4, 5]
+        default=0,
+        description="Choose board size. Uses old board size if empty.",
+        examples=[3, 4, 5],
     )
 
 
