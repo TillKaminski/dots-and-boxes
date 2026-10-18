@@ -1,6 +1,6 @@
 """Class that handles Communication between APIs and Game Logic."""
 
-from ai.bots.bot_service import BotService
+from backend.ai.bots.bot_service import BotService
 from .game_board import GameBoard, Orientation
 from .errors import (
     ERROR_GAME_OVER,
@@ -30,6 +30,9 @@ class GameService:
         """Creates a new Game Session."""
         if game_id in self.games:
             return ERROR_GAME_EXISTS
+        # TODO: Check if model exists for given board size, default: rule
+        if size != 4:
+            bot_model = "rule"
         if bot_model:
             bot_service.register_bot(game_id, size, bot_model)
         self.games[game_id] = GameBoard(
@@ -91,15 +94,16 @@ class GameService:
             return game
         return game.get_state_object()
 
-    def restart_game(self, game_id: str, starting_player: int = 1):
+    def restart_game(self, game_id: str, board_size: int, starting_player: int = 1):
         """Restart current Game-Session."""
         board = self._get_game(game_id)
         # Check for error
         if isinstance(board, dict):
             return board
         if isinstance(board, GameBoard):
-            size = board.size
-            bot = board.bot_model
+            size = board.size if (board_size == 0) else board_size
+            # TODO: Check if model exists for given board size, default: rule
+            bot = board.bot_model if (size == 4) else "rule"
             if bot:
                 bot_service.delete_bot(game_id)
             self.games[game_id] = GameBoard(

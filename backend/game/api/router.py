@@ -1,9 +1,9 @@
 """Routes for Game-APIs."""
 
 from fastapi import APIRouter, HTTPException, Depends
-from game.errors import ERROR_INVALID_ORIENTATION, get_error_response
-from game.game_board import Orientation
-from game.game_service import GameService
+from backend.game.errors import ERROR_INVALID_ORIENTATION, get_error_response
+from backend.game.game_board import Orientation
+from backend.game.game_service import GameService
 from .response import (
     GameResponse,
     MoveRequest,
@@ -17,7 +17,7 @@ router = APIRouter(prefix="/v1/games", tags=["Games"])
 
 def get_game_service():
     """Service-Instance."""
-    from main import service
+    from backend.main import service
 
     return service
 
@@ -51,9 +51,10 @@ def new_game(
     - **HTTPException** If the game already exists (409).
     """
     starting_player = request_data.starting_player
+    board_size = request_data.board_size
     bot_name = request_data.bot_model
     result = service.create_game(
-        game_id=game_id, starting_player=starting_player, bot_model=bot_name
+        game_id=game_id, size=board_size, starting_player=starting_player, bot_model=bot_name
     )
     _check_error_message(result)
 
@@ -197,7 +198,8 @@ def restart_game(
     """
     # default set in Request Body
     starting_player = request_data.starting_player
-    result = service.restart_game(game_id=game_id, starting_player=starting_player)
+    board_size = request_data.board_size
+    result = service.restart_game(game_id=game_id, starting_player=starting_player, board_size=board_size)
     _check_error_message(result)
 
     result["scores"] = {str(k): v for k, v in result["scores"].items()}
