@@ -88,6 +88,7 @@ describe('GameService', () => {
       const gameId = 'test_game';
       const newGameRequest: NewGameRequest = {
         startingPlayer: 1,
+        boardSize: 4,
         botModel: 'bot_model',
       };
 
@@ -129,6 +130,7 @@ describe('GameService', () => {
       const gameId = 'test_game';
       const newGameRequest: NewGameRequest = {
         startingPlayer: 1,
+        boardSize: 4,
         botModel: 'random',
       };
 
@@ -158,6 +160,7 @@ describe('GameService', () => {
 
       const requestBody: RestartGameRequest = {
         startingPlayer: 1,
+        boardSize: 4,
       };
 
       let receivedData: GameState | undefined;
@@ -286,7 +289,11 @@ describe('GameService', () => {
   describe('Error Handling APIs', () => {
     it('should handle error for create_new_game', fakeAsync(() => {
       const gameId = 'test_game';
-      const newGameRequest = { startingPlayer: 1, botModel: 'bot_model' };
+      const newGameRequest = {
+        startingPlayer: 1,
+        botModel: 'bot_model',
+        boardSize: 4,
+      };
 
       const mockErrorResponse = {
         status: 500,
