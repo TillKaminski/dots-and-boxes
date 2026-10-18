@@ -2,11 +2,11 @@
 
 from abc import ABC, abstractmethod
 from typing import Any, Dict
-from backend.ai.bots.move import Move
+from backend.game.position import Position
 from backend.game.game_board import Orientation
 
 
-class BasicBot(ABC):
+class BaseAgent(ABC):
     """Basic Interface for all Bots.
 
     - reset()
@@ -30,12 +30,12 @@ class BasicBot(ABC):
 
     def move(
         self, log_move: bool = False, return_dictionary: bool = False
-    ) -> Dict[str, Any] | Move:
+    ) -> Dict[str, Any] | Position:
         """Select a move.
 
         Returns dict: {"x": int, "y": int, "orientation": "horizontal|vertical"}
         """
-        selected_move: Move = self._select_move()
+        selected_move: Position = self._select_move()
 
         if log_move:
             print(f"[{self.name()}] Selected move: {selected_move}")
@@ -50,7 +50,7 @@ class BasicBot(ABC):
         return selected_move
 
     @abstractmethod
-    def _select_move(self) -> Dict[str, Any] | Move:
+    def _select_move(self) -> Dict[str, Any] | Position:
         """Select a move."""
         raise NotImplementedError("Subclass: _select_move()-Method not implemented.")
 

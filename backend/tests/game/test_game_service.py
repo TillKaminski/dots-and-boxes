@@ -2,7 +2,7 @@
 
 from unittest.mock import patch
 import pytest
-from backend.ai.bots.move import Move
+from backend.game.position import Position
 from backend.game.game_board import Orientation
 from backend.game.game_service import GameService
 
@@ -236,7 +236,7 @@ def test_make_bot_move(services):
     board.bot_model = bot_model_name
     board.bot_id = bot_id
 
-    expected_move = Move(x=1, y=1, orientation=Orientation.VERTICAL, available=True)
+    expected_move = Position(x=1, y=1, orientation=Orientation.VERTICAL, available=True)
 
     mock_bot_service.game_state_required.return_value = True
     mock_bot_service.get_move.return_value = expected_move

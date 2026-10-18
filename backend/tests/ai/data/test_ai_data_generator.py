@@ -3,7 +3,7 @@
 import sys
 
 from unittest.mock import MagicMock, Mock, patch
-from backend.ai.bots.move import Move
+from backend.game.position import Position
 from backend.game.game_board import Orientation
 from backend.ai.data.data_generator import DataGenerator, main
 
@@ -75,8 +75,8 @@ def test_invalid_move_rejected_and_updated():
     bot2 = MagicMock()
 
     # Setup moves, second should raise error
-    move_valid = Move(x=1, y=2, orientation=Orientation.HORIZONTAL)
-    move_invalid = Move(x=10, y=10, orientation=Orientation.VERTICAL)
+    move_valid = Position(x=1, y=2, orientation=Orientation.HORIZONTAL)
+    move_invalid = Position(x=10, y=10, orientation=Orientation.VERTICAL)
 
     bot1.move.side_effect = [move_valid, move_invalid]
 
@@ -140,7 +140,7 @@ def test_main_view_parameter(storage_mock):
     storage_instance.print_training_data_summary.assert_called_once()
 
 
-@patch("backend.ai.bots.bot_service.BOT_MODEL")
+@patch("backend.ai.agents.bot_service.BOT_MODEL")
 @patch("backend.ai.data.data_generator.DataGenerator")
 def test_main_runs_simulation(generator_mock: Mock, bot_classes_mock: Mock):
     """Test if Terminal Parameter is processed correctly."""

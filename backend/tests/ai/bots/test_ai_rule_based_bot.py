@@ -4,8 +4,8 @@ import pytest
 import numpy as np
 from unittest.mock import patch
 
-from backend.ai.bots.rule_based_bot import RuleBasedBot
-from backend.ai.bots.move import Move
+from backend.ai.agents.heuristic_agent import HeuristicAgent
+from backend.game.position import Position
 from backend.game.game_board import Orientation
 
 GAME_SIZE = 3
@@ -13,9 +13,9 @@ GAME_SIZE = 3
 
 # Create Fixtures for the different Game States
 @pytest.fixture
-def rule_based_bot() -> RuleBasedBot:
+def rule_based_bot() -> HeuristicAgent:
     """Fixture for a RuleBasedBot instance (size: 3x3)."""
-    return RuleBasedBot(GAME_SIZE)
+    return HeuristicAgent(GAME_SIZE)
 
 
 @pytest.fixture
@@ -24,7 +24,7 @@ def setup_win_state(rule_based_bot):
     rule_based_bot.update(x=0, y=1, orientation=Orientation.HORIZONTAL)
     rule_based_bot.update(x=0, y=0, orientation=Orientation.VERTICAL)
     rule_based_bot.update(x=1, y=0, orientation=Orientation.VERTICAL)
-    win_move = Move(0, 0, Orientation.HORIZONTAL)
+    win_move = Position(0, 0, Orientation.HORIZONTAL)
     return rule_based_bot, win_move
 
 
@@ -34,7 +34,7 @@ def setup_neutral_state(rule_based_bot):
     rule_based_bot.boxes[:] = -2
     rule_based_bot.boxes[0, 0] = -4
 
-    neutral_move = Move(0, 0, Orientation.VERTICAL)
+    neutral_move = Position(0, 0, Orientation.VERTICAL)
     return rule_based_bot, neutral_move
 
 
@@ -57,7 +57,7 @@ def test_bot_constructor(rule_based_bot):
     assert rule_based_bot.boxes.shape == (GAME_SIZE, GAME_SIZE)
     assert np.all(rule_based_bot.boxes == -4)
 
-    assert rule_based_bot.name() == RuleBasedBot.BOT_NAME
+    assert rule_based_bot.name() == HeuristicAgent.BOT_NAME
 
 
 def test_move_returns_valid_move_dict(rule_based_bot):
@@ -72,7 +72,7 @@ def test_move_returns_valid_move_dict(rule_based_bot):
 def test_move_logging(rule_based_bot):
     """Test Terminal Logging has no impact on Bot Behavior."""
     move = rule_based_bot.move(log_move=True)
-    assert isinstance(move, Move)
+    assert isinstance(move, Position)
 
     for pos in rule_based_bot.positions:
         pos.update()
@@ -158,19 +158,19 @@ def test_update_vertical_edge(rule_based_bot):
 def test_helper_get_adjacent_boxes(rule_based_bot):
     """Test _get_adjacent_boxes for horizontal and vertical moves (mid and edges)."""
     # Horizontal Mid
-    move_h_mid = Move(1, 1, Orientation.HORIZONTAL)
+    move_h_mid = Position(1, 1, Orientation.HORIZONTAL)
     assert rule_based_bot._get_adjacent_boxes(move_h_mid) == [(1, 1), (1, 0)]
 
     # Vertical Mid
-    move_v_mid = Move(1, 1, Orientation.VERTICAL)
+    move_v_mid = Position(1, 1, Orientation.VERTICAL)
     assert rule_based_bot._get_adjacent_boxes(move_v_mid) == [(1, 1), (0, 1)]
 
     # Horizontal Bottom Edge (0, 0)
-    move_h_top = Move(0, 0, Orientation.HORIZONTAL)
+    move_h_top = Position(0, 0, Orientation.HORIZONTAL)
     assert rule_based_bot._get_adjacent_boxes(move_h_top) == [(0, 0)]
 
     # Vertical Left Edge (0, 0)
-    move_v_left = Move(0, 0, Orientation.VERTICAL)
+    move_v_left = Position(0, 0, Orientation.VERTICAL)
     assert rule_based_bot._get_adjacent_boxes(move_v_left) == [(0, 0)]
 
 
@@ -178,7 +178,7 @@ def test_move_return_values(rule_based_bot):
     """Test move() returns valid Move object and dictionary structure."""
     # Return Move-Object
     move = rule_based_bot.move(return_dictionary=False)
-    assert isinstance(move, Move)
+    assert isinstance(move, Position)
     assert move.orientation in [Orientation.HORIZONTAL, Orientation.VERTICAL]
 
     # Return Dictionary

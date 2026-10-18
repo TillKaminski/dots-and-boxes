@@ -3,16 +3,16 @@
 from unittest.mock import patch
 import pytest
 
-from backend.ai.bots.random_bot import RandomBot
+from backend.ai.agents.random_agent import RandomAgent
 from backend.ai.data.data_generator import SimulationMode
 from backend.game.game_service import GameService
-from backend.ai.bots.evaluator import BotEvaluator
+from backend.ai.evaluation.evaluator import BotEvaluator
 
 BOARD_SIZE = 1
 N_GAMES = 4
 
-bot1 = RandomBot(size=BOARD_SIZE)
-bot2 = RandomBot(size=BOARD_SIZE)
+bot1 = RandomAgent(size=BOARD_SIZE)
+bot2 = RandomAgent(size=BOARD_SIZE)
 
 
 @pytest.fixture

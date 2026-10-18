@@ -1,6 +1,6 @@
 """Class that handles Communication between APIs and Game Logic."""
 
-from backend.ai.bots.bot_service import BotService
+from backend.ai.agents.bot_service import BotService
 from .game_board import GameBoard, Orientation
 from .errors import (
     ERROR_GAME_OVER,

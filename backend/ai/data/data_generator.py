@@ -6,11 +6,11 @@ import os
 import random
 
 from enum import Enum
-from backend.ai.bots.basic_bot import BasicBot
-from backend.ai.bots.bot_service import BotService
+from backend.ai.agents.base_agent import BaseAgent
+from backend.ai.agents.bot_service import BotService
 from backend.ai.data.data_storage import DataStorage
 from backend.game.game_service import GameService
-from backend.ai.bots.move import Move
+from backend.game.position import Position
 
 logger = logging.getLogger(__name__)
 
@@ -34,8 +34,8 @@ class DataGenerator:
     def simulate_game(
         self,
         game_id: str,
-        bot1: BasicBot,
-        bot2: BasicBot,
+        bot1: BaseAgent,
+        bot2: BaseAgent,
         starting_player: int = 1,
         save_moves: bool = True,
         log: bool = False,
@@ -68,7 +68,7 @@ class DataGenerator:
                 state = self.service.get_state_object(game_id)
                 current_bot.update_state(state)
 
-            move: Move = current_bot.move(log_move=log, return_dictionary=False)
+            move: Position = current_bot.move(log_move=log, return_dictionary=False)
 
             state_before = self.service.get_state(game_id=game_id)
 
@@ -119,8 +119,8 @@ class DataGenerator:
     def simulate_multiple_games(
         self,
         n_games: int,
-        bot1: BasicBot,
-        bot2: BasicBot,
+        bot1: BaseAgent,
+        bot2: BaseAgent,
         start_mode: SimulationMode = SimulationMode.FIXED,
         prefix: str = "game",
         log: bool = False,

@@ -3,8 +3,8 @@
 import random
 
 import numpy as np
-from backend.ai.bots.move import Move
-from backend.ai.bots.basic_bot import BasicBot
+from backend.game.position import Position
+from backend.ai.agents.base_agent import BaseAgent
 from backend.game.game_board import Orientation
 
 import logging
@@ -12,7 +12,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class RuleBasedBot(BasicBot):
+class HeuristicAgent(BaseAgent):
     """Rule-based Bot that performs Moves with a simple logic."""
 
     BOT_NAME = "Rule"
@@ -20,7 +20,7 @@ class RuleBasedBot(BasicBot):
     def __init__(self, size: int):
         """Rule-based Bot Constructor."""
         self.size = size
-        self.positions: list[Move] = []
+        self.positions: list[Position] = []
         self.boxes: np.ndarray = np.full((size, size), -4, dtype=int)
         self._init_positions()
         self.MAX_RANDOM_ATTEMPTS = 15
@@ -29,11 +29,11 @@ class RuleBasedBot(BasicBot):
         """Initialize all possible moves."""
         for y in range(self.size + 1):
             for x in range(self.size):
-                self.positions.append(Move(x, y, Orientation.HORIZONTAL))
+                self.positions.append(Position(x, y, Orientation.HORIZONTAL))
 
         for y in range(self.size):
             for x in range(self.size + 1):
-                self.positions.append(Move(x, y, Orientation.VERTICAL))
+                self.positions.append(Position(x, y, Orientation.VERTICAL))
 
     def reset(self) -> None:
         """Resets the Bot for following Games."""
@@ -76,7 +76,7 @@ class RuleBasedBot(BasicBot):
                 if self.boxes[x - 1, y] == 0:
                     self.boxes[x - 1, y] = 1
 
-    def _get_adjacent_boxes(self, move: Move) -> list[tuple[int, int]]:
+    def _get_adjacent_boxes(self, move: Position) -> list[tuple[int, int]]:
         """Get Coordinates of adjacent Boxes."""
         boxes = []
         x, y = move.x, move.y

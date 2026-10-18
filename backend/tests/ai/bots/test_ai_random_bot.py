@@ -1,8 +1,8 @@
 """Test Class for Random Bot."""
 
 import pytest
-from backend.ai.bots.random_bot import RandomBot
-from backend.ai.bots.move import Move
+from backend.ai.agents.random_agent import RandomAgent
+from backend.game.position import Position
 from backend.game.game_board import Orientation
 
 bot_size = 4
@@ -11,7 +11,7 @@ bot_size = 4
 @pytest.fixture
 def bot():
     """Create a Bot Instance for each Test."""
-    return RandomBot(bot_size)
+    return RandomAgent(bot_size)
 
 
 def test_random_bot_constructor(bot):
@@ -33,7 +33,7 @@ def test_move_returns_valid_move_dict(bot):
 
 def test_move_returns_valid_move(bot):
     """Random-Bot should return a valid move dict."""
-    move: Move = bot.move()
+    move: Position = bot.move()
     assert isinstance(move.x, int)
     assert isinstance(move.x, int)
     assert move.orientation in [Orientation.HORIZONTAL, Orientation.VERTICAL]
@@ -54,7 +54,7 @@ def test_update_positions(bot):
 def test_move_logging(bot, capsys):
     """Test Terminal Logging has no impact on Bot Behavior."""
     move = bot.move(log_move=True)
-    assert isinstance(move, Move)
+    assert isinstance(move, Position)
 
     for pos in bot.positions:
         pos.update()
@@ -86,4 +86,4 @@ def test_move_not_possible(bot):
 
 def test_name(bot):
     """Name-Method should return Model Name."""
-    assert bot.name() == RandomBot.BOT_NAME
+    assert bot.name() == RandomAgent.BOT_NAME

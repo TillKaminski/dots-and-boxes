@@ -3,11 +3,11 @@
 import unittest
 from typing import Any, Dict
 from backend.game.game_board import Orientation
-from backend.ai.bots.basic_bot import BasicBot
+from backend.ai.agents.base_agent import BaseAgent
 
 
 # Create Classes for Inheritance Behavior
-class TestBot(BasicBot):
+class TestBot(BaseAgent):
     """Subclass that calls Superclass Methods."""
 
     def reset(self) -> None:
@@ -29,7 +29,7 @@ class TestBot(BasicBot):
         return super().name()
 
 
-class MockBot(BasicBot):
+class MockBot(BaseAgent):
     """Minimal Bot Implementation."""
 
     def reset(self) -> None:
@@ -68,7 +68,7 @@ class TestAbstractMethods(unittest.TestCase):
             self.bot.update(x=0, y=0, orientation=Orientation.HORIZONTAL)
 
         # Bot Name not set
-        assert self.bot.name() == BasicBot.BOT_NAME
+        assert self.bot.name() == BaseAgent.BOT_NAME
 
 
 class TestBasicBotImplementation(unittest.TestCase):
@@ -77,7 +77,7 @@ class TestBasicBotImplementation(unittest.TestCase):
     def test_call_abstract_class_throws_error(self):
         """Creating an instance of Basic Class throws an error."""
         with self.assertRaises(TypeError):
-            BasicBot()
+            BaseAgent()
 
     def test_subclass_methods(self):
         """Test Subclass Implementations."""

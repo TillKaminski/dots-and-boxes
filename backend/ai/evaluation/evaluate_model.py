@@ -1,8 +1,8 @@
 """Provides Bot-Evaluation via Terminal."""
 
 import argparse
-from backend.ai.bots.bot_service import BotService
-from backend.ai.bots.evaluator import BotEvaluator
+from backend.ai.agents.bot_service import BotService
+from backend.ai.evaluation.evaluator import BotEvaluator
 from backend.game.game_service import GameService
 
 

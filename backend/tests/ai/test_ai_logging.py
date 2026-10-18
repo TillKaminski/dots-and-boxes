@@ -7,7 +7,7 @@ from backend.ai.data.data_generator import DataGenerator
 from backend.ai.data.data_storage import DataStorage
 
 generator_logger = logging.getLogger("backend.ai.data.data_generator")
-bot_logger = logging.getLogger("backend.ai.bots.random_bot")
+bot_logger = logging.getLogger("backend.ai.agents.random_bot")
 storage_logger = logging.getLogger("backend.ai.data.data_storage")
 
 

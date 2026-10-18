@@ -6,18 +6,18 @@ import random
 from typing import Any, Dict
 
 import torch
-from backend.ai.bots.basic_bot import BasicBot
-from backend.ai.bots.move import Move
+from backend.ai.agents.base_agent import BaseAgent
+from backend.game.position import Position
 from backend.ai.config.params import DeploymentConfig, ModelConfig
 from backend.ai.data.data_preprocessing import DataPreprocessor
-from backend.ai.model.ffn_model import FeedForwardNet
+from ai.model.ffn import FeedForwardNet
 from backend.game.game_board import Orientation
 from backend.game.game_state import GameState
 
 logger = logging.getLogger(__name__)
 
 
-class FFNBot(BasicBot):
+class FFNAgent(BaseAgent):
     """Bot Class that uses a FFN for Predictions based on the current Game State."""
 
     BOT_NAME = "FFN"
@@ -33,7 +33,7 @@ class FFNBot(BasicBot):
         self.size = size
         self.model_path = model_path
         self.epsilon = epsilon
-        self.positions: list[Move] = []
+        self.positions: list[Position] = []
         self.preprocessor = DataPreprocessor(size=size)
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -78,7 +78,7 @@ class FFNBot(BasicBot):
         self._init_positions()
         self._current_state = None
 
-    def _select_move(self) -> Dict[str, Any] | Move:
+    def _select_move(self) -> Dict[str, Any] | Position:
         """Predicts the best Move based on the current Game State.
 
         Returns dict: {"x": int, "y": int, "orientation": "horizontal|vertical"}
@@ -129,20 +129,20 @@ class FFNBot(BasicBot):
         """Initialize all possible moves."""
         for x in range(self.size):
             for y in range(self.size + 1):
-                self.positions.append(Move(x, y, Orientation.HORIZONTAL))
+                self.positions.append(Position(x, y, Orientation.HORIZONTAL))
 
         for x in range(self.size + 1):
             for y in range(self.size):
-                self.positions.append(Move(x, y, Orientation.VERTICAL))
+                self.positions.append(Position(x, y, Orientation.VERTICAL))
 
-    def _map_index_to_move(self, index: int) -> Move:
+    def _map_index_to_move(self, index: int) -> Position:
         """Maps 1D Representation to corresponding Move Object."""
         if 0 <= index < len(self.positions):
             return self.positions[index]
 
         raise ValueError(f"Invalid Move Index '{index}'")
 
-    def _get_random_legal_move(self) -> Move:
+    def _get_random_legal_move(self) -> Position:
         """Helper-Method for Exploration."""
         legal_moves = [move for move in self.positions if move.available]
         return random.choice(legal_moves)

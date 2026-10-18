@@ -1,6 +1,6 @@
 """Generates Metics to compare different Bot Models."""
 
-from backend.ai.bots.basic_bot import BasicBot
+from backend.ai.agents.base_agent import BaseAgent
 from backend.ai.data.data_generator import DataGenerator, SimulationMode
 from backend.game.game_service import GameService
 
@@ -16,8 +16,8 @@ class BotEvaluator:
 
     def evaluate(
         self,
-        bot1: BasicBot,
-        bot2: BasicBot,
+        bot1: BaseAgent,
+        bot2: BaseAgent,
         n_games: int = 100,
         start_mode: SimulationMode = SimulationMode.ALTERNATE,
         save_moves: bool = True,

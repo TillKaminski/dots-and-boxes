@@ -1,8 +1,8 @@
 """Implementation of a Random Bot."""
 
 import random
-from backend.ai.bots.move import Move
-from backend.ai.bots.basic_bot import BasicBot
+from backend.game.position import Position
+from backend.ai.agents.base_agent import BaseAgent
 from backend.game.game_board import Orientation
 
 import logging
@@ -10,7 +10,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class RandomBot(BasicBot):
+class RandomAgent(BaseAgent):
     """Bot that selects random available moves."""
 
     BOT_NAME = "Random"
@@ -18,18 +18,18 @@ class RandomBot(BasicBot):
     def __init__(self, size: int):
         """Creates a new Random-Bot."""
         self.size = size
-        self.positions: list[Move] = []
+        self.positions: list[Position] = []
         self._init_positions()
 
     def _init_positions(self):
         """Initialize all possible moves."""
         for y in range(self.size + 1):
             for x in range(self.size):
-                self.positions.append(Move(x, y, Orientation.HORIZONTAL))
+                self.positions.append(Position(x, y, Orientation.HORIZONTAL))
 
         for y in range(self.size):
             for x in range(self.size + 1):
-                self.positions.append(Move(x, y, Orientation.VERTICAL))
+                self.positions.append(Position(x, y, Orientation.VERTICAL))
 
     def reset(self) -> None:
         """Resets the Bot for following Games."""

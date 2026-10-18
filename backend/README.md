@@ -85,7 +85,7 @@ python -m backend.ai.training.training --it 100
 ```
 4. **Evaluation** (Win-rates between different AI versions):
 ```bash
-python -m backend.ai.bots.evaluation --n 100 --bot1 "random" --bot2 "rule"
+python -m backend.ai.agents.evaluation --n 100 --bot1 "random" --bot2 "rule"
 ```
 
 ## Local Setup

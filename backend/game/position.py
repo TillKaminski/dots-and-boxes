@@ -5,7 +5,7 @@ from backend.game.game_board import Orientation
 
 
 @dataclass
-class Move:
+class Position:
     """Represents a possible move on the game board."""
 
     x: int

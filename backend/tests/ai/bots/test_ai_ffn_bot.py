@@ -4,7 +4,7 @@ import pytest
 from unittest.mock import patch, MagicMock
 import torch
 
-from backend.ai.bots.ffn_bot import FFNBot
+from backend.ai.agents.ffn_agent import FFNAgent
 
 from backend.game.game_state import GameState
 
@@ -27,13 +27,13 @@ def state_mock():
 
 
 @pytest.fixture  # (autouse=True)
-@patch("backend.ai.bots.ffn_bot.os.path.join", return_value=MOCK_MODEL_PATH)
-@patch("backend.ai.bots.ffn_bot.os.path.exists", return_value=True)
-@patch("backend.ai.bots.ffn_bot.torch.load")
-@patch("backend.ai.bots.ffn_bot.FeedForwardNet")
-@patch("backend.ai.bots.ffn_bot.ModelConfig")
-@patch("backend.ai.bots.ffn_bot.DeploymentConfig")
-def ffn_bot_mock(
+@patch("backend.ai.agents.ffn_agent.os.path.join", return_value=MOCK_MODEL_PATH)
+@patch("backend.ai.agents.ffn_agent.os.path.exists", return_value=True)
+@patch("backend.ai.agents.ffn_agent.torch.load")
+@patch("backend.ai.agents.ffn_agent.FeedForwardNet")
+@patch("backend.ai.agents.ffn_agent.ModelConfig")
+@patch("backend.ai.agents.ffn_agent.DeploymentConfig")
+def ffn_agent_mock(
     MockDeploymentConfig, MockModelConfig, MockFFN, MockLoad, MockExists, MockJoin
 ):
     """Creates a Mock for the FFNBot (and Mocks for Dependencies)."""
@@ -43,15 +43,15 @@ def ffn_bot_mock(
     MockModelConfig.HIDDEN_LAYERS = [5]
     MockDeploymentConfig.MODEL_PATH = MOCK_MODEL_PATH
 
-    bot = FFNBot(size=BOT_SIZE)
+    bot = FFNAgent(size=BOT_SIZE)
     bot.model = MockFFN.return_value
 
     return bot
 
 
-def test_ffn_bot_initialization(ffn_bot_mock):
+def test_ffn_agent_initialization(ffn_agent_mock):
     """Tests Initialization Model Loading."""
-    bot = ffn_bot_mock
+    bot = ffn_agent_mock
 
     assert bot.size == BOT_SIZE
     assert len(bot.positions) == MOCK_OUTPUT_SIZE
@@ -59,19 +59,19 @@ def test_ffn_bot_initialization(ffn_bot_mock):
     assert isinstance(bot.model, MagicMock)
 
 
-def test_ffn_bot_load_model_not_found(ffn_bot_mock):
+def test_ffn_agent_load_model_not_found(ffn_agent_mock):
     """Test, if Logging works for 'Model not found'."""
-    with patch("backend.ai.bots.ffn_bot.os.path.exists", return_value=False):
-        with patch("backend.ai.bots.ffn_bot.logger.warning") as mock_logger:
-            bot = ffn_bot_mock
+    with patch("backend.ai.agents.ffn_agent.os.path.exists", return_value=False):
+        with patch("backend.ai.agents.ffn_agent.logger.warning") as mock_logger:
+            bot = ffn_agent_mock
             bot._load_model()
             mock_logger.assert_called_once()
             assert "Model file not found" in mock_logger.call_args[0][0]
 
 
-def test_ffn_bot_reset(ffn_bot_mock):
+def test_ffn_agent_reset(ffn_agent_mock):
     """Test reset() makes all positions available."""
-    bot = ffn_bot_mock
+    bot = ffn_agent_mock
 
     for i in range(MOCK_OUTPUT_SIZE - 1):
         bot.positions[i].available = False
@@ -84,17 +84,17 @@ def test_ffn_bot_reset(ffn_bot_mock):
     assert bot._current_state is None
 
 
-def test_ffn_bot_move_no_state_set(ffn_bot_mock):
+def test_ffn_agent_move_no_state_set(ffn_agent_mock):
     """Test, if move() without a State set raises an Error."""
-    bot = ffn_bot_mock
+    bot = ffn_agent_mock
     bot._current_state = None
     with pytest.raises(RuntimeError, match="No Game State set."):
         bot.move()
 
 
-def test_ffn_bot_move(ffn_bot_mock, state_mock):
+def test_ffn_agent_move(ffn_agent_mock, state_mock):
     """Test, if move-Method returns a valid Move."""
-    bot = ffn_bot_mock
+    bot = ffn_agent_mock
     bot.update_state(state_mock)
 
     best_index = 7
@@ -117,19 +117,19 @@ def test_ffn_bot_move(ffn_bot_mock, state_mock):
     bot.model.assert_called_once()
 
 
-def test_ffn_bot_map_index_invalid(ffn_bot_mock):
+def test_ffn_agent_map_index_invalid(ffn_agent_mock):
     """Test, if mapping an invalid Position-Index throws an Error."""
     # Test negative
     with pytest.raises(ValueError):
-        ffn_bot_mock._map_index_to_move(-1)
+        ffn_agent_mock._map_index_to_move(-1)
     # Test out of bounds
     with pytest.raises(ValueError):
-        ffn_bot_mock._map_index_to_move(1000)
+        ffn_agent_mock._map_index_to_move(1000)
 
 
-def test_ffn_bot_update_positions(ffn_bot_mock):
+def test_ffn_agent_update_positions(ffn_agent_mock):
     """Test, if Move is unavailable after update()."""
-    bot = ffn_bot_mock
+    bot = ffn_agent_mock
 
     # Chose random Move
     move_to_update = bot.positions[5]
@@ -138,23 +138,23 @@ def test_ffn_bot_update_positions(ffn_bot_mock):
     assert not move_to_update.available
 
 
-def test_ffn_bot_update_state(ffn_bot_mock, state_mock):
+def test_ffn_agent_update_state(ffn_agent_mock, state_mock):
     """Test Updating the internal GameState."""
-    bot = ffn_bot_mock
+    bot = ffn_agent_mock
     bot.update_state(state_mock)
     assert bot._current_state is state_mock
 
 
-def test_ffn_bot_name(ffn_bot_mock):
+def test_ffn_agent_name(ffn_agent_mock):
     """Test, if Name-Method returns the correct Bpt-Name."""
-    bot = ffn_bot_mock
-    assert bot.name() == FFNBot.BOT_NAME
+    bot = ffn_agent_mock
+    assert bot.name() == FFNAgent.BOT_NAME
 
 
-@patch("backend.ai.bots.ffn_bot.random.random")
-def test_ffn_bot_move_epsilon_set(mock_random, ffn_bot_mock, state_mock):
+@patch("backend.ai.agents.ffn_agent.random.random")
+def test_ffn_agent_move_epsilon_set(mock_random, ffn_agent_mock, state_mock):
     """Tests if exploration is triggered when random < epsilon."""
-    bot = ffn_bot_mock
+    bot = ffn_agent_mock
     bot.update_state(state_mock)
 
     bot.epsilon = 0.5
@@ -169,9 +169,9 @@ def test_ffn_bot_move_epsilon_set(mock_random, ffn_bot_mock, state_mock):
         assert move_result == bot.positions[0]
 
 
-def test_ffn_bot_get_random_legal_move(ffn_bot_mock):
+def test_ffn_agent_get_random_legal_move(ffn_agent_mock):
     """Tests if only available moves are selected (for epsilon > 0)."""
-    bot = ffn_bot_mock
+    bot = ffn_agent_mock
 
     for pos in bot.positions:
         pos.available = False

@@ -1,19 +1,19 @@
 """Service Class that handles Bot Management."""
 
 import inspect
-from backend.ai.bots.basic_bot import BasicBot
-from backend.ai.bots.ffn_bot import FFNBot
-from backend.ai.bots.move import Move
-from backend.ai.bots.random_bot import RandomBot
-from backend.ai.bots.rule_based_bot import RuleBasedBot
+from backend.ai.agents.base_agent import BaseAgent
+from backend.ai.agents.ffn_agent import FFNAgent
+from backend.game.position import Position
+from backend.ai.agents.random_agent import RandomAgent
+from backend.ai.agents.heuristic_agent import HeuristicAgent
 from backend.game.game_board import Orientation
 from backend.game.game_state import GameState
 
-BOT_MODEL: dict[str, BasicBot] = {
-    "random": RandomBot,
-    "rule": RuleBasedBot,
-    "ffn": FFNBot,
-    "pvn": FFNBot,  # Placeholder, TODO: Implement PVN Bot
+BOT_MODEL: dict[str, BaseAgent] = {
+    "random": RandomAgent,
+    "rule": HeuristicAgent,
+    "ffn": FFNAgent,
+    "pvn": FFNAgent,  # Placeholder, TODO: Implement PVN Bot
 }
 
 BOT_BOARD_SIZES: dict[str, list[int]] = {
@@ -23,7 +23,7 @@ BOT_BOARD_SIZES: dict[str, list[int]] = {
     "pvn": [4],
 }
 
-ACTIVE_BOTS: dict[str, BasicBot] = {}
+ACTIVE_BOTS: dict[str, BaseAgent] = {}
 
 
 class BotService:
@@ -35,7 +35,7 @@ class BotService:
         size: int,
         model: str | None = None,
         epsilon: float | None = None,
-    ) -> BasicBot:
+    ) -> BaseAgent:
         """Function to create a bot based on its name."""
         BotClass = BOT_MODEL.get(bot_name.lower())
         if BotClass is None:
@@ -76,14 +76,14 @@ class BotService:
         """Returns available Bot Models."""
         return BOT_MODEL.keys()
 
-    def get_bot_model(self, model: str) -> BasicBot:
+    def get_bot_model(self, model: str) -> BaseAgent:
         """Returns the Bot Object."""
         model_lower = model.lower()
         if model_lower in BOT_MODEL.keys():
             return BOT_MODEL.get(model_lower)
         raise ValueError("Bot Model not found.")
 
-    def game_state_required(self, bot_model: str | BasicBot) -> bool:
+    def game_state_required(self, bot_model: str | BaseAgent) -> bool:
         """Check, if Bot needs a GameState Object for predictions.
 
         Accepts Model Name as String or Model Object.
@@ -91,10 +91,10 @@ class BotService:
         if isinstance(bot_model, str):
             BotClass = self.get_bot_model(bot_model)
             return BotClass.game_state_required()
-        elif isinstance(bot_model, BasicBot):
+        elif isinstance(bot_model, BaseAgent):
             return bot_model.game_state_required()
 
-    def get_move(self, game_id: str, game_state: GameState | None = None) -> Move:
+    def get_move(self, game_id: str, game_state: GameState | None = None) -> Position:
         """Returns the Bot Move (Model dependent)."""
         bot_model = self.get_bot(game_id)
         if self.game_state_required(bot_model):
@@ -128,7 +128,7 @@ class BotService:
         deleted_bot = ACTIVE_BOTS.pop(game_id)
         return f"Deleted Bot: {deleted_bot.name()}: ({game_id})"
 
-    def get_bot(self, game_id: str) -> BasicBot:
+    def get_bot(self, game_id: str) -> BaseAgent:
         """Returns Bot Model in dependency of GameID."""
         if game_id in ACTIVE_BOTS.keys():
             return ACTIVE_BOTS[game_id]
