@@ -1,7 +1,7 @@
 """Test-Class for API-Calls."""
 
 from fastapi.testclient import TestClient
-from main import app
+from backend.main import app
 
 client = TestClient(app)
 game_id = "1"
